@@ -1,4 +1,5 @@
 # Trusted Publisher no npm: org=emitfy, repo=emitfy-node, workflow=publish.yml
+# Não usar NODE_AUTH_TOKEN / registry-url — o token anula o OIDC.
 name: Publish npm
 
 on:
@@ -21,7 +22,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-          registry-url: https://registry.npmjs.org
 
       - name: Install
         run: npm install
