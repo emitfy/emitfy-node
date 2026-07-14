@@ -39,6 +39,29 @@ function walkFiles(dir, files = []) {
 }
 
 /**
+ * @param {unknown} value
+ * @returns {unknown}
+ */
+function sortKeys(value) {
+  if (Array.isArray(value)) {
+    return value.map(sortKeys)
+  }
+
+  if (value && typeof value === 'object') {
+    const object = /** @type {Record<string, unknown>} */ (value)
+    const sorted = {}
+
+    for (const key of Object.keys(object).sort()) {
+      sorted[key] = sortKeys(object[key])
+    }
+
+    return sorted
+  }
+
+  return value
+}
+
+/**
  * Hash estável do surface publicado (src + package.json sem version).
  * @param {string} base
  */
@@ -50,7 +73,7 @@ function contentHash(base) {
     const parsed = JSON.parse(readFileSync(pkgPath, 'utf8'))
     delete parsed.version
     hash.update('package.json\0')
-    hash.update(JSON.stringify(parsed))
+    hash.update(JSON.stringify(sortKeys(parsed)))
     hash.update('\0')
   }
 
@@ -66,9 +89,10 @@ function contentHash(base) {
 
   for (const file of files) {
     const rel = relative(base, file).replaceAll('\\', '/')
+    const body = readFileSync(file, 'utf8').replaceAll('\r\n', '\n')
     hash.update(rel)
     hash.update('\0')
-    hash.update(readFileSync(file))
+    hash.update(body)
     hash.update('\0')
   }
 
