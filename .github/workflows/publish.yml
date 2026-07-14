@@ -1,5 +1,6 @@
 # Trusted Publisher no npm: org=emitfy, repo=emitfy-node, workflow=publish.yml
 # Requer npm CLI >= 11.5.1. Não usar NODE_AUTH_TOKEN / registry-url (anula OIDC).
+# Só publica se src/ (e package.json sem version) mudou vs latest no npm.
 name: Publish npm
 
 on:
@@ -26,11 +27,34 @@ jobs:
       - name: Upgrade npm (OIDC trusted publishing)
         run: npm install -g npm@latest
 
+      - name: Should publish?
+        id: decide
+        run: |
+          set +e
+          node scripts/should-publish.mjs
+          code=$?
+          set -e
+          if [ "$code" -eq 10 ]; then
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if [ "$code" -ne 0 ]; then
+            exit "$code"
+          fi
+          echo "publish=true" >> "$GITHUB_OUTPUT"
+
       - name: Install
+        if: steps.decide.outputs.publish == 'true'
         run: npm install
 
       - name: Build
+        if: steps.decide.outputs.publish == 'true'
         run: npm run build
 
       - name: Publish @emitfy/sdk
+        if: steps.decide.outputs.publish == 'true'
         run: npm publish --access public --provenance
+
+      - name: Skipped
+        if: steps.decide.outputs.publish != 'true'
+        run: echo "Nenhuma alteração no SDK — publish ignorado."
