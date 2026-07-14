@@ -1,0 +1,45 @@
+{
+  "name": "@emitfy/sdk",
+  "version": "0.2.1",
+  "description": "Official Emitfy API SDK for Node.js / TypeScript",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "prepublishOnly": "npm run build"
+  },
+  "license": "MIT",
+  "keywords": [
+    "emitfy",
+    "nfe",
+    "nfse",
+    "fiscal",
+    "brazil",
+    "sdk"
+  ],
+  "homepage": "https://api.emitfy.com/docs/sdks",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/emitfy/emitfy-node.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.0"
+  }
+}
