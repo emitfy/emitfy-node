@@ -1,5 +1,5 @@
 # Trusted Publisher no npm: org=emitfy, repo=emitfy-node, workflow=publish.yml
-# Não usar NODE_AUTH_TOKEN / registry-url — o token anula o OIDC.
+# Requer npm CLI >= 11.5.1. Não usar NODE_AUTH_TOKEN / registry-url (anula OIDC).
 name: Publish npm
 
 on:
@@ -22,6 +22,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
+
+      - name: Upgrade npm (OIDC trusted publishing)
+        run: npm install -g npm@latest
 
       - name: Install
         run: npm install

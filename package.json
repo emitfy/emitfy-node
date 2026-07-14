@@ -1,6 +1,6 @@
 {
   "name": "@emitfy/sdk",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Official Emitfy API SDK for Node.js / TypeScript",
   "type": "module",
   "main": "./dist/index.js",
