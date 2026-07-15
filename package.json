@@ -1,7 +1,7 @@
 {
   "name": "@emitfy/sdk",
-  "version": "0.2.2",
-  "description": "Official Emitfy API SDK for Node.js / TypeScript",
+  "version": "0.3.0",
+  "description": "Official Emitfy API SDK for Node.js / TypeScript (OpenAPI-typed)",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -16,6 +16,7 @@
     "src"
   ],
   "scripts": {
+    "generate": "openapi-ts && node scripts/fix-generated-imports.mjs",
     "build": "tsc -p tsconfig.json",
     "prepublishOnly": "npm run build"
   },
@@ -26,7 +27,8 @@
     "nfse",
     "fiscal",
     "brazil",
-    "sdk"
+    "sdk",
+    "openapi"
   ],
   "homepage": "https://api.emitfy.com/docs/sdks",
   "repository": {
@@ -40,6 +42,7 @@
     "node": ">=18"
   },
   "devDependencies": {
+    "@hey-api/openapi-ts": "0.99.0",
     "typescript": "^5.8.0"
   }
 }
