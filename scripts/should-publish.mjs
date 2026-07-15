@@ -62,18 +62,25 @@ function sortKeys(value) {
 }
 
 /**
- * Hash estável do surface publicado (src + package.json sem version).
+ * Hash estável do surface publicado (README + src + package.json sem version).
  * @param {string} base
  */
 function contentHash(base) {
   const hash = createHash('sha256')
   const pkgPath = join(base, 'package.json')
+  const readmePath = join(base, 'README.md')
 
   if (existsSync(pkgPath)) {
     const parsed = JSON.parse(readFileSync(pkgPath, 'utf8'))
     delete parsed.version
     hash.update('package.json\0')
     hash.update(JSON.stringify(sortKeys(parsed)))
+    hash.update('\0')
+  }
+
+  if (existsSync(readmePath)) {
+    hash.update('README.md\0')
+    hash.update(readFileSync(readmePath, 'utf8').replaceAll('\r\n', '\n'))
     hash.update('\0')
   }
 
