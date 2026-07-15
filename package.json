@@ -16,7 +16,6 @@
     "src"
   ],
   "scripts": {
-    "generate": "openapi-ts && node scripts/fix-generated-imports.mjs",
     "build": "tsc -p tsconfig.json",
     "prepublishOnly": "npm run build"
   },
@@ -42,7 +41,6 @@
     "node": ">=18"
   },
   "devDependencies": {
-    "@hey-api/openapi-ts": "0.99.0",
     "typescript": "^5.8.0"
   }
 }
