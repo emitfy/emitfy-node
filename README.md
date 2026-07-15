@@ -42,17 +42,8 @@ await company.nfse.create(
 ## Typed OpenAPI surface
 
 - Facade: `emitfy.webhooks`, `emitfy.companies`, `emitfy.company(id).nfse|nfe|…`
-- Types reexportados do gerador: `import type { WebhookCreate, NfseCreateData, … } from '@emitfy/sdk'`
-- Operações de baixo nível: `import { operations } from '@emitfy/sdk'` (`operations.nfseCreate`, …)
-
-No monorepo Emitfy, regenerar após mudar o OpenAPI:
-
-```bash
-pnpm run sdk:generate
-# ou: cd sdks/typescript && npm run generate
-```
-
-Os arquivos em `src/generated/` são **commitados** (o repo público não inclui o YAML).
+- Types: `import type { WebhookCreate, NfseCreateData, … } from '@emitfy/sdk'`
+- Low-level operations: `import { operations } from '@emitfy/sdk'` (`operations.nfseCreate`, …)
 
 ## Method map
 
