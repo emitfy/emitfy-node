@@ -2,7 +2,7 @@
 
 Official Emitfy API SDK for Node.js / TypeScript.
 
-Tipagem gerada a partir do OpenAPI (`@hey-api/openapi-ts`) + facade `Emitfy` amigável.
+Tipagem alinhada ao OpenAPI + facade `Emitfy` amigável.
 
 ## Install
 
