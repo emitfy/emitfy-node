@@ -17,9 +17,6 @@ import type {
   ProductsUpdateData,
   ReceivedNfesListData,
   ReceivedNfesManifestData,
-  SalesCreateData,
-  SalesListData,
-  SalesUpdateData,
   WebhookCreate,
   CteCreateData,
   CteListData,
@@ -239,7 +236,6 @@ export class CompanyContext {
     unknown,
     ProductsUpdateData
   >
-  readonly sales: CompanyResource<SalesListData, SalesCreateData, unknown, SalesUpdateData>
   readonly invoices: {
     list: (query?: QueryOf<InvoicesListData>) => Promise<unknown>
     get: (id: string) => Promise<unknown>
@@ -293,13 +289,6 @@ export class CompanyContext {
       get: api.productsGet,
       update: api.productsUpdate,
       delete: api.productsDelete
-    })
-    this.sales = new CompanyResource(client, companyId, {
-      list: api.salesList,
-      create: api.salesCreate,
-      get: api.salesGet,
-      update: api.salesUpdate,
-      delete: api.salesDelete
     })
     this.invoices = {
       list: (query) =>
@@ -385,26 +374,6 @@ export class CompanyContext {
   transmitNfce(id: string) {
     return callApi(() =>
       api.nfceTransmit({
-        client: this.client,
-        throwOnError: true,
-        path: { companyId: this.companyId, id }
-      })
-    )
-  }
-
-  emitSaleInvoice(id: string) {
-    return callApi(() =>
-      api.salesEmitInvoice({
-        client: this.client,
-        throwOnError: true,
-        path: { companyId: this.companyId, id }
-      })
-    )
-  }
-
-  cancelSaleInvoice(id: string) {
-    return callApi(() =>
-      api.salesCancelInvoice({
         client: this.client,
         throwOnError: true,
         path: { companyId: this.companyId, id }

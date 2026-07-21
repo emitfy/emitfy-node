@@ -558,156 +558,6 @@ export type ProductsUpdateResponses = {
     200: unknown;
 };
 
-export type SalesListData = {
-    body?: never;
-    path: {
-        /**
-         * ID da empresa (CNPJ operacional) no path
-         */
-        companyId: string;
-    };
-    query?: {
-        page?: number;
-        pageSize?: number;
-    };
-    url: '/companies/{companyId}/sales';
-};
-
-export type SalesListResponses = {
-    /**
-     * Lista paginada
-     */
-    200: unknown;
-};
-
-export type SalesCreateData = {
-    /**
-     * Fonte-canônica Zod SaleCreateRequestBodySchema
-     */
-    body: {
-        [key: string]: unknown;
-    };
-    path: {
-        /**
-         * ID da empresa (CNPJ operacional) no path
-         */
-        companyId: string;
-    };
-    query?: never;
-    url: '/companies/{companyId}/sales';
-};
-
-export type SalesCreateResponses = {
-    /**
-     * Venda criada
-     */
-    200: SuccessEnvelope;
-};
-
-export type SalesCreateResponse = SalesCreateResponses[keyof SalesCreateResponses];
-
-export type SalesDeleteData = {
-    body?: never;
-    path: {
-        /**
-         * ID da empresa (CNPJ operacional) no path
-         */
-        companyId: string;
-        id: string;
-    };
-    query?: never;
-    url: '/companies/{companyId}/sales/{id}';
-};
-
-export type SalesDeleteResponses = {
-    /**
-     * Venda removida
-     */
-    200: unknown;
-};
-
-export type SalesGetData = {
-    body?: never;
-    path: {
-        /**
-         * ID da empresa (CNPJ operacional) no path
-         */
-        companyId: string;
-        id: string;
-    };
-    query?: never;
-    url: '/companies/{companyId}/sales/{id}';
-};
-
-export type SalesGetResponses = {
-    /**
-     * Venda
-     */
-    200: unknown;
-};
-
-export type SalesUpdateData = {
-    body?: {
-        [key: string]: unknown;
-    };
-    path: {
-        /**
-         * ID da empresa (CNPJ operacional) no path
-         */
-        companyId: string;
-        id: string;
-    };
-    query?: never;
-    url: '/companies/{companyId}/sales/{id}';
-};
-
-export type SalesUpdateResponses = {
-    /**
-     * Venda atualizada
-     */
-    200: unknown;
-};
-
-export type SalesEmitInvoiceData = {
-    body?: never;
-    path: {
-        /**
-         * ID da empresa (CNPJ operacional) no path
-         */
-        companyId: string;
-        id: string;
-    };
-    query?: never;
-    url: '/companies/{companyId}/sales/{id}/emit-invoice';
-};
-
-export type SalesEmitInvoiceResponses = {
-    /**
-     * Emissão enfileirada
-     */
-    200: unknown;
-};
-
-export type SalesCancelInvoiceData = {
-    body?: never;
-    path: {
-        /**
-         * ID da empresa (CNPJ operacional) no path
-         */
-        companyId: string;
-        id: string;
-    };
-    query?: never;
-    url: '/companies/{companyId}/sales/{id}/cancel-invoice';
-};
-
-export type SalesCancelInvoiceResponses = {
-    /**
-     * Cancelamento enfileirado
-     */
-    200: unknown;
-};
-
 export type NfseListData = {
     body?: never;
     path: {
@@ -1210,6 +1060,39 @@ export type InvoicesListResponses = {
      */
     200: unknown;
 };
+
+export type InvoicesCreateData = {
+    body: {
+        type: 'nfse' | 'nfe' | 'nfce';
+        issueMode?: 'draft' | 'immediate' | 'scheduled';
+        commercial: {
+            [key: string]: unknown;
+        };
+        externalId?: string;
+        sourceKey?: string;
+        [key: string]: unknown;
+    };
+    headers?: {
+        'Idempotency-Key'?: string;
+    };
+    path: {
+        /**
+         * ID da empresa (CNPJ operacional) no path
+         */
+        companyId: string;
+    };
+    query?: never;
+    url: '/companies/{companyId}/invoices';
+};
+
+export type InvoicesCreateResponses = {
+    /**
+     * Nota criada ou existente (idempotente por sourceKey+type)
+     */
+    200: SuccessEnvelope;
+};
+
+export type InvoicesCreateResponse = InvoicesCreateResponses[keyof InvoicesCreateResponses];
 
 export type InvoicesGetData = {
     body?: never;

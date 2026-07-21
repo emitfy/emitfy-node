@@ -52,7 +52,7 @@ await company.nfse.create(
 | `emitfy.webhooks.*` | `/v1/webhooks` |
 | `emitfy.companies.*` | `/v1/companies` |
 | `company.nfse\|nfe\|nfce\|cte` | `/v1/companies/:id/{resource}` |
-| `company.customers\|products\|sales` | `/v1/companies/:id/{resource}` |
+| `company.customers\|products\|invoices` | `/v1/companies/:id/{resource}` |
 | `company.receivedNfes` | `/v1/companies/:id/received-nfes` |
 
 Docs: https://api.emitfy.com/docs/sdks  
