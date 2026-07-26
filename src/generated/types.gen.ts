@@ -21,6 +21,36 @@ export type SuccessEnvelope = {
     data?: unknown;
 };
 
+/**
+ * Transportadora informada inline na emissão (não há cadastro de transportadora — os dados ficam congelados no snapshot da nota)
+ */
+export type TransportCarrier = {
+    name: string;
+    /**
+     * CNPJ ou CPF válido da transportadora
+     */
+    taxId: string;
+    stateRegistration?: string;
+    address?: {
+        street?: string;
+        city?: string;
+        state?: string;
+    };
+    vehicle?: {
+        plate: string;
+        state?: string;
+        rntc?: string;
+    };
+};
+
+/**
+ * Dados de transporte da nota — null quando não informados na emissão
+ */
+export type TransportDetail = {
+    freightModality?: string;
+    carrier?: TransportCarrier;
+};
+
 export type WebhookCreate = {
     name?: string;
     url: string;
@@ -375,9 +405,18 @@ export type CustomersCreateData = {
     url: '/companies/{companyId}/customers';
 };
 
+export type CustomersCreateErrors = {
+    /**
+     * Cliente já existe (documento ou e-mail duplicado)
+     */
+    409: ErrorBody;
+};
+
+export type CustomersCreateError = CustomersCreateErrors[keyof CustomersCreateErrors];
+
 export type CustomersCreateResponses = {
     /**
-     * Cliente criado/atualizado
+     * Cliente criado
      */
     200: unknown;
 };
@@ -683,6 +722,22 @@ export type NfeListResponses = {
 
 export type NfeCreateData = {
     body: {
+        /**
+         * Dados de transporte inline (opcional). `freightModality` é obrigatório
+         * quando `carrier` é enviado; `noShipping` com `carrier` retorna 400.
+         *
+         */
+        transport?: {
+            /**
+             * Também aceita os códigos SEFAZ 0/1/2/3/4/9 como alias
+             */
+            freightModality?: 'bySender' | 'byRecipient' | 'byThirdParties' | 'ownBySender' | 'ownByRecipient' | 'noShipping';
+            /**
+             * Valor do frete; compõe o total quando por conta do emitente
+             */
+            value?: number;
+            carrier?: TransportCarrier;
+        };
         [key: string]: unknown;
     };
     headers?: {
@@ -747,10 +802,18 @@ export type NfeGetData = {
 
 export type NfeGetResponses = {
     /**
-     * NF-e
+     * NF-e (inclui `transport` quando informado na emissão)
      */
-    200: unknown;
+    200: {
+        success?: true;
+        data?: {
+            transport?: TransportDetail;
+            [key: string]: unknown;
+        };
+    };
 };
+
+export type NfeGetResponse = NfeGetResponses[keyof NfeGetResponses];
 
 export type NfceListData = {
     body?: never;
@@ -1061,39 +1124,6 @@ export type InvoicesListResponses = {
     200: unknown;
 };
 
-export type InvoicesCreateData = {
-    body: {
-        type: 'nfse' | 'nfe' | 'nfce';
-        issueMode?: 'draft' | 'immediate' | 'scheduled';
-        commercial: {
-            [key: string]: unknown;
-        };
-        externalId?: string;
-        sourceKey?: string;
-        [key: string]: unknown;
-    };
-    headers?: {
-        'Idempotency-Key'?: string;
-    };
-    path: {
-        /**
-         * ID da empresa (CNPJ operacional) no path
-         */
-        companyId: string;
-    };
-    query?: never;
-    url: '/companies/{companyId}/invoices';
-};
-
-export type InvoicesCreateResponses = {
-    /**
-     * Nota criada ou existente (idempotente por sourceKey+type)
-     */
-    200: SuccessEnvelope;
-};
-
-export type InvoicesCreateResponse = InvoicesCreateResponses[keyof InvoicesCreateResponses];
-
 export type InvoicesGetData = {
     body?: never;
     path: {
@@ -1109,10 +1139,18 @@ export type InvoicesGetData = {
 
 export type InvoicesGetResponses = {
     /**
-     * Nota unificada
+     * Nota unificada (inclui `transport` quando informado na emissão da NF-e)
      */
-    200: unknown;
+    200: {
+        success?: true;
+        data?: {
+            transport?: TransportDetail;
+            [key: string]: unknown;
+        };
+    };
 };
+
+export type InvoicesGetResponse = InvoicesGetResponses[keyof InvoicesGetResponses];
 
 export type ReceivedNfesListData = {
     body?: never;

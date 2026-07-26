@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.js';
 import { type Client, type ClientMeta, formDataBodySerializer, type Options as Options2, type RequestResult, type TDataShape } from './client/index.js';
-import type { ApiCredentialsStatusData, ApiCredentialsStatusResponses, CompaniesCreateData, CompaniesCreateResponses, CompaniesDeleteData, CompaniesDeleteResponses, CompaniesGetData, CompaniesGetErrors, CompaniesGetResponses, CompaniesListData, CompaniesListResponses, CompaniesUpdateData, CompaniesUpdateResponses, CompanyCertificateDeleteData, CompanyCertificateDeleteResponses, CompanyCertificateGetData, CompanyCertificateGetResponses, CompanyCertificateUploadData, CompanyCertificateUploadResponses, CompanyEnvironmentData, CompanyEnvironmentResponses, CompanyStatusData, CompanyStatusResponses, CteCancelData, CteCancelErrors, CteCancelResponses, CteCreateData, CteCreateResponses, CteGetData, CteGetErrors, CteGetResponses, CteListData, CteListResponses, CteOsCreateData, CteOsCreateErrors, CteOsCreateResponses, CustomersCreateData, CustomersCreateResponses, CustomersDeleteData, CustomersDeleteResponses, CustomersGetData, CustomersGetErrors, CustomersGetResponses, CustomersListData, CustomersListResponses, CustomersUpdateData, CustomersUpdateResponses, InvoicesCreateData, InvoicesCreateResponses, InvoicesGetData, InvoicesGetResponses, InvoicesListData, InvoicesListResponses, NfceCancelData, NfceCancelErrors, NfceCancelResponses, NfceCreateData, NfceCreateResponses, NfceGetData, NfceGetErrors, NfceGetResponses, NfceListData, NfceListResponses, NfceTransmitData, NfceTransmitErrors, NfceTransmitResponses, NfeCancelData, NfeCancelErrors, NfeCancelResponses, NfeCreateData, NfeCreateResponses, NfeGetData, NfeGetResponses, NfeListData, NfeListResponses, NfseCancelData, NfseCancelErrors, NfseCancelResponses, NfseCreateData, NfseCreateResponses, NfseGetData, NfseGetErrors, NfseGetResponses, NfseListData, NfseListResponses, ProductsCreateData, ProductsCreateResponses, ProductsDeleteData, ProductsDeleteResponses, ProductsGetData, ProductsGetResponses, ProductsListData, ProductsListResponses, ProductsUpdateData, ProductsUpdateResponses, ReceivedNfesGetData, ReceivedNfesGetResponses, ReceivedNfesListData, ReceivedNfesListResponses, ReceivedNfesManifestData, ReceivedNfesManifestResponses, ReceivedNfesSyncData, ReceivedNfesSyncErrors, ReceivedNfesSyncResponses, ReceivedNfesXmlData, ReceivedNfesXmlResponses, WebhooksCreateData, WebhooksCreateResponses, WebhooksDeleteData, WebhooksDeleteResponses, WebhooksListData, WebhooksListResponses, WebhooksSetActiveData, WebhooksSetActiveResponses, WebhooksUpdateData, WebhooksUpdateResponses } from './types.gen.js';
+import type { ApiCredentialsStatusData, ApiCredentialsStatusResponses, CompaniesCreateData, CompaniesCreateResponses, CompaniesDeleteData, CompaniesDeleteResponses, CompaniesGetData, CompaniesGetErrors, CompaniesGetResponses, CompaniesListData, CompaniesListResponses, CompaniesUpdateData, CompaniesUpdateResponses, CompanyCertificateDeleteData, CompanyCertificateDeleteResponses, CompanyCertificateGetData, CompanyCertificateGetResponses, CompanyCertificateUploadData, CompanyCertificateUploadResponses, CompanyEnvironmentData, CompanyEnvironmentResponses, CompanyStatusData, CompanyStatusResponses, CteCancelData, CteCancelErrors, CteCancelResponses, CteCreateData, CteCreateResponses, CteGetData, CteGetErrors, CteGetResponses, CteListData, CteListResponses, CteOsCreateData, CteOsCreateErrors, CteOsCreateResponses, CustomersCreateData, CustomersCreateErrors, CustomersCreateResponses, CustomersDeleteData, CustomersDeleteResponses, CustomersGetData, CustomersGetErrors, CustomersGetResponses, CustomersListData, CustomersListResponses, CustomersUpdateData, CustomersUpdateResponses, InvoicesGetData, InvoicesGetResponses, InvoicesListData, InvoicesListResponses, NfceCancelData, NfceCancelErrors, NfceCancelResponses, NfceCreateData, NfceCreateResponses, NfceGetData, NfceGetErrors, NfceGetResponses, NfceListData, NfceListResponses, NfceTransmitData, NfceTransmitErrors, NfceTransmitResponses, NfeCancelData, NfeCancelErrors, NfeCancelResponses, NfeCreateData, NfeCreateResponses, NfeGetData, NfeGetResponses, NfeListData, NfeListResponses, NfseCancelData, NfseCancelErrors, NfseCancelResponses, NfseCreateData, NfseCreateResponses, NfseGetData, NfseGetErrors, NfseGetResponses, NfseListData, NfseListResponses, ProductsCreateData, ProductsCreateResponses, ProductsDeleteData, ProductsDeleteResponses, ProductsGetData, ProductsGetResponses, ProductsListData, ProductsListResponses, ProductsUpdateData, ProductsUpdateResponses, ReceivedNfesGetData, ReceivedNfesGetResponses, ReceivedNfesListData, ReceivedNfesListResponses, ReceivedNfesManifestData, ReceivedNfesManifestResponses, ReceivedNfesSyncData, ReceivedNfesSyncErrors, ReceivedNfesSyncResponses, ReceivedNfesXmlData, ReceivedNfesXmlResponses, WebhooksCreateData, WebhooksCreateResponses, WebhooksDeleteData, WebhooksDeleteResponses, WebhooksListData, WebhooksListResponses, WebhooksSetActiveData, WebhooksSetActiveResponses, WebhooksUpdateData, WebhooksUpdateResponses } from './types.gen.js';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -201,9 +201,11 @@ export const customersList = <ThrowOnError extends boolean = false>(options: Opt
 });
 
 /**
- * Create or upsert customer
+ * Create customer
+ *
+ * Cria um novo cliente. Retorna 409 (`CUSTOMER_DOCUMENT_EXISTS` / `CUSTOMER_EMAIL_EXISTS`) se já existir cliente com o mesmo documento ou e-mail. Para atualizar, use `PUT /companies/{companyId}/customers/{id}`.
  */
-export const customersCreate = <ThrowOnError extends boolean = false>(options: Options<CustomersCreateData, ThrowOnError>): RequestResult<CustomersCreateResponses, unknown, ThrowOnError> => (options.client ?? client).post<CustomersCreateResponses, unknown, ThrowOnError>({
+export const customersCreate = <ThrowOnError extends boolean = false>(options: Options<CustomersCreateData, ThrowOnError>): RequestResult<CustomersCreateResponses, CustomersCreateErrors, ThrowOnError> => (options.client ?? client).post<CustomersCreateResponses, CustomersCreateErrors, ThrowOnError>({
     security: [{ name: 'X-Api-Key', type: 'apiKey' }, { name: 'X-Api-Secret', type: 'apiKey' }],
     url: '/companies/{companyId}/customers',
     ...options,
@@ -481,24 +483,13 @@ export const cteOsCreate = <ThrowOnError extends boolean = false>(options: Optio
 
 /**
  * List invoices
+ *
+ * Consulta unificada das notas da empresa (todos os tipos). Emissão acontece nos endpoints por tipo (`/nfse`, `/nfe`, `/nfce`, `/cte`, `/cte-os`).
  */
 export const invoicesList = <ThrowOnError extends boolean = false>(options: Options<InvoicesListData, ThrowOnError>): RequestResult<InvoicesListResponses, unknown, ThrowOnError> => (options.client ?? client).get<InvoicesListResponses, unknown, ThrowOnError>({
     security: [{ name: 'X-Api-Key', type: 'apiKey' }, { name: 'X-Api-Secret', type: 'apiKey' }],
     url: '/companies/{companyId}/invoices',
     ...options
-});
-
-/**
- * Create invoice (invoice-first)
- */
-export const invoicesCreate = <ThrowOnError extends boolean = false>(options: Options<InvoicesCreateData, ThrowOnError>): RequestResult<InvoicesCreateResponses, unknown, ThrowOnError> => (options.client ?? client).post<InvoicesCreateResponses, unknown, ThrowOnError>({
-    security: [{ name: 'X-Api-Key', type: 'apiKey' }, { name: 'X-Api-Secret', type: 'apiKey' }],
-    url: '/companies/{companyId}/invoices',
-    ...options,
-    headers: {
-        'Content-Type': 'application/json',
-        ...options.headers
-    }
 });
 
 /**
