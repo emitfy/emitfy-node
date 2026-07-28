@@ -51,6 +51,90 @@ export type TransportDetail = {
     carrier?: TransportCarrier;
 };
 
+/**
+ * Item de produto compartilhado entre NF-e e NFC-e (DNA do catálogo)
+ */
+export type ProductEmitItem = {
+    sku?: string;
+    name?: string;
+    category?: string;
+    description: string;
+    fiscalDescription?: string;
+    guarantee?: number;
+    ncm?: string;
+    cfop?: string;
+    cfopInternal?: string;
+    cfopExternal?: string;
+    cfopInternational?: string;
+    quantity: number;
+    unitValue: number;
+    unit?: string;
+    commercialUnit?: string;
+    taxableUnit?: string;
+    gtin?: string;
+    icmsOrigin?: string;
+    icmsCst?: string;
+    icmsTaxRate?: number;
+    pisCst?: string;
+    pisTaxRate?: number;
+    cofinsCst?: string;
+    cofinsTaxRate?: number;
+    taxClassification?: string;
+    ibsCst?: string;
+    cbsCst?: string;
+    [key: string]: unknown;
+};
+
+export type NfseCreateRequest = {
+    /**
+     * Discriminação completa na nota
+     */
+    serviceDescription: string;
+    /**
+     * Nome no catálogo (default = slice da discriminação)
+     */
+    name?: string;
+    /**
+     * Default direct-api-nfse
+     */
+    sku?: string;
+    /**
+     * Default other_service
+     */
+    category?: string;
+    guarantee?: number;
+    cityServiceCode?: string;
+    /**
+     * Alias legado de cityServiceCode
+     */
+    serviceCode?: string;
+    serviceItemCode?: string;
+    nbsCode?: string;
+    cnaeCode?: string;
+    taxClassification?: string;
+    ibsCst?: string;
+    ibsOperationIndicator?: string;
+    natureOfOperation?: string;
+    serviceLocation?: string;
+    municipalityOfIncidence?: string;
+    taxes?: {
+        [key: string]: unknown;
+    };
+    amount: number;
+    issueDate?: string;
+    externalId?: string;
+    borrower: {
+        taxId?: string;
+        name: string;
+        email?: string;
+        phone?: string;
+        address?: {
+            [key: string]: unknown;
+        };
+    };
+    [key: string]: unknown;
+};
+
 export type WebhookCreate = {
     name?: string;
     url: string;
@@ -621,9 +705,7 @@ export type NfseListResponses = {
 };
 
 export type NfseCreateData = {
-    body: {
-        [key: string]: unknown;
-    };
+    body: NfseCreateRequest;
     headers?: {
         'Idempotency-Key'?: string;
     };
@@ -841,9 +923,7 @@ export type NfceListResponses = {
 export type NfceCreateData = {
     body: {
         paymentMethod: 'credit_card' | 'debit_card' | 'pix' | 'bank_transfer' | 'cash' | 'bank_slip' | 'other';
-        items: Array<{
-            [key: string]: unknown;
-        }>;
+        items: Array<ProductEmitItem>;
         recipient?: {
             [key: string]: unknown;
         };

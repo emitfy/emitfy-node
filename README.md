@@ -31,7 +31,11 @@ const company = emitfy.company(process.env.EMITFY_COMPANY_ID!)
 
 await company.nfse.create(
   {
-    serviceDescription: 'Serviço',
+    name: 'Consultoria',
+    category: 'consulting',
+    serviceDescription: 'Consultoria em tecnologia',
+    cityServiceCode: '02800',
+    taxes: { iss: { rate: 2.9, isWithheld: false } },
     amount: 100,
     borrower: { taxId: '12.345.678/0001-90', name: 'Cliente LTDA' }
   },
