@@ -1271,3 +1271,195 @@ export type ReceivedNfesManifestResponses = {
      */
     200: unknown;
 };
+
+export type UtilsSearchNcmData = {
+    body?: never;
+    path?: never;
+    query?: {
+        search?: string;
+        offset?: number;
+        limit?: number;
+    };
+    url: '/utils/ncm';
+};
+
+export type UtilsSearchNcmResponses = {
+    /**
+     * Lista paginada de NCM
+     */
+    200: unknown;
+};
+
+export type UtilsSearchNbsData = {
+    body?: never;
+    path?: never;
+    query?: {
+        search?: string;
+    };
+    url: '/utils/nbs';
+};
+
+export type UtilsSearchNbsResponses = {
+    /**
+     * Lista paginada de NBS
+     */
+    200: unknown;
+};
+
+export type UtilsSearchCfopData = {
+    body?: never;
+    path?: never;
+    query?: {
+        search?: string;
+    };
+    url: '/utils/cfop';
+};
+
+export type UtilsSearchCfopResponses = {
+    /**
+     * Lista paginada de CFOP
+     */
+    200: unknown;
+};
+
+export type UtilsSearchCnaeData = {
+    body?: never;
+    path?: never;
+    query?: {
+        search?: string;
+    };
+    url: '/utils/cnae';
+};
+
+export type UtilsSearchCnaeResponses = {
+    /**
+     * Lista paginada de CNAE
+     */
+    200: unknown;
+};
+
+export type UtilsSearchCestData = {
+    body?: never;
+    path?: never;
+    query?: {
+        search?: string;
+    };
+    url: '/utils/cest';
+};
+
+export type UtilsSearchCestResponses = {
+    /**
+     * Lista paginada de CEST
+     */
+    200: unknown;
+};
+
+export type UtilsSearchFederalServicesData = {
+    body?: never;
+    path?: never;
+    query?: {
+        search?: string;
+    };
+    url: '/utils/federal-services';
+};
+
+export type UtilsSearchFederalServicesResponses = {
+    /**
+     * Lista de itens LC 116
+     */
+    200: unknown;
+};
+
+export type UtilsSearchTaxClassCodeData = {
+    body?: never;
+    path?: never;
+    query?: {
+        search?: string;
+    };
+    url: '/utils/tax-class-code';
+};
+
+export type UtilsSearchTaxClassCodeResponses = {
+    /**
+     * Códigos de classificação tributária
+     */
+    200: unknown;
+};
+
+export type UtilsSearchIbsOperationIndicatorData = {
+    body?: never;
+    path?: never;
+    query?: {
+        search?: string;
+    };
+    url: '/utils/ibs-operation-indicator';
+};
+
+export type UtilsSearchIbsOperationIndicatorResponses = {
+    /**
+     * Indicadores de operação IBS
+     */
+    200: unknown;
+};
+
+export type UtilsFiscalSuggestionsData = {
+    body?: never;
+    path?: never;
+    query?: {
+        search?: string;
+    };
+    url: '/utils/fiscal-suggestions';
+};
+
+export type UtilsFiscalSuggestionsResponses = {
+    /**
+     * Sugestões fiscais
+     */
+    200: unknown;
+};
+
+export type UtilsLookupCnpjData = {
+    body?: never;
+    path: {
+        cnpj: string;
+    };
+    query?: never;
+    url: '/utils/cnpj/{cnpj}';
+};
+
+export type UtilsLookupCnpjErrors = {
+    /**
+     * Rate limit (teto agressivo)
+     */
+    429: unknown;
+};
+
+export type UtilsLookupCnpjResponses = {
+    /**
+     * Dados do CNPJ
+     */
+    200: unknown;
+};
+
+export type UtilsLookupZipcodeData = {
+    body?: never;
+    path: {
+        zipcode: string;
+    };
+    query?: never;
+    url: '/utils/zipcode/{zipcode}';
+};
+
+export type UtilsLookupZipcodeErrors = {
+    /**
+     * Rate limit (teto agressivo)
+     */
+    429: unknown;
+};
+
+export type UtilsLookupZipcodeResponses = {
+    /**
+     * Endereço do CEP
+     */
+    200: unknown;
+};

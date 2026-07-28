@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.js';
 import { type Client, type ClientMeta, formDataBodySerializer, type Options as Options2, type RequestResult, type TDataShape } from './client/index.js';
-import type { ApiCredentialsStatusData, ApiCredentialsStatusResponses, CompaniesCreateData, CompaniesCreateResponses, CompaniesDeleteData, CompaniesDeleteResponses, CompaniesGetData, CompaniesGetErrors, CompaniesGetResponses, CompaniesListData, CompaniesListResponses, CompaniesUpdateData, CompaniesUpdateResponses, CompanyCertificateDeleteData, CompanyCertificateDeleteResponses, CompanyCertificateGetData, CompanyCertificateGetResponses, CompanyCertificateUploadData, CompanyCertificateUploadResponses, CompanyEnvironmentData, CompanyEnvironmentResponses, CompanyStatusData, CompanyStatusResponses, CteCancelData, CteCancelErrors, CteCancelResponses, CteCreateData, CteCreateResponses, CteGetData, CteGetErrors, CteGetResponses, CteListData, CteListResponses, CteOsCreateData, CteOsCreateErrors, CteOsCreateResponses, CustomersCreateData, CustomersCreateErrors, CustomersCreateResponses, CustomersDeleteData, CustomersDeleteResponses, CustomersGetData, CustomersGetErrors, CustomersGetResponses, CustomersListData, CustomersListResponses, CustomersUpdateData, CustomersUpdateResponses, InvoicesGetData, InvoicesGetResponses, InvoicesListData, InvoicesListResponses, NfceCancelData, NfceCancelErrors, NfceCancelResponses, NfceCreateData, NfceCreateResponses, NfceGetData, NfceGetErrors, NfceGetResponses, NfceListData, NfceListResponses, NfceTransmitData, NfceTransmitErrors, NfceTransmitResponses, NfeCancelData, NfeCancelErrors, NfeCancelResponses, NfeCreateData, NfeCreateResponses, NfeGetData, NfeGetResponses, NfeListData, NfeListResponses, NfseCancelData, NfseCancelErrors, NfseCancelResponses, NfseCreateData, NfseCreateResponses, NfseGetData, NfseGetErrors, NfseGetResponses, NfseListData, NfseListResponses, ProductsCreateData, ProductsCreateResponses, ProductsDeleteData, ProductsDeleteResponses, ProductsGetData, ProductsGetResponses, ProductsListData, ProductsListResponses, ProductsUpdateData, ProductsUpdateResponses, ReceivedNfesGetData, ReceivedNfesGetResponses, ReceivedNfesListData, ReceivedNfesListResponses, ReceivedNfesManifestData, ReceivedNfesManifestResponses, ReceivedNfesSyncData, ReceivedNfesSyncErrors, ReceivedNfesSyncResponses, ReceivedNfesXmlData, ReceivedNfesXmlResponses, WebhooksCreateData, WebhooksCreateResponses, WebhooksDeleteData, WebhooksDeleteResponses, WebhooksListData, WebhooksListResponses, WebhooksSetActiveData, WebhooksSetActiveResponses, WebhooksUpdateData, WebhooksUpdateResponses } from './types.gen.js';
+import type { ApiCredentialsStatusData, ApiCredentialsStatusResponses, CompaniesCreateData, CompaniesCreateResponses, CompaniesDeleteData, CompaniesDeleteResponses, CompaniesGetData, CompaniesGetErrors, CompaniesGetResponses, CompaniesListData, CompaniesListResponses, CompaniesUpdateData, CompaniesUpdateResponses, CompanyCertificateDeleteData, CompanyCertificateDeleteResponses, CompanyCertificateGetData, CompanyCertificateGetResponses, CompanyCertificateUploadData, CompanyCertificateUploadResponses, CompanyEnvironmentData, CompanyEnvironmentResponses, CompanyStatusData, CompanyStatusResponses, CteCancelData, CteCancelErrors, CteCancelResponses, CteCreateData, CteCreateResponses, CteGetData, CteGetErrors, CteGetResponses, CteListData, CteListResponses, CteOsCreateData, CteOsCreateErrors, CteOsCreateResponses, CustomersCreateData, CustomersCreateErrors, CustomersCreateResponses, CustomersDeleteData, CustomersDeleteResponses, CustomersGetData, CustomersGetErrors, CustomersGetResponses, CustomersListData, CustomersListResponses, CustomersUpdateData, CustomersUpdateResponses, InvoicesGetData, InvoicesGetResponses, InvoicesListData, InvoicesListResponses, NfceCancelData, NfceCancelErrors, NfceCancelResponses, NfceCreateData, NfceCreateResponses, NfceGetData, NfceGetErrors, NfceGetResponses, NfceListData, NfceListResponses, NfceTransmitData, NfceTransmitErrors, NfceTransmitResponses, NfeCancelData, NfeCancelErrors, NfeCancelResponses, NfeCreateData, NfeCreateResponses, NfeGetData, NfeGetResponses, NfeListData, NfeListResponses, NfseCancelData, NfseCancelErrors, NfseCancelResponses, NfseCreateData, NfseCreateResponses, NfseGetData, NfseGetErrors, NfseGetResponses, NfseListData, NfseListResponses, ProductsCreateData, ProductsCreateResponses, ProductsDeleteData, ProductsDeleteResponses, ProductsGetData, ProductsGetResponses, ProductsListData, ProductsListResponses, ProductsUpdateData, ProductsUpdateResponses, ReceivedNfesGetData, ReceivedNfesGetResponses, ReceivedNfesListData, ReceivedNfesListResponses, ReceivedNfesManifestData, ReceivedNfesManifestResponses, ReceivedNfesSyncData, ReceivedNfesSyncErrors, ReceivedNfesSyncResponses, ReceivedNfesXmlData, ReceivedNfesXmlResponses, UtilsFiscalSuggestionsData, UtilsFiscalSuggestionsResponses, UtilsLookupCnpjData, UtilsLookupCnpjErrors, UtilsLookupCnpjResponses, UtilsLookupZipcodeData, UtilsLookupZipcodeErrors, UtilsLookupZipcodeResponses, UtilsSearchCestData, UtilsSearchCestResponses, UtilsSearchCfopData, UtilsSearchCfopResponses, UtilsSearchCnaeData, UtilsSearchCnaeResponses, UtilsSearchFederalServicesData, UtilsSearchFederalServicesResponses, UtilsSearchIbsOperationIndicatorData, UtilsSearchIbsOperationIndicatorResponses, UtilsSearchNbsData, UtilsSearchNbsResponses, UtilsSearchNcmData, UtilsSearchNcmResponses, UtilsSearchTaxClassCodeData, UtilsSearchTaxClassCodeResponses, WebhooksCreateData, WebhooksCreateResponses, WebhooksDeleteData, WebhooksDeleteResponses, WebhooksListData, WebhooksListResponses, WebhooksSetActiveData, WebhooksSetActiveResponses, WebhooksUpdateData, WebhooksUpdateResponses } from './types.gen.js';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -548,4 +548,103 @@ export const receivedNfesManifest = <ThrowOnError extends boolean = false>(optio
         'Content-Type': 'application/json',
         ...options.headers
     }
+});
+
+/**
+ * Search NCM codes
+ */
+export const utilsSearchNcm = <ThrowOnError extends boolean = false>(options?: Options<UtilsSearchNcmData, ThrowOnError>): RequestResult<UtilsSearchNcmResponses, unknown, ThrowOnError> => (options?.client ?? client).get<UtilsSearchNcmResponses, unknown, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }, { name: 'X-Api-Secret', type: 'apiKey' }],
+    url: '/utils/ncm',
+    ...options
+});
+
+/**
+ * Search NBS codes
+ */
+export const utilsSearchNbs = <ThrowOnError extends boolean = false>(options?: Options<UtilsSearchNbsData, ThrowOnError>): RequestResult<UtilsSearchNbsResponses, unknown, ThrowOnError> => (options?.client ?? client).get<UtilsSearchNbsResponses, unknown, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }, { name: 'X-Api-Secret', type: 'apiKey' }],
+    url: '/utils/nbs',
+    ...options
+});
+
+/**
+ * Search CFOP codes
+ */
+export const utilsSearchCfop = <ThrowOnError extends boolean = false>(options?: Options<UtilsSearchCfopData, ThrowOnError>): RequestResult<UtilsSearchCfopResponses, unknown, ThrowOnError> => (options?.client ?? client).get<UtilsSearchCfopResponses, unknown, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }, { name: 'X-Api-Secret', type: 'apiKey' }],
+    url: '/utils/cfop',
+    ...options
+});
+
+/**
+ * Search CNAE codes
+ */
+export const utilsSearchCnae = <ThrowOnError extends boolean = false>(options?: Options<UtilsSearchCnaeData, ThrowOnError>): RequestResult<UtilsSearchCnaeResponses, unknown, ThrowOnError> => (options?.client ?? client).get<UtilsSearchCnaeResponses, unknown, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }, { name: 'X-Api-Secret', type: 'apiKey' }],
+    url: '/utils/cnae',
+    ...options
+});
+
+/**
+ * Search CEST codes
+ */
+export const utilsSearchCest = <ThrowOnError extends boolean = false>(options?: Options<UtilsSearchCestData, ThrowOnError>): RequestResult<UtilsSearchCestResponses, unknown, ThrowOnError> => (options?.client ?? client).get<UtilsSearchCestResponses, unknown, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }, { name: 'X-Api-Secret', type: 'apiKey' }],
+    url: '/utils/cest',
+    ...options
+});
+
+/**
+ * Search LC 116 federal service items
+ */
+export const utilsSearchFederalServices = <ThrowOnError extends boolean = false>(options?: Options<UtilsSearchFederalServicesData, ThrowOnError>): RequestResult<UtilsSearchFederalServicesResponses, unknown, ThrowOnError> => (options?.client ?? client).get<UtilsSearchFederalServicesResponses, unknown, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }, { name: 'X-Api-Secret', type: 'apiKey' }],
+    url: '/utils/federal-services',
+    ...options
+});
+
+/**
+ * Search tax classification codes (RTC)
+ */
+export const utilsSearchTaxClassCode = <ThrowOnError extends boolean = false>(options?: Options<UtilsSearchTaxClassCodeData, ThrowOnError>): RequestResult<UtilsSearchTaxClassCodeResponses, unknown, ThrowOnError> => (options?.client ?? client).get<UtilsSearchTaxClassCodeResponses, unknown, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }, { name: 'X-Api-Secret', type: 'apiKey' }],
+    url: '/utils/tax-class-code',
+    ...options
+});
+
+/**
+ * Search IBS operation indicators
+ */
+export const utilsSearchIbsOperationIndicator = <ThrowOnError extends boolean = false>(options?: Options<UtilsSearchIbsOperationIndicatorData, ThrowOnError>): RequestResult<UtilsSearchIbsOperationIndicatorResponses, unknown, ThrowOnError> => (options?.client ?? client).get<UtilsSearchIbsOperationIndicatorResponses, unknown, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }, { name: 'X-Api-Secret', type: 'apiKey' }],
+    url: '/utils/ibs-operation-indicator',
+    ...options
+});
+
+/**
+ * Deterministic fiscal suggestions
+ */
+export const utilsFiscalSuggestions = <ThrowOnError extends boolean = false>(options?: Options<UtilsFiscalSuggestionsData, ThrowOnError>): RequestResult<UtilsFiscalSuggestionsResponses, unknown, ThrowOnError> => (options?.client ?? client).get<UtilsFiscalSuggestionsResponses, unknown, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }, { name: 'X-Api-Secret', type: 'apiKey' }],
+    url: '/utils/fiscal-suggestions',
+    ...options
+});
+
+/**
+ * Lookup CNPJ enrichment
+ */
+export const utilsLookupCnpj = <ThrowOnError extends boolean = false>(options: Options<UtilsLookupCnpjData, ThrowOnError>): RequestResult<UtilsLookupCnpjResponses, UtilsLookupCnpjErrors, ThrowOnError> => (options.client ?? client).get<UtilsLookupCnpjResponses, UtilsLookupCnpjErrors, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }, { name: 'X-Api-Secret', type: 'apiKey' }],
+    url: '/utils/cnpj/{cnpj}',
+    ...options
+});
+
+/**
+ * Lookup Brazilian ZIP code (CEP)
+ */
+export const utilsLookupZipcode = <ThrowOnError extends boolean = false>(options: Options<UtilsLookupZipcodeData, ThrowOnError>): RequestResult<UtilsLookupZipcodeResponses, UtilsLookupZipcodeErrors, ThrowOnError> => (options.client ?? client).get<UtilsLookupZipcodeResponses, UtilsLookupZipcodeErrors, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }, { name: 'X-Api-Secret', type: 'apiKey' }],
+    url: '/utils/zipcode/{zipcode}',
+    ...options
 });
