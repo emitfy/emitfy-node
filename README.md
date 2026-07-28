@@ -55,5 +55,5 @@ await company.nfse.create(
 | `company.customers\|products\|invoices` | `/v1/companies/:id/{resource}` |
 | `company.receivedNfes` | `/v1/companies/:id/received-nfes` |
 
-Docs: https://api.emitfy.com/docs/sdks  
+Docs: https://docs.emitfy.com/sdks  
 OpenAPI: https://api.emitfy.com/openapi.yaml
