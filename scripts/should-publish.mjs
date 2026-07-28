@@ -2,8 +2,8 @@
  * Decide se @emitfy/sdk deve ir ao npm.
  *
  * exit 0  → publicar
- * exit 10 → pular (sem alterações / já publicado)
- * exit 1  → erro (ex.: código mudou mas a versão já existe)
+ * exit 10 → pular (sem alterações / versão já no registry)
+ * exit 1  → erro inesperado (rede, pack, etc.)
  */
 import { createHash } from 'node:crypto'
 import {
@@ -150,10 +150,10 @@ try {
   }
 
   if (npmView(`${packageName}@${pkg.version}`)) {
-    console.error(
-      `SDK source changed, but ${packageName}@${pkg.version} already exists on npm. Bump version in package.json.`
+    console.log(
+      `SDK source changed, but ${packageName}@${pkg.version} already on npm — skip (bump package.json to publish).`
     )
-    process.exit(1)
+    process.exit(10)
   }
 
   console.log(
