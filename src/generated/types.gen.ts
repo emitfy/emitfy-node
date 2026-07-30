@@ -103,12 +103,18 @@ export type NfseCreateRequest = {
      */
     category?: string;
     guarantee?: number;
-    cityServiceCode?: string;
+    /**
+     * Código municipal do serviço (obrigatório; alias legado serviceCode ainda aceito na API)
+     */
+    cityServiceCode: string;
     /**
      * Alias legado de cityServiceCode
      */
     serviceCode?: string;
-    serviceItemCode?: string;
+    /**
+     * Item LC 116
+     */
+    serviceItemCode: string;
     nbsCode?: string;
     cnaeCode?: string;
     taxClassification?: string;
@@ -117,7 +123,11 @@ export type NfseCreateRequest = {
     natureOfOperation?: string;
     serviceLocation?: string;
     municipalityOfIncidence?: string;
-    taxes?: {
+    taxes: {
+        iss: {
+            rate: number;
+            isWithheld?: boolean;
+        };
         [key: string]: unknown;
     };
     amount: number;
@@ -126,7 +136,7 @@ export type NfseCreateRequest = {
     borrower: {
         taxId?: string;
         name: string;
-        email?: string;
+        email: string;
         phone?: string;
         address?: {
             [key: string]: unknown;

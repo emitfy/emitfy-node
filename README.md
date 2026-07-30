@@ -35,9 +35,14 @@ await company.nfse.create(
     category: 'consulting',
     serviceDescription: 'Consultoria em tecnologia',
     cityServiceCode: '02800',
+    serviceItemCode: '01.05',
     taxes: { iss: { rate: 2.9, isWithheld: false } },
     amount: 100,
-    borrower: { taxId: '12.345.678/0001-90', name: 'Cliente LTDA' }
+    borrower: {
+      taxId: '12.345.678/0001-90',
+      name: 'Cliente LTDA',
+      email: 'financeiro@cliente.com.br'
+    }
   },
   'pedido-001'
 )
