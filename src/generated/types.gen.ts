@@ -1219,11 +1219,15 @@ export type InvoicesGetData = {
 
 export type InvoicesGetResponses = {
     /**
-     * Nota unificada (inclui `transport` quando informado na emissão da NF-e)
+     * Nota unificada (inclui `externalId` e `transport` quando informados)
      */
     200: {
         success?: true;
         data?: {
+            /**
+             * ID externo do pedido/ordem (API ou integração)
+             */
+            externalId?: string;
             transport?: TransportDetail;
             [key: string]: unknown;
         };
