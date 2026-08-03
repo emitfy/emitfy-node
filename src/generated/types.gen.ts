@@ -52,6 +52,66 @@ export type TransportDetail = {
 };
 
 /**
+ * Resource público de invoice (GET detalhe/lista API e webhook data). Campos ausentes são omitidos (não null). Apenas um de document.nfse|nfe|nfce.
+ *
+ */
+export type PublicInvoiceResource = {
+    id: string;
+    externalId?: string;
+    companyId: string;
+    /**
+     * Presente em webhooks
+     */
+    taxId?: string;
+    type: 'nfse' | 'nfe' | 'nfce';
+    status: string;
+    amount: number;
+    currency: 'BRL';
+    issuedAt?: string;
+    cancelledAt?: string;
+    createdAt: string;
+    updatedAt: string;
+    /**
+     * Política de emissão. `scheduledFor` só quando mode=scheduled.
+     */
+    emission?: {
+        mode?: 'draft' | 'immediate' | 'scheduled';
+        scheduledFor?: string;
+    };
+    rejectionReason?: string;
+    customer?: {
+        [key: string]: unknown;
+    };
+    items?: Array<{
+        [key: string]: unknown;
+    }>;
+    document?: {
+        number?: string;
+        series?: string;
+        accessKey?: string;
+        protocol?: string;
+        rps?: {
+            number?: string;
+            series?: string;
+        };
+        nfse?: {
+            [key: string]: unknown;
+        };
+        nfe?: {
+            [key: string]: unknown;
+        };
+        nfce?: {
+            [key: string]: unknown;
+        };
+    };
+    assets?: {
+        pdf?: string;
+        xml?: string;
+        verificationUrl?: string;
+    };
+};
+
+/**
  * Item de produto compartilhado entre NF-e e NFC-e (DNA do catálogo)
  */
 export type ProductEmitItem = {
@@ -1229,18 +1289,11 @@ export type InvoicesGetData = {
 
 export type InvoicesGetResponses = {
     /**
-     * Nota unificada (inclui `externalId` e `transport` quando informados)
+     * Resource público nested (customer, document.nfse|nfe|nfce, assets). Campos ausentes omitidos.
      */
     200: {
         success?: true;
-        data?: {
-            /**
-             * ID externo do pedido/ordem (API ou integração)
-             */
-            externalId?: string;
-            transport?: TransportDetail;
-            [key: string]: unknown;
-        };
+        data?: PublicInvoiceResource;
     };
 };
 
