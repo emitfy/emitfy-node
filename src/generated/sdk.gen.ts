@@ -171,6 +171,9 @@ export const companyCertificateUpload = <ThrowOnError extends boolean = false>(o
 
 /**
  * Company fiscal status
+ *
+ * Prontidão para emissão (`ready`, `issues[]`). Em `nfse.auth`, o Emitfy deriva do IBGE do endereço se o município exige certificado A1, login/senha ou token (catálogo municipal ACBr). Municípios só-login não listam A1 faltando como único bloqueio de NFS-e.
+ *
  */
 export const companyStatus = <ThrowOnError extends boolean = false>(options: Options<CompanyStatusData, ThrowOnError>): RequestResult<CompanyStatusResponses, unknown, ThrowOnError> => (options.client ?? client).get<CompanyStatusResponses, unknown, ThrowOnError>({
     security: [{ name: 'X-Api-Key', type: 'apiKey' }, { name: 'X-Api-Secret', type: 'apiKey' }],

@@ -496,7 +496,7 @@ export type CompanyStatusData = {
 
 export type CompanyStatusResponses = {
     /**
-     * Status fiscal / módulos
+     * Status fiscal / módulos (+ nfse.auth)
      */
     200: unknown;
 };
