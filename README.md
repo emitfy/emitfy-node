@@ -35,8 +35,8 @@ await company.nfse.create(
     category: 'consulting',
     serviceDescription: 'Consultoria em tecnologia',
     cityServiceCode: '02800',
-    serviceItemCode: '01.05',
-    taxes: { iss: { rate: 2.9, isWithheld: false } },
+    federalServiceCode: '01.05',
+    iss: { rate: 2.9, isWithheld: false },
     amount: 100,
     borrower: {
       taxId: '12.345.678/0001-90',
@@ -56,13 +56,13 @@ await company.nfse.create(
 
 ## Method map
 
-| SDK | HTTP |
-| --- | --- |
-| `emitfy.webhooks.*` | `/v1/webhooks` |
-| `emitfy.companies.*` | `/v1/companies` |
-| `company.nfse\|nfe\|nfce\|cte` | `/v1/companies/:id/{resource}` |
-| `company.customers\|products\|invoices` | `/v1/companies/:id/{resource}` |
-| `company.receivedNfes` | `/v1/companies/:id/received-nfes` |
+| SDK                                     | HTTP                              |
+| --------------------------------------- | --------------------------------- |
+| `emitfy.webhooks.*`                     | `/v1/webhooks`                    |
+| `emitfy.companies.*`                    | `/v1/companies`                   |
+| `company.nfse\|nfe\|nfce\|cte`          | `/v1/companies/:id/{resource}`    |
+| `company.customers\|products\|invoices` | `/v1/companies/:id/{resource}`    |
+| `company.receivedNfes`                  | `/v1/companies/:id/received-nfes` |
 
 Docs: https://docs.emitfy.com/sdks  
 OpenAPI: https://api.emitfy.com/openapi.yaml

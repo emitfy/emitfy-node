@@ -164,30 +164,43 @@ export type NfseCreateRequest = {
     category?: string;
     guarantee?: number;
     /**
-     * Código municipal do serviço (obrigatório; alias legado serviceCode ainda aceito na API)
+     * Código municipal do serviço
      */
     cityServiceCode: string;
     /**
-     * Alias legado de cityServiceCode
+     * Item LC 116 (cTribNac)
      */
-    serviceCode?: string;
+    federalServiceCode: string;
     /**
-     * Item LC 116
+     * Código NBS (reforma)
      */
-    serviceItemCode: string;
-    nbsCode?: string;
+    nbs?: string;
     cnaeCode?: string;
-    taxClassification?: string;
-    ibsCst?: string;
-    ibsOperationIndicator?: string;
+    iss: {
+        rate: number;
+        isWithheld?: boolean;
+    };
+    ibsCbs?: {
+        /**
+         * CST IBS/CBS (default 000)
+         */
+        cst?: string;
+        /**
+         * cClassTrib (default 000001)
+         */
+        taxClassCode?: string;
+        /**
+         * cIndOp (default 100301)
+         */
+        operationIndicator?: string;
+    };
     natureOfOperation?: string;
     serviceLocation?: string;
     municipalityOfIncidence?: string;
-    taxes: {
-        iss: {
-            rate: number;
-            isWithheld?: boolean;
-        };
+    /**
+     * Retenções federais opcionais (pis/cofins/csll/ir/inss). ISS canônico é iss no topo.
+     */
+    taxes?: {
         [key: string]: unknown;
     };
     amount: number;
@@ -202,6 +215,42 @@ export type NfseCreateRequest = {
             [key: string]: unknown;
         };
     };
+    /**
+     * Alias legado de cityServiceCode
+     *
+     * @deprecated
+     */
+    serviceCode?: string;
+    /**
+     * Alias legado de federalServiceCode
+     *
+     * @deprecated
+     */
+    serviceItemCode?: string;
+    /**
+     * Alias legado de nbs
+     *
+     * @deprecated
+     */
+    nbsCode?: string;
+    /**
+     * Alias legado de ibsCbs.taxClassCode
+     *
+     * @deprecated
+     */
+    taxClassification?: string;
+    /**
+     * Alias legado de ibsCbs.cst
+     *
+     * @deprecated
+     */
+    ibsCst?: string;
+    /**
+     * Alias legado de ibsCbs.operationIndicator
+     *
+     * @deprecated
+     */
+    ibsOperationIndicator?: string;
     [key: string]: unknown;
 };
 
