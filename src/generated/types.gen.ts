@@ -21,6 +21,38 @@ export type SuccessEnvelope = {
     data?: unknown;
 };
 
+export type InvoiceUpdateRequest = {
+    /**
+     * Versão atual da nota (concorrência). 409 INVOICE_VERSION_CONFLICT se desatualizada.
+     */
+    version: number;
+    /**
+     * Snapshot comercial parcial (merge no servidor)
+     */
+    commercial?: {
+        [key: string]: unknown;
+    };
+    issueMode?: 'draft' | 'immediate' | 'scheduled';
+    scheduledAt?: string;
+    sendEmail?: boolean;
+    [key: string]: unknown;
+};
+
+export type NfeCorrectionRequest = {
+    /**
+     * Texto da CC-e (NF-e autorizada). Não reprocessa rejeição.
+     */
+    correction: string;
+};
+
+export type NumberInutilizationRequest = {
+    series: number;
+    rangeStart: number;
+    rangeEnd: number;
+    justification: string;
+    year?: number;
+};
+
 /**
  * Transportadora informada inline na emissão (não há cadastro de transportadora — os dados ficam congelados no snapshot da nota)
  */
@@ -65,6 +97,10 @@ export type PublicInvoiceResource = {
     taxId?: string;
     type: 'nfse' | 'nfe' | 'nfce';
     status: string;
+    /**
+     * Concorrência para PATCH
+     */
+    version: number;
     amount: number;
     currency: 'BRL';
     issuedAt?: string;
@@ -899,6 +935,46 @@ export type NfseGetResponses = {
     200: unknown;
 };
 
+export type NfseXmlData = {
+    body?: never;
+    path: {
+        /**
+         * ID da empresa (CNPJ operacional) no path
+         */
+        companyId: string;
+        id: string;
+    };
+    query?: never;
+    url: '/companies/{companyId}/nfse/{id}/xml';
+};
+
+export type NfseXmlResponses = {
+    /**
+     * XML ou URL do XML
+     */
+    200: unknown;
+};
+
+export type NfsePdfData = {
+    body?: never;
+    path: {
+        /**
+         * ID da empresa (CNPJ operacional) no path
+         */
+        companyId: string;
+        id: string;
+    };
+    query?: never;
+    url: '/companies/{companyId}/nfse/{id}/pdf';
+};
+
+export type NfsePdfResponses = {
+    /**
+     * PDF ou URL do PDF
+     */
+    200: unknown;
+};
+
 export type NfeListData = {
     body?: never;
     path: {
@@ -1015,6 +1091,112 @@ export type NfeGetResponses = {
 };
 
 export type NfeGetResponse = NfeGetResponses[keyof NfeGetResponses];
+
+export type NfeXmlData = {
+    body?: never;
+    path: {
+        /**
+         * ID da empresa (CNPJ operacional) no path
+         */
+        companyId: string;
+        id: string;
+    };
+    query?: never;
+    url: '/companies/{companyId}/nfe/{id}/xml';
+};
+
+export type NfeXmlResponses = {
+    /**
+     * XML ou URL do XML
+     */
+    200: unknown;
+};
+
+export type NfePdfData = {
+    body?: never;
+    path: {
+        /**
+         * ID da empresa (CNPJ operacional) no path
+         */
+        companyId: string;
+        id: string;
+    };
+    query?: never;
+    url: '/companies/{companyId}/nfe/{id}/pdf';
+};
+
+export type NfePdfResponses = {
+    /**
+     * PDF ou URL do PDF
+     */
+    200: unknown;
+};
+
+export type NfeRejectionXmlData = {
+    body?: never;
+    path: {
+        /**
+         * ID da empresa (CNPJ operacional) no path
+         */
+        companyId: string;
+        id: string;
+    };
+    query?: never;
+    url: '/companies/{companyId}/nfe/{id}/rejection-xml';
+};
+
+export type NfeRejectionXmlResponses = {
+    /**
+     * XML de rejeição
+     */
+    200: unknown;
+};
+
+export type NfeCorrectionData = {
+    body: NfeCorrectionRequest;
+    path: {
+        /**
+         * ID da empresa (CNPJ operacional) no path
+         */
+        companyId: string;
+        id: string;
+    };
+    query?: never;
+    url: '/companies/{companyId}/nfe/{id}/correction';
+};
+
+export type NfeCorrectionErrors = {
+    /**
+     * Tipo não é NF-e ou texto inválido
+     */
+    400: unknown;
+};
+
+export type NfeCorrectionResponses = {
+    /**
+     * CC-e protocolada
+     */
+    200: unknown;
+};
+
+export type NfeInutilizeData = {
+    body: NumberInutilizationRequest;
+    path: {
+        /**
+         * ID da empresa (CNPJ operacional) no path
+         */
+        companyId: string;
+    };
+    query?: never;
+    url: '/companies/{companyId}/nfe/inutilizations';
+};
+
+export type NfeInutilizeResponses = {
+    /**
+     * Faixa inutilizada
+     */
+    200: unknown;
+};
 
 export type NfceListData = {
     body?: never;
@@ -1167,6 +1349,65 @@ export type NfceTransmitResponses = {
      * Transmissão enfileirada
      */
     202: unknown;
+};
+
+export type NfceXmlData = {
+    body?: never;
+    path: {
+        /**
+         * ID da empresa (CNPJ operacional) no path
+         */
+        companyId: string;
+        id: string;
+    };
+    query?: never;
+    url: '/companies/{companyId}/nfce/{id}/xml';
+};
+
+export type NfceXmlResponses = {
+    /**
+     * XML ou URL do XML
+     */
+    200: unknown;
+};
+
+export type NfcePdfData = {
+    body?: never;
+    path: {
+        /**
+         * ID da empresa (CNPJ operacional) no path
+         */
+        companyId: string;
+        id: string;
+    };
+    query?: never;
+    url: '/companies/{companyId}/nfce/{id}/pdf';
+};
+
+export type NfcePdfResponses = {
+    /**
+     * PDF ou URL do PDF
+     */
+    200: unknown;
+};
+
+export type NfceInutilizeData = {
+    body: NumberInutilizationRequest;
+    path: {
+        /**
+         * ID da empresa (CNPJ operacional) no path
+         */
+        companyId: string;
+    };
+    query?: never;
+    url: '/companies/{companyId}/nfce/inutilizations';
+};
+
+export type NfceInutilizeResponses = {
+    /**
+     * Faixa inutilizada
+     */
+    200: unknown;
 };
 
 export type CteListData = {
@@ -1347,6 +1588,155 @@ export type InvoicesGetResponses = {
 };
 
 export type InvoicesGetResponse = InvoicesGetResponses[keyof InvoicesGetResponses];
+
+export type InvoicesUpdateData = {
+    body: InvoiceUpdateRequest;
+    path: {
+        /**
+         * ID da empresa (CNPJ operacional) no path
+         */
+        companyId: string;
+        id: string;
+    };
+    query?: never;
+    url: '/companies/{companyId}/invoices/{id}';
+};
+
+export type InvoicesUpdateErrors = {
+    /**
+     * Não editável ou conflito de version
+     */
+    409: unknown;
+};
+
+export type InvoicesUpdateResponses = {
+    /**
+     * Nota atualizada (`invoice` + version incrementada)
+     */
+    200: unknown;
+};
+
+export type InvoicesEmitData = {
+    body?: never;
+    path: {
+        /**
+         * ID da empresa (CNPJ operacional) no path
+         */
+        companyId: string;
+        id: string;
+    };
+    query?: never;
+    url: '/companies/{companyId}/invoices/{id}/emit';
+};
+
+export type InvoicesEmitErrors = {
+    /**
+     * INVOICE_CANNOT_EMIT
+     */
+    400: unknown;
+    /**
+     * Módulo fiscal inativo
+     */
+    409: unknown;
+};
+
+export type InvoicesEmitResponses = {
+    /**
+     * Enfileirada (`queued`) ou retida no plano (`held`)
+     */
+    200: unknown;
+};
+
+export type InvoicesCancelData = {
+    body?: {
+        [key: string]: unknown;
+    };
+    path: {
+        /**
+         * ID da empresa (CNPJ operacional) no path
+         */
+        companyId: string;
+        id: string;
+    };
+    query?: never;
+    url: '/companies/{companyId}/invoices/{id}/cancel';
+};
+
+export type InvoicesCancelErrors = {
+    /**
+     * Status não permite cancelamento
+     */
+    409: unknown;
+};
+
+export type InvoicesCancelResponses = {
+    /**
+     * Cancelamento enfileirado
+     */
+    200: unknown;
+};
+
+export type InvoicesConsultData = {
+    body?: never;
+    path: {
+        /**
+         * ID da empresa (CNPJ operacional) no path
+         */
+        companyId: string;
+        id: string;
+    };
+    query?: never;
+    url: '/companies/{companyId}/invoices/{id}/consult';
+};
+
+export type InvoicesConsultResponses = {
+    /**
+     * Status reconsultado
+     */
+    200: unknown;
+};
+
+export type InvoicesEventsData = {
+    body?: never;
+    path: {
+        /**
+         * ID da empresa (CNPJ operacional) no path
+         */
+        companyId: string;
+        id: string;
+    };
+    query?: never;
+    url: '/companies/{companyId}/invoices/{id}/events';
+};
+
+export type InvoicesEventsResponses = {
+    /**
+     * Timeline de eventos
+     */
+    200: unknown;
+};
+
+export type InvoicesSendEmailData = {
+    body?: {
+        [key: string]: unknown;
+    };
+    path: {
+        /**
+         * ID da empresa (CNPJ operacional) no path
+         */
+        companyId: string;
+        id: string;
+    };
+    query?: never;
+    url: '/companies/{companyId}/invoices/{id}/send-borrower-email';
+};
+
+export type InvoicesSendEmailResponses = {
+    /**
+     * E-mail enviado ou enfileirado
+     */
+    200: unknown;
+};
 
 export type ReceivedNfesListData = {
     body?: never;

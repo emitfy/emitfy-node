@@ -21,7 +21,15 @@ import type {
   CteCreateData,
   CteListData,
   CteOsCreateData,
-  InvoicesListData
+  CompanyCertificateUploadData,
+  CompanyEnvironmentData,
+  InvoicesCancelData,
+  InvoicesListData,
+  InvoicesSendEmailData,
+  InvoicesUpdateData,
+  NfeCorrectionData,
+  NfeInutilizeData,
+  NfceInutilizeData
 } from './generated/types.gen.js'
 
 export type { WebhookCreate, Client }
@@ -153,6 +161,16 @@ class CompanyResource<
         throwOnError: true
         path: { companyId: string; id: string }
       }) => Promise<{ data: unknown; response: Response }>
+      xml?: (options: {
+        client: Client
+        throwOnError: true
+        path: { companyId: string; id: string }
+      }) => Promise<{ data: unknown; response: Response }>
+      pdf?: (options: {
+        client: Client
+        throwOnError: true
+        path: { companyId: string; id: string }
+      }) => Promise<{ data: unknown; response: Response }>
     }
   ) {}
 
@@ -217,6 +235,34 @@ class CompanyResource<
       })
     )
   }
+
+  xml(id: string) {
+    if (!this.handlers.xml) {
+      throw new EmitfyError('xml is not available for this resource.', null, null, 0)
+    }
+
+    return callApi(() =>
+      this.handlers.xml!({
+        client: this.client,
+        throwOnError: true,
+        path: { companyId: this.companyId, id }
+      })
+    )
+  }
+
+  pdf(id: string) {
+    if (!this.handlers.pdf) {
+      throw new EmitfyError('pdf is not available for this resource.', null, null, 0)
+    }
+
+    return callApi(() =>
+      this.handlers.pdf!({
+        client: this.client,
+        throwOnError: true,
+        path: { companyId: this.companyId, id }
+      })
+    )
+  }
 }
 
 export class CompanyContext {
@@ -239,6 +285,12 @@ export class CompanyContext {
   readonly invoices: {
     list: (query?: QueryOf<InvoicesListData>) => Promise<unknown>
     get: (id: string) => Promise<unknown>
+    update: (id: string, body: BodyOf<InvoicesUpdateData>) => Promise<unknown>
+    emit: (id: string) => Promise<unknown>
+    cancel: (id: string, body?: NonNullable<InvoicesCancelData['body']>) => Promise<unknown>
+    consult: (id: string) => Promise<unknown>
+    events: (id: string) => Promise<unknown>
+    sendEmail: (id: string, body?: NonNullable<InvoicesSendEmailData['body']>) => Promise<unknown>
   }
   readonly receivedNfes: {
     list: (query?: QueryOf<ReceivedNfesListData>) => Promise<unknown>
@@ -256,19 +308,25 @@ export class CompanyContext {
       list: api.nfseList,
       create: api.nfseCreate,
       get: api.nfseGet,
-      delete: api.nfseCancel
+      delete: api.nfseCancel,
+      xml: api.nfseXml,
+      pdf: api.nfsePdf
     })
     this.nfe = new CompanyResource(client, companyId, {
       list: api.nfeList,
       create: api.nfeCreate,
       get: api.nfeGet,
-      delete: api.nfeCancel
+      delete: api.nfeCancel,
+      xml: api.nfeXml,
+      pdf: api.nfePdf
     })
     this.nfce = new CompanyResource(client, companyId, {
       list: api.nfceList,
       create: api.nfceCreate,
       get: api.nfceGet,
-      delete: api.nfceCancel
+      delete: api.nfceCancel,
+      xml: api.nfceXml,
+      pdf: api.nfcePdf
     })
     this.cte = new CompanyResource(client, companyId, {
       list: api.cteList,
@@ -306,6 +364,57 @@ export class CompanyContext {
             client,
             throwOnError: true,
             path: { companyId, id }
+          })
+        ),
+      update: (id, body) =>
+        callApi(() =>
+          api.invoicesUpdate({
+            client,
+            throwOnError: true,
+            path: { companyId, id },
+            body
+          })
+        ),
+      emit: (id) =>
+        callApi(() =>
+          api.invoicesEmit({
+            client,
+            throwOnError: true,
+            path: { companyId, id }
+          })
+        ),
+      cancel: (id, body) =>
+        callApi(() =>
+          api.invoicesCancel({
+            client,
+            throwOnError: true,
+            path: { companyId, id },
+            body
+          })
+        ),
+      consult: (id) =>
+        callApi(() =>
+          api.invoicesConsult({
+            client,
+            throwOnError: true,
+            path: { companyId, id }
+          })
+        ),
+      events: (id) =>
+        callApi(() =>
+          api.invoicesEvents({
+            client,
+            throwOnError: true,
+            path: { companyId, id }
+          })
+        ),
+      sendEmail: (id, body) =>
+        callApi(() =>
+          api.invoicesSendEmail({
+            client,
+            throwOnError: true,
+            path: { companyId, id },
+            body
           })
         )
     }
@@ -374,6 +483,101 @@ export class CompanyContext {
   transmitNfce(id: string) {
     return callApi(() =>
       api.nfceTransmit({
+        client: this.client,
+        throwOnError: true,
+        path: { companyId: this.companyId, id }
+      })
+    )
+  }
+
+  status() {
+    return callApi(() =>
+      api.companyStatus({
+        client: this.client,
+        throwOnError: true,
+        path: { companyId: this.companyId }
+      })
+    )
+  }
+
+  setEnvironment(environment: 'development' | 'production') {
+    return callApi(() =>
+      api.companyEnvironment({
+        client: this.client,
+        throwOnError: true,
+        path: { companyId: this.companyId },
+        body: { environment } as BodyOf<CompanyEnvironmentData>
+      })
+    )
+  }
+
+  certificateStatus() {
+    return callApi(() =>
+      api.companyCertificateGet({
+        client: this.client,
+        throwOnError: true,
+        path: { companyId: this.companyId }
+      })
+    )
+  }
+
+  uploadCertificate(body: BodyOf<CompanyCertificateUploadData>) {
+    return callApi(() =>
+      api.companyCertificateUpload({
+        client: this.client,
+        throwOnError: true,
+        path: { companyId: this.companyId },
+        body
+      })
+    )
+  }
+
+  deleteCertificate() {
+    return callApi(() =>
+      api.companyCertificateDelete({
+        client: this.client,
+        throwOnError: true,
+        path: { companyId: this.companyId }
+      })
+    )
+  }
+
+  createCorrectionLetter(id: string, body: BodyOf<NfeCorrectionData>) {
+    return callApi(() =>
+      api.nfeCorrection({
+        client: this.client,
+        throwOnError: true,
+        path: { companyId: this.companyId, id },
+        body
+      })
+    )
+  }
+
+  inutilizeNfe(body: BodyOf<NfeInutilizeData>) {
+    return callApi(() =>
+      api.nfeInutilize({
+        client: this.client,
+        throwOnError: true,
+        path: { companyId: this.companyId },
+        body
+      })
+    )
+  }
+
+  inutilizeNfce(body: BodyOf<NfceInutilizeData>) {
+    return callApi(() =>
+      api.nfceInutilize({
+        client: this.client,
+        throwOnError: true,
+        path: { companyId: this.companyId },
+        body
+      })
+    )
+  }
+
+  nfeRejectionXml(id: string) {
+    return callApi(() =>
+      api.nfeRejectionXml({
         client: this.client,
         throwOnError: true,
         path: { companyId: this.companyId, id }

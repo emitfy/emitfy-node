@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.js';
 import { type Client, type ClientMeta, formDataBodySerializer, type Options as Options2, type RequestResult, type TDataShape } from './client/index.js';
-import type { ApiCredentialsStatusData, ApiCredentialsStatusResponses, CompaniesCreateData, CompaniesCreateResponses, CompaniesDeleteData, CompaniesDeleteResponses, CompaniesGetData, CompaniesGetErrors, CompaniesGetResponses, CompaniesListData, CompaniesListResponses, CompaniesUpdateData, CompaniesUpdateResponses, CompanyCertificateDeleteData, CompanyCertificateDeleteResponses, CompanyCertificateGetData, CompanyCertificateGetResponses, CompanyCertificateUploadData, CompanyCertificateUploadResponses, CompanyEnvironmentData, CompanyEnvironmentResponses, CompanyStatusData, CompanyStatusResponses, CteCancelData, CteCancelErrors, CteCancelResponses, CteCreateData, CteCreateResponses, CteGetData, CteGetErrors, CteGetResponses, CteListData, CteListResponses, CteOsCreateData, CteOsCreateErrors, CteOsCreateResponses, CustomersCreateData, CustomersCreateErrors, CustomersCreateResponses, CustomersDeleteData, CustomersDeleteResponses, CustomersGetData, CustomersGetErrors, CustomersGetResponses, CustomersListData, CustomersListResponses, CustomersUpdateData, CustomersUpdateResponses, InvoicesGetData, InvoicesGetResponses, InvoicesListData, InvoicesListResponses, NfceCancelData, NfceCancelErrors, NfceCancelResponses, NfceCreateData, NfceCreateResponses, NfceGetData, NfceGetErrors, NfceGetResponses, NfceListData, NfceListResponses, NfceTransmitData, NfceTransmitErrors, NfceTransmitResponses, NfeCancelData, NfeCancelErrors, NfeCancelResponses, NfeCreateData, NfeCreateResponses, NfeGetData, NfeGetResponses, NfeListData, NfeListResponses, NfseCancelData, NfseCancelErrors, NfseCancelResponses, NfseCreateData, NfseCreateResponses, NfseGetData, NfseGetErrors, NfseGetResponses, NfseListData, NfseListResponses, ProductsCreateData, ProductsCreateResponses, ProductsDeleteData, ProductsDeleteResponses, ProductsGetData, ProductsGetResponses, ProductsListData, ProductsListResponses, ProductsUpdateData, ProductsUpdateResponses, ReceivedNfesGetData, ReceivedNfesGetResponses, ReceivedNfesListData, ReceivedNfesListResponses, ReceivedNfesManifestData, ReceivedNfesManifestResponses, ReceivedNfesSyncData, ReceivedNfesSyncErrors, ReceivedNfesSyncResponses, ReceivedNfesXmlData, ReceivedNfesXmlResponses, UtilsFiscalSuggestionsData, UtilsFiscalSuggestionsResponses, UtilsLookupCnpjData, UtilsLookupCnpjErrors, UtilsLookupCnpjResponses, UtilsLookupZipcodeData, UtilsLookupZipcodeErrors, UtilsLookupZipcodeResponses, UtilsSearchCestData, UtilsSearchCestResponses, UtilsSearchCfopData, UtilsSearchCfopResponses, UtilsSearchCnaeData, UtilsSearchCnaeResponses, UtilsSearchFederalServicesData, UtilsSearchFederalServicesResponses, UtilsSearchIbsOperationIndicatorData, UtilsSearchIbsOperationIndicatorResponses, UtilsSearchNbsData, UtilsSearchNbsResponses, UtilsSearchNcmData, UtilsSearchNcmResponses, UtilsSearchTaxClassCodeData, UtilsSearchTaxClassCodeResponses, WebhooksCreateData, WebhooksCreateResponses, WebhooksDeleteData, WebhooksDeleteResponses, WebhooksListData, WebhooksListResponses, WebhooksSetActiveData, WebhooksSetActiveResponses, WebhooksUpdateData, WebhooksUpdateResponses } from './types.gen.js';
+import type { ApiCredentialsStatusData, ApiCredentialsStatusResponses, CompaniesCreateData, CompaniesCreateResponses, CompaniesDeleteData, CompaniesDeleteResponses, CompaniesGetData, CompaniesGetErrors, CompaniesGetResponses, CompaniesListData, CompaniesListResponses, CompaniesUpdateData, CompaniesUpdateResponses, CompanyCertificateDeleteData, CompanyCertificateDeleteResponses, CompanyCertificateGetData, CompanyCertificateGetResponses, CompanyCertificateUploadData, CompanyCertificateUploadResponses, CompanyEnvironmentData, CompanyEnvironmentResponses, CompanyStatusData, CompanyStatusResponses, CteCancelData, CteCancelErrors, CteCancelResponses, CteCreateData, CteCreateResponses, CteGetData, CteGetErrors, CteGetResponses, CteListData, CteListResponses, CteOsCreateData, CteOsCreateErrors, CteOsCreateResponses, CustomersCreateData, CustomersCreateErrors, CustomersCreateResponses, CustomersDeleteData, CustomersDeleteResponses, CustomersGetData, CustomersGetErrors, CustomersGetResponses, CustomersListData, CustomersListResponses, CustomersUpdateData, CustomersUpdateResponses, InvoicesCancelData, InvoicesCancelErrors, InvoicesCancelResponses, InvoicesConsultData, InvoicesConsultResponses, InvoicesEmitData, InvoicesEmitErrors, InvoicesEmitResponses, InvoicesEventsData, InvoicesEventsResponses, InvoicesGetData, InvoicesGetResponses, InvoicesListData, InvoicesListResponses, InvoicesSendEmailData, InvoicesSendEmailResponses, InvoicesUpdateData, InvoicesUpdateErrors, InvoicesUpdateResponses, NfceCancelData, NfceCancelErrors, NfceCancelResponses, NfceCreateData, NfceCreateResponses, NfceGetData, NfceGetErrors, NfceGetResponses, NfceInutilizeData, NfceInutilizeResponses, NfceListData, NfceListResponses, NfcePdfData, NfcePdfResponses, NfceTransmitData, NfceTransmitErrors, NfceTransmitResponses, NfceXmlData, NfceXmlResponses, NfeCancelData, NfeCancelErrors, NfeCancelResponses, NfeCorrectionData, NfeCorrectionErrors, NfeCorrectionResponses, NfeCreateData, NfeCreateResponses, NfeGetData, NfeGetResponses, NfeInutilizeData, NfeInutilizeResponses, NfeListData, NfeListResponses, NfePdfData, NfePdfResponses, NfeRejectionXmlData, NfeRejectionXmlResponses, NfeXmlData, NfeXmlResponses, NfseCancelData, NfseCancelErrors, NfseCancelResponses, NfseCreateData, NfseCreateResponses, NfseGetData, NfseGetErrors, NfseGetResponses, NfseListData, NfseListResponses, NfsePdfData, NfsePdfResponses, NfseXmlData, NfseXmlResponses, ProductsCreateData, ProductsCreateResponses, ProductsDeleteData, ProductsDeleteResponses, ProductsGetData, ProductsGetResponses, ProductsListData, ProductsListResponses, ProductsUpdateData, ProductsUpdateResponses, ReceivedNfesGetData, ReceivedNfesGetResponses, ReceivedNfesListData, ReceivedNfesListResponses, ReceivedNfesManifestData, ReceivedNfesManifestResponses, ReceivedNfesSyncData, ReceivedNfesSyncErrors, ReceivedNfesSyncResponses, ReceivedNfesXmlData, ReceivedNfesXmlResponses, UtilsFiscalSuggestionsData, UtilsFiscalSuggestionsResponses, UtilsLookupCnpjData, UtilsLookupCnpjErrors, UtilsLookupCnpjResponses, UtilsLookupZipcodeData, UtilsLookupZipcodeErrors, UtilsLookupZipcodeResponses, UtilsSearchCestData, UtilsSearchCestResponses, UtilsSearchCfopData, UtilsSearchCfopResponses, UtilsSearchCnaeData, UtilsSearchCnaeResponses, UtilsSearchFederalServicesData, UtilsSearchFederalServicesResponses, UtilsSearchIbsOperationIndicatorData, UtilsSearchIbsOperationIndicatorResponses, UtilsSearchNbsData, UtilsSearchNbsResponses, UtilsSearchNcmData, UtilsSearchNcmResponses, UtilsSearchTaxClassCodeData, UtilsSearchTaxClassCodeResponses, WebhooksCreateData, WebhooksCreateResponses, WebhooksDeleteData, WebhooksDeleteResponses, WebhooksListData, WebhooksListResponses, WebhooksSetActiveData, WebhooksSetActiveResponses, WebhooksUpdateData, WebhooksUpdateResponses } from './types.gen.js';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -343,6 +343,24 @@ export const nfseGet = <ThrowOnError extends boolean = false>(options: Options<N
 });
 
 /**
+ * Get NFS-e XML
+ */
+export const nfseXml = <ThrowOnError extends boolean = false>(options: Options<NfseXmlData, ThrowOnError>): RequestResult<NfseXmlResponses, unknown, ThrowOnError> => (options.client ?? client).get<NfseXmlResponses, unknown, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }, { name: 'X-Api-Secret', type: 'apiKey' }],
+    url: '/companies/{companyId}/nfse/{id}/xml',
+    ...options
+});
+
+/**
+ * Get NFS-e PDF
+ */
+export const nfsePdf = <ThrowOnError extends boolean = false>(options: Options<NfsePdfData, ThrowOnError>): RequestResult<NfsePdfResponses, unknown, ThrowOnError> => (options.client ?? client).get<NfsePdfResponses, unknown, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }, { name: 'X-Api-Secret', type: 'apiKey' }],
+    url: '/companies/{companyId}/nfse/{id}/pdf',
+    ...options
+});
+
+/**
  * List NF-e
  */
 export const nfeList = <ThrowOnError extends boolean = false>(options: Options<NfeListData, ThrowOnError>): RequestResult<NfeListResponses, unknown, ThrowOnError> => (options.client ?? client).get<NfeListResponses, unknown, ThrowOnError>({
@@ -380,6 +398,62 @@ export const nfeGet = <ThrowOnError extends boolean = false>(options: Options<Nf
     security: [{ name: 'X-Api-Key', type: 'apiKey' }, { name: 'X-Api-Secret', type: 'apiKey' }],
     url: '/companies/{companyId}/nfe/{id}',
     ...options
+});
+
+/**
+ * Get NF-e XML
+ */
+export const nfeXml = <ThrowOnError extends boolean = false>(options: Options<NfeXmlData, ThrowOnError>): RequestResult<NfeXmlResponses, unknown, ThrowOnError> => (options.client ?? client).get<NfeXmlResponses, unknown, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }, { name: 'X-Api-Secret', type: 'apiKey' }],
+    url: '/companies/{companyId}/nfe/{id}/xml',
+    ...options
+});
+
+/**
+ * Get NF-e PDF
+ */
+export const nfePdf = <ThrowOnError extends boolean = false>(options: Options<NfePdfData, ThrowOnError>): RequestResult<NfePdfResponses, unknown, ThrowOnError> => (options.client ?? client).get<NfePdfResponses, unknown, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }, { name: 'X-Api-Secret', type: 'apiKey' }],
+    url: '/companies/{companyId}/nfe/{id}/pdf',
+    ...options
+});
+
+/**
+ * Get NF-e rejection XML
+ */
+export const nfeRejectionXml = <ThrowOnError extends boolean = false>(options: Options<NfeRejectionXmlData, ThrowOnError>): RequestResult<NfeRejectionXmlResponses, unknown, ThrowOnError> => (options.client ?? client).get<NfeRejectionXmlResponses, unknown, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }, { name: 'X-Api-Secret', type: 'apiKey' }],
+    url: '/companies/{companyId}/nfe/{id}/rejection-xml',
+    ...options
+});
+
+/**
+ * Issue NF-e correction letter (CC-e)
+ *
+ * Carta de correção eletrônica de NF-e autorizada. Não reprocessa nota rejected — para retry use `POST .../invoices/{id}/emit`.
+ *
+ */
+export const nfeCorrection = <ThrowOnError extends boolean = false>(options: Options<NfeCorrectionData, ThrowOnError>): RequestResult<NfeCorrectionResponses, NfeCorrectionErrors, ThrowOnError> => (options.client ?? client).post<NfeCorrectionResponses, NfeCorrectionErrors, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }, { name: 'X-Api-Secret', type: 'apiKey' }],
+    url: '/companies/{companyId}/nfe/{id}/correction',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Inutilize NF-e number range
+ */
+export const nfeInutilize = <ThrowOnError extends boolean = false>(options: Options<NfeInutilizeData, ThrowOnError>): RequestResult<NfeInutilizeResponses, unknown, ThrowOnError> => (options.client ?? client).post<NfeInutilizeResponses, unknown, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }, { name: 'X-Api-Secret', type: 'apiKey' }],
+    url: '/companies/{companyId}/nfe/inutilizations',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
 });
 
 /**
@@ -429,6 +503,37 @@ export const nfceTransmit = <ThrowOnError extends boolean = false>(options: Opti
     security: [{ name: 'X-Api-Key', type: 'apiKey' }, { name: 'X-Api-Secret', type: 'apiKey' }],
     url: '/companies/{companyId}/nfce/{id}/transmit',
     ...options
+});
+
+/**
+ * Get NFC-e XML
+ */
+export const nfceXml = <ThrowOnError extends boolean = false>(options: Options<NfceXmlData, ThrowOnError>): RequestResult<NfceXmlResponses, unknown, ThrowOnError> => (options.client ?? client).get<NfceXmlResponses, unknown, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }, { name: 'X-Api-Secret', type: 'apiKey' }],
+    url: '/companies/{companyId}/nfce/{id}/xml',
+    ...options
+});
+
+/**
+ * Get NFC-e PDF
+ */
+export const nfcePdf = <ThrowOnError extends boolean = false>(options: Options<NfcePdfData, ThrowOnError>): RequestResult<NfcePdfResponses, unknown, ThrowOnError> => (options.client ?? client).get<NfcePdfResponses, unknown, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }, { name: 'X-Api-Secret', type: 'apiKey' }],
+    url: '/companies/{companyId}/nfce/{id}/pdf',
+    ...options
+});
+
+/**
+ * Inutilize NFC-e number range
+ */
+export const nfceInutilize = <ThrowOnError extends boolean = false>(options: Options<NfceInutilizeData, ThrowOnError>): RequestResult<NfceInutilizeResponses, unknown, ThrowOnError> => (options.client ?? client).post<NfceInutilizeResponses, unknown, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }, { name: 'X-Api-Secret', type: 'apiKey' }],
+    url: '/companies/{companyId}/nfce/inutilizations',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
 });
 
 /**
@@ -487,7 +592,7 @@ export const cteOsCreate = <ThrowOnError extends boolean = false>(options: Optio
 /**
  * List invoices
  *
- * Consulta unificada das notas da empresa (todos os tipos). Emissão acontece nos endpoints por tipo (`/nfse`, `/nfe`, `/nfce`, `/cte`, `/cte-os`).
+ * Consulta unificada das notas da empresa (todos os tipos). Criação inicial nos atalhos por tipo (`/nfse`, `/nfe`, `/nfce`, `/cte`, `/cte-os`). PATCH/emit/cancel nesta família `/invoices`.
  */
 export const invoicesList = <ThrowOnError extends boolean = false>(options: Options<InvoicesListData, ThrowOnError>): RequestResult<InvoicesListResponses, unknown, ThrowOnError> => (options.client ?? client).get<InvoicesListResponses, unknown, ThrowOnError>({
     security: [{ name: 'X-Api-Key', type: 'apiKey' }, { name: 'X-Api-Secret', type: 'apiKey' }],
@@ -502,6 +607,82 @@ export const invoicesGet = <ThrowOnError extends boolean = false>(options: Optio
     security: [{ name: 'X-Api-Key', type: 'apiKey' }, { name: 'X-Api-Secret', type: 'apiKey' }],
     url: '/companies/{companyId}/invoices/{id}',
     ...options
+});
+
+/**
+ * Update invoice draft or rejected note
+ *
+ * Edita nota pending (draft/scheduled) ou rejected. `version` obrigatório. 409 INVOICE_NOT_EDITABLE se autorizada/cancelada; 409 INVOICE_VERSION_CONFLICT se version divergir. Não é carta de correção.
+ *
+ */
+export const invoicesUpdate = <ThrowOnError extends boolean = false>(options: Options<InvoicesUpdateData, ThrowOnError>): RequestResult<InvoicesUpdateResponses, InvoicesUpdateErrors, ThrowOnError> => (options.client ?? client).patch<InvoicesUpdateResponses, InvoicesUpdateErrors, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }, { name: 'X-Api-Secret', type: 'apiKey' }],
+    url: '/companies/{companyId}/invoices/{id}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Emit or retry invoice
+ *
+ * Enfileira emissão imediata (forceManual) de nota pending ou rejected. Não altera nota autorizada/cancelada. Não é carta de correção (`POST .../nfe/{id}/correction`).
+ *
+ */
+export const invoicesEmit = <ThrowOnError extends boolean = false>(options: Options<InvoicesEmitData, ThrowOnError>): RequestResult<InvoicesEmitResponses, InvoicesEmitErrors, ThrowOnError> => (options.client ?? client).post<InvoicesEmitResponses, InvoicesEmitErrors, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }, { name: 'X-Api-Secret', type: 'apiKey' }],
+    url: '/companies/{companyId}/invoices/{id}/emit',
+    ...options
+});
+
+/**
+ * Cancel authorized invoice
+ *
+ * Cancela nota autorizada. Equivale aos DELETE tipados (`/nfse/{id}`, `/nfe/{id}`, `/nfce/{id}`).
+ */
+export const invoicesCancel = <ThrowOnError extends boolean = false>(options: Options<InvoicesCancelData, ThrowOnError>): RequestResult<InvoicesCancelResponses, InvoicesCancelErrors, ThrowOnError> => (options.client ?? client).post<InvoicesCancelResponses, InvoicesCancelErrors, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }, { name: 'X-Api-Secret', type: 'apiKey' }],
+    url: '/companies/{companyId}/invoices/{id}/cancel',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Consult invoice at SEFAZ or city hall
+ */
+export const invoicesConsult = <ThrowOnError extends boolean = false>(options: Options<InvoicesConsultData, ThrowOnError>): RequestResult<InvoicesConsultResponses, unknown, ThrowOnError> => (options.client ?? client).get<InvoicesConsultResponses, unknown, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }, { name: 'X-Api-Secret', type: 'apiKey' }],
+    url: '/companies/{companyId}/invoices/{id}/consult',
+    ...options
+});
+
+/**
+ * List invoice events
+ */
+export const invoicesEvents = <ThrowOnError extends boolean = false>(options: Options<InvoicesEventsData, ThrowOnError>): RequestResult<InvoicesEventsResponses, unknown, ThrowOnError> => (options.client ?? client).get<InvoicesEventsResponses, unknown, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }, { name: 'X-Api-Secret', type: 'apiKey' }],
+    url: '/companies/{companyId}/invoices/{id}/events',
+    ...options
+});
+
+/**
+ * Resend invoice email
+ *
+ * Reenvia e-mail da NFS-e autorizada ao tomador.
+ */
+export const invoicesSendEmail = <ThrowOnError extends boolean = false>(options: Options<InvoicesSendEmailData, ThrowOnError>): RequestResult<InvoicesSendEmailResponses, unknown, ThrowOnError> => (options.client ?? client).post<InvoicesSendEmailResponses, unknown, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }, { name: 'X-Api-Secret', type: 'apiKey' }],
+    url: '/companies/{companyId}/invoices/{id}/send-borrower-email',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
 });
 
 /**
