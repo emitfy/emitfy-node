@@ -56,14 +56,14 @@ await company.nfse.create(
 
 ## Method map
 
-| SDK                                     | HTTP                              |
-| --------------------------------------- | --------------------------------- |
-| `emitfy.webhooks.*`                     | `/v1/webhooks`                    |
-| `emitfy.companies.*`                    | `/v1/companies`                   |
-| `company.nfse\|nfe\|nfce\|cte`          | `/v1/companies/:id/{resource}`    |
-| `company.customers\|products`           | `/v1/companies/:id/{resource}`    |
-| `company.invoices.update\|emit`         | `PATCH` / `POST .../invoices/:id/emit` |
-| `company.receivedNfes`                  | `/v1/companies/:id/received-nfes` |
+| SDK                             | HTTP                                   |
+| ------------------------------- | -------------------------------------- |
+| `emitfy.webhooks.*`             | `/v1/webhooks`                         |
+| `emitfy.companies.*`            | `/v1/companies`                        |
+| `company.nfse\|nfe\|nfce\|cte`  | `/v1/companies/:id/{resource}`         |
+| `company.customers\|products`   | `/v1/companies/:id/{resource}`         |
+| `company.invoices.update\|emit` | `PATCH` / `POST .../invoices/:id/emit` |
+| `company.receivedNfes`          | `/v1/companies/:id/received-nfes`      |
 
 Docs: https://docs.emitfy.com/sdks  
 OpenAPI: https://api.emitfy.com/openapi.yaml

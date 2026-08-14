@@ -98,7 +98,12 @@ function toEmitfyError(error: unknown, statusCode = 0): EmitfyError {
     }
 
     if (typeof record.message === 'string') {
-      return new EmitfyError(record.message, record.code ?? null, record.details ?? null, statusCode)
+      return new EmitfyError(
+        record.message,
+        record.code ?? null,
+        record.details ?? null,
+        statusCode
+      )
     }
   }
 
@@ -637,9 +642,7 @@ export class Emitfy {
     this.webhooks = {
       list: () => callApi(() => api.webhooksList({ client: this.client, throwOnError: true })),
       create: (body) =>
-        callApi(() =>
-          api.webhooksCreate({ client: this.client, throwOnError: true, body })
-        ),
+        callApi(() => api.webhooksCreate({ client: this.client, throwOnError: true, body })),
       update: (id, body) =>
         callApi(() =>
           api.webhooksUpdate({
@@ -659,17 +662,13 @@ export class Emitfy {
           })
         ),
       delete: (id) =>
-        callApi(() =>
-          api.webhooksDelete({ client: this.client, throwOnError: true, path: { id } })
-        )
+        callApi(() => api.webhooksDelete({ client: this.client, throwOnError: true, path: { id } }))
     }
 
     this.companies = {
       list: () => callApi(() => api.companiesList({ client: this.client, throwOnError: true })),
       create: (body) =>
-        callApi(() =>
-          api.companiesCreate({ client: this.client, throwOnError: true, body })
-        ),
+        callApi(() => api.companiesCreate({ client: this.client, throwOnError: true, body })),
       get: (companyId) =>
         callApi(() =>
           api.companiesGet({

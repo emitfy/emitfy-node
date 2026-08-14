@@ -6,14 +6,7 @@
  * exit 1  → erro inesperado (rede, pack, etc.)
  */
 import { createHash } from 'node:crypto'
-import {
-  existsSync,
-  mkdtempSync,
-  readFileSync,
-  readdirSync,
-  rmSync,
-  statSync
-} from 'node:fs'
+import { existsSync, mkdtempSync, readFileSync, readdirSync, rmSync, statSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join, relative } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -90,9 +83,7 @@ function contentHash(base) {
     throw new Error(`src/ missing in ${base}`)
   }
 
-  const files = walkFiles(srcDir).sort((a, b) =>
-    relative(base, a).localeCompare(relative(base, b))
-  )
+  const files = walkFiles(srcDir).sort((a, b) => relative(base, a).localeCompare(relative(base, b)))
 
   for (const file of files) {
     const rel = relative(base, file).replaceAll('\\', '/')
