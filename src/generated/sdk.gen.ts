@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.js';
 import { type Client, type ClientMeta, formDataBodySerializer, type Options as Options2, type RequestResult, type TDataShape } from './client/index.js';
-import type { ApiCredentialsStatusData, ApiCredentialsStatusResponses, CompaniesCreateData, CompaniesCreateResponses, CompaniesDeleteData, CompaniesDeleteResponses, CompaniesGetData, CompaniesGetErrors, CompaniesGetResponses, CompaniesListData, CompaniesListResponses, CompaniesUpdateData, CompaniesUpdateResponses, CompanyCertificateDeleteData, CompanyCertificateDeleteResponses, CompanyCertificateGetData, CompanyCertificateGetResponses, CompanyCertificateUploadData, CompanyCertificateUploadResponses, CompanyEnvironmentData, CompanyEnvironmentResponses, CompanyStatusData, CompanyStatusResponses, CteCancelData, CteCancelErrors, CteCancelResponses, CteCreateData, CteCreateResponses, CteGetData, CteGetErrors, CteGetResponses, CteListData, CteListResponses, CteOsCreateData, CteOsCreateErrors, CteOsCreateResponses, CustomersCreateData, CustomersCreateErrors, CustomersCreateResponses, CustomersDeleteData, CustomersDeleteResponses, CustomersGetData, CustomersGetErrors, CustomersGetResponses, CustomersListData, CustomersListResponses, CustomersUpdateData, CustomersUpdateResponses, InvoicesCancelData, InvoicesCancelErrors, InvoicesCancelResponses, InvoicesConsultData, InvoicesConsultResponses, InvoicesEmitData, InvoicesEmitErrors, InvoicesEmitResponses, InvoicesEventsData, InvoicesEventsResponses, InvoicesGetData, InvoicesGetResponses, InvoicesListData, InvoicesListResponses, InvoicesSendEmailData, InvoicesSendEmailResponses, InvoicesUpdateData, InvoicesUpdateErrors, InvoicesUpdateResponses, NfceCancelData, NfceCancelErrors, NfceCancelResponses, NfceCreateData, NfceCreateResponses, NfceGetData, NfceGetErrors, NfceGetResponses, NfceInutilizeData, NfceInutilizeResponses, NfceListData, NfceListResponses, NfcePdfData, NfcePdfResponses, NfceTransmitData, NfceTransmitErrors, NfceTransmitResponses, NfceXmlData, NfceXmlResponses, NfeCancelData, NfeCancelErrors, NfeCancelResponses, NfeCorrectionData, NfeCorrectionErrors, NfeCorrectionResponses, NfeCreateData, NfeCreateResponses, NfeGetData, NfeGetResponses, NfeInutilizeData, NfeInutilizeResponses, NfeListData, NfeListResponses, NfePdfData, NfePdfResponses, NfeRejectionXmlData, NfeRejectionXmlResponses, NfeXmlData, NfeXmlResponses, NfseCancelData, NfseCancelErrors, NfseCancelResponses, NfseCreateData, NfseCreateResponses, NfseGetData, NfseGetErrors, NfseGetResponses, NfseListData, NfseListResponses, NfsePdfData, NfsePdfResponses, NfseXmlData, NfseXmlResponses, ProductsCreateData, ProductsCreateResponses, ProductsDeleteData, ProductsDeleteResponses, ProductsGetData, ProductsGetResponses, ProductsListData, ProductsListResponses, ProductsUpdateData, ProductsUpdateResponses, ReceivedNfesGetData, ReceivedNfesGetResponses, ReceivedNfesListData, ReceivedNfesListResponses, ReceivedNfesManifestData, ReceivedNfesManifestResponses, ReceivedNfesSyncData, ReceivedNfesSyncErrors, ReceivedNfesSyncResponses, ReceivedNfesXmlData, ReceivedNfesXmlResponses, UtilsFiscalSuggestionsData, UtilsFiscalSuggestionsResponses, UtilsLookupCnpjData, UtilsLookupCnpjErrors, UtilsLookupCnpjResponses, UtilsLookupZipcodeData, UtilsLookupZipcodeErrors, UtilsLookupZipcodeResponses, UtilsSearchCestData, UtilsSearchCestResponses, UtilsSearchCfopData, UtilsSearchCfopResponses, UtilsSearchCnaeData, UtilsSearchCnaeResponses, UtilsSearchFederalServicesData, UtilsSearchFederalServicesResponses, UtilsSearchIbsOperationIndicatorData, UtilsSearchIbsOperationIndicatorResponses, UtilsSearchNbsData, UtilsSearchNbsResponses, UtilsSearchNcmData, UtilsSearchNcmResponses, UtilsSearchTaxClassCodeData, UtilsSearchTaxClassCodeResponses, WebhooksCreateData, WebhooksCreateResponses, WebhooksDeleteData, WebhooksDeleteResponses, WebhooksListData, WebhooksListResponses, WebhooksSetActiveData, WebhooksSetActiveResponses, WebhooksUpdateData, WebhooksUpdateResponses } from './types.gen.js';
+import type { ApiCredentialsStatusData, ApiCredentialsStatusResponses, CompaniesCreateData, CompaniesCreateResponses, CompaniesDeleteData, CompaniesDeleteResponses, CompaniesGetData, CompaniesGetErrors, CompaniesGetResponses, CompaniesListData, CompaniesListResponses, CompaniesUpdateData, CompaniesUpdateResponses, CompanyCertificateDeleteData, CompanyCertificateDeleteResponses, CompanyCertificateGetData, CompanyCertificateGetResponses, CompanyCertificateUploadData, CompanyCertificateUploadResponses, CompanyEnvironmentData, CompanyEnvironmentErrors, CompanyStatusData, CompanyStatusResponses, CteCancelData, CteCancelErrors, CteCancelResponses, CteConsultData, CteConsultErrors, CteConsultResponses, CteCreateData, CteCreateResponses, CteGetData, CteGetErrors, CteGetResponses, CteListData, CteListResponses, CteOsCreateData, CteOsCreateErrors, CteOsCreateResponses, CustomersCreateData, CustomersCreateErrors, CustomersCreateResponses, CustomersDeleteData, CustomersDeleteResponses, CustomersGetData, CustomersGetErrors, CustomersGetResponses, CustomersListData, CustomersListResponses, CustomersUpdateData, CustomersUpdateResponses, InvoicesCancelData, InvoicesCancelErrors, InvoicesCancelResponses, InvoicesConsultData, InvoicesConsultResponses, InvoicesEmitData, InvoicesEmitErrors, InvoicesEmitResponses, InvoicesEventsData, InvoicesEventsResponses, InvoicesGetData, InvoicesGetResponses, InvoicesListData, InvoicesListResponses, InvoicesSendEmailData, InvoicesSendEmailResponses, InvoicesUpdateData, InvoicesUpdateErrors, InvoicesUpdateResponses, MdfeAddDocumentData, MdfeAddDocumentResponses, MdfeAddDriverData, MdfeAddDriverResponses, MdfeAddPaymentData, MdfeAddPaymentResponses, MdfeCancelData, MdfeCancelErrors, MdfeCancelResponses, MdfeCloseData, MdfeCloseResponses, MdfeConsultData, MdfeConsultErrors, MdfeConsultResponses, MdfeCreateData, MdfeCreateResponses, MdfeGetData, MdfeGetErrors, MdfeGetResponses, MdfeListData, MdfeListResponses, NfceCancelData, NfceCancelErrors, NfceCancelResponses, NfceCreateData, NfceCreateResponses, NfceGetData, NfceGetErrors, NfceGetResponses, NfceInutilizeData, NfceInutilizeResponses, NfceListData, NfceListResponses, NfcePdfData, NfcePdfResponses, NfceTransmitData, NfceTransmitErrors, NfceTransmitResponses, NfceXmlData, NfceXmlResponses, NfeCancelData, NfeCancelErrors, NfeCancelResponses, NfeCorrectionData, NfeCorrectionErrors, NfeCorrectionResponses, NfeCreateData, NfeCreateResponses, NfeGetData, NfeGetResponses, NfeInutilizeData, NfeInutilizeResponses, NfeListData, NfeListResponses, NfePdfData, NfePdfResponses, NfeRejectionXmlData, NfeRejectionXmlResponses, NfeXmlData, NfeXmlResponses, NfseCancelData, NfseCancelErrors, NfseCancelResponses, NfseCreateData, NfseCreateResponses, NfseGetData, NfseGetErrors, NfseGetResponses, NfseListData, NfseListResponses, NfsePdfData, NfsePdfResponses, NfseXmlData, NfseXmlResponses, ProductsCreateData, ProductsCreateResponses, ProductsDeleteData, ProductsDeleteResponses, ProductsGetData, ProductsGetResponses, ProductsListData, ProductsListResponses, ProductsUpdateData, ProductsUpdateResponses, ReceivedNfesGetData, ReceivedNfesGetResponses, ReceivedNfesListData, ReceivedNfesListResponses, ReceivedNfesManifestData, ReceivedNfesManifestResponses, ReceivedNfesSyncData, ReceivedNfesSyncErrors, ReceivedNfesSyncResponses, ReceivedNfesXmlData, ReceivedNfesXmlResponses, UtilsFiscalSuggestionsData, UtilsFiscalSuggestionsResponses, UtilsLookupCnpjData, UtilsLookupCnpjErrors, UtilsLookupCnpjResponses, UtilsLookupZipcodeData, UtilsLookupZipcodeErrors, UtilsLookupZipcodeResponses, UtilsSearchCestData, UtilsSearchCestResponses, UtilsSearchCfopData, UtilsSearchCfopResponses, UtilsSearchCnaeData, UtilsSearchCnaeResponses, UtilsSearchFederalServicesData, UtilsSearchFederalServicesResponses, UtilsSearchIbsOperationIndicatorData, UtilsSearchIbsOperationIndicatorResponses, UtilsSearchNbsData, UtilsSearchNbsResponses, UtilsSearchNcmData, UtilsSearchNcmResponses, UtilsSearchTaxClassCodeData, UtilsSearchTaxClassCodeResponses, WebhooksCreateData, WebhooksCreateResponses, WebhooksDeleteData, WebhooksDeleteResponses, WebhooksListData, WebhooksListResponses, WebhooksSetActiveData, WebhooksSetActiveResponses, WebhooksUpdateData, WebhooksUpdateResponses } from './types.gen.js';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -183,8 +183,12 @@ export const companyStatus = <ThrowOnError extends boolean = false>(options: Opt
 
 /**
  * Switch homologation / production
+ *
+ * Descontinuado. A emissão pública é sempre produção (SEFAZ tpAmb=1). Retorna 410.
+ *
+ * @deprecated
  */
-export const companyEnvironment = <ThrowOnError extends boolean = false>(options: Options<CompanyEnvironmentData, ThrowOnError>): RequestResult<CompanyEnvironmentResponses, unknown, ThrowOnError> => (options.client ?? client).patch<CompanyEnvironmentResponses, unknown, ThrowOnError>({
+export const companyEnvironment = <ThrowOnError extends boolean = false>(options: Options<CompanyEnvironmentData, ThrowOnError>): RequestResult<unknown, CompanyEnvironmentErrors, ThrowOnError> => (options.client ?? client).patch<unknown, CompanyEnvironmentErrors, ThrowOnError>({
     security: [{ name: 'X-Api-Key', type: 'apiKey' }, { name: 'X-Api-Secret', type: 'apiKey' }],
     url: '/companies/{companyId}/environment',
     ...options,
@@ -577,11 +581,125 @@ export const cteGet = <ThrowOnError extends boolean = false>(options: Options<Ct
 });
 
 /**
+ * Consult CT-e at SEFAZ
+ */
+export const cteConsult = <ThrowOnError extends boolean = false>(options: Options<CteConsultData, ThrowOnError>): RequestResult<CteConsultResponses, CteConsultErrors, ThrowOnError> => (options.client ?? client).get<CteConsultResponses, CteConsultErrors, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }, { name: 'X-Api-Secret', type: 'apiKey' }],
+    url: '/companies/{companyId}/cte/{id}/consult',
+    ...options
+});
+
+/**
  * Emit CT-e OS (modelo 67)
  */
 export const cteOsCreate = <ThrowOnError extends boolean = false>(options: Options<CteOsCreateData, ThrowOnError>): RequestResult<CteOsCreateResponses, CteOsCreateErrors, ThrowOnError> => (options.client ?? client).post<CteOsCreateResponses, CteOsCreateErrors, ThrowOnError>({
     security: [{ name: 'X-Api-Key', type: 'apiKey' }, { name: 'X-Api-Secret', type: 'apiKey' }],
     url: '/companies/{companyId}/cte-os',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * List MDF-e
+ */
+export const mdfeList = <ThrowOnError extends boolean = false>(options: Options<MdfeListData, ThrowOnError>): RequestResult<MdfeListResponses, unknown, ThrowOnError> => (options.client ?? client).get<MdfeListResponses, unknown, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }, { name: 'X-Api-Secret', type: 'apiKey' }],
+    url: '/companies/{companyId}/mdfe',
+    ...options
+});
+
+/**
+ * Emit MDF-e (modelo 58)
+ */
+export const mdfeCreate = <ThrowOnError extends boolean = false>(options: Options<MdfeCreateData, ThrowOnError>): RequestResult<MdfeCreateResponses, unknown, ThrowOnError> => (options.client ?? client).post<MdfeCreateResponses, unknown, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }, { name: 'X-Api-Secret', type: 'apiKey' }],
+    url: '/companies/{companyId}/mdfe',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Cancel MDF-e
+ */
+export const mdfeCancel = <ThrowOnError extends boolean = false>(options: Options<MdfeCancelData, ThrowOnError>): RequestResult<MdfeCancelResponses, MdfeCancelErrors, ThrowOnError> => (options.client ?? client).delete<MdfeCancelResponses, MdfeCancelErrors, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }, { name: 'X-Api-Secret', type: 'apiKey' }],
+    url: '/companies/{companyId}/mdfe/{id}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Get MDF-e
+ */
+export const mdfeGet = <ThrowOnError extends boolean = false>(options: Options<MdfeGetData, ThrowOnError>): RequestResult<MdfeGetResponses, MdfeGetErrors, ThrowOnError> => (options.client ?? client).get<MdfeGetResponses, MdfeGetErrors, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }, { name: 'X-Api-Secret', type: 'apiKey' }],
+    url: '/companies/{companyId}/mdfe/{id}',
+    ...options
+});
+
+/**
+ * Consult MDF-e at SEFAZ
+ */
+export const mdfeConsult = <ThrowOnError extends boolean = false>(options: Options<MdfeConsultData, ThrowOnError>): RequestResult<MdfeConsultResponses, MdfeConsultErrors, ThrowOnError> => (options.client ?? client).get<MdfeConsultResponses, MdfeConsultErrors, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }, { name: 'X-Api-Secret', type: 'apiKey' }],
+    url: '/companies/{companyId}/mdfe/{id}/consult',
+    ...options
+});
+
+/**
+ * Close MDF-e
+ */
+export const mdfeClose = <ThrowOnError extends boolean = false>(options: Options<MdfeCloseData, ThrowOnError>): RequestResult<MdfeCloseResponses, unknown, ThrowOnError> => (options.client ?? client).post<MdfeCloseResponses, unknown, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }, { name: 'X-Api-Secret', type: 'apiKey' }],
+    url: '/companies/{companyId}/mdfe/{id}/close',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Add driver to MDF-e
+ */
+export const mdfeAddDriver = <ThrowOnError extends boolean = false>(options: Options<MdfeAddDriverData, ThrowOnError>): RequestResult<MdfeAddDriverResponses, unknown, ThrowOnError> => (options.client ?? client).post<MdfeAddDriverResponses, unknown, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }, { name: 'X-Api-Secret', type: 'apiKey' }],
+    url: '/companies/{companyId}/mdfe/{id}/drivers',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Add document to MDF-e
+ */
+export const mdfeAddDocument = <ThrowOnError extends boolean = false>(options: Options<MdfeAddDocumentData, ThrowOnError>): RequestResult<MdfeAddDocumentResponses, unknown, ThrowOnError> => (options.client ?? client).post<MdfeAddDocumentResponses, unknown, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }, { name: 'X-Api-Secret', type: 'apiKey' }],
+    url: '/companies/{companyId}/mdfe/{id}/documents',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Add payment to MDF-e
+ */
+export const mdfeAddPayment = <ThrowOnError extends boolean = false>(options: Options<MdfeAddPaymentData, ThrowOnError>): RequestResult<MdfeAddPaymentResponses, unknown, ThrowOnError> => (options.client ?? client).post<MdfeAddPaymentResponses, unknown, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }, { name: 'X-Api-Secret', type: 'apiKey' }],
+    url: '/companies/{companyId}/mdfe/{id}/payments',
     ...options,
     headers: {
         'Content-Type': 'application/json',

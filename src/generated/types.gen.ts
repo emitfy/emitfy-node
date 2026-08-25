@@ -30,12 +30,20 @@ export type InvoiceUpdateRequest = {
      * Snapshot comercial parcial (merge no servidor)
      */
     commercial?: {
-        [key: string]: unknown;
+        nfe?: {
+            [key: string]: unknown;
+        };
+        nfce?: {
+            [key: string]: unknown;
+        };
+        nfseLayout?: {
+            [key: string]: unknown;
+        };
+        presenceType?: string;
     };
     issueMode?: 'draft' | 'immediate' | 'scheduled';
     scheduledAt?: string;
     sendEmail?: boolean;
-    [key: string]: unknown;
 };
 
 export type NfeCorrectionRequest = {
@@ -51,6 +59,17 @@ export type NumberInutilizationRequest = {
     rangeEnd: number;
     justification: string;
     year?: number;
+};
+
+export type NfeAddress = {
+    street?: string;
+    number?: string;
+    complement?: string;
+    district?: string;
+    city?: string;
+    state?: string;
+    zipcode?: string;
+    cityCode?: string;
 };
 
 /**
@@ -178,7 +197,31 @@ export type ProductEmitItem = {
     taxClassification?: string;
     ibsCst?: string;
     cbsCst?: string;
-    [key: string]: unknown;
+    importDeclarations?: Array<{
+        [key: string]: unknown;
+    }>;
+    traces?: Array<{
+        [key: string]: unknown;
+    }>;
+    exports?: Array<{
+        [key: string]: unknown;
+    }>;
+    vehicle?: {
+        [key: string]: unknown;
+    };
+    medicine?: {
+        [key: string]: unknown;
+    };
+    weapons?: Array<{
+        [key: string]: unknown;
+    }>;
+    fuel?: {
+        [key: string]: unknown;
+    };
+    taxReturn?: {
+        [key: string]: unknown;
+    };
+    additionalInfo?: string;
 };
 
 export type NfseCreateRequest = {
@@ -237,7 +280,25 @@ export type NfseCreateRequest = {
      * Retenções federais opcionais (pis/cofins/csll/ir/inss). ISS canônico é iss no topo.
      */
     taxes?: {
-        [key: string]: unknown;
+        iss?: {
+            rate?: number;
+            isWithheld?: boolean;
+        };
+        pis?: {
+            [key: string]: unknown;
+        };
+        cofins?: {
+            [key: string]: unknown;
+        };
+        csll?: {
+            [key: string]: unknown;
+        };
+        ir?: {
+            [key: string]: unknown;
+        };
+        inss?: {
+            [key: string]: unknown;
+        };
     };
     amount: number;
     issueDate?: string;
@@ -248,8 +309,30 @@ export type NfseCreateRequest = {
         email: string;
         phone?: string;
         address?: {
-            [key: string]: unknown;
+            street?: string;
+            number?: string;
+            complement?: string;
+            district?: string;
+            city?: string;
+            state?: string;
+            zipcode?: string;
+            cityCode?: string;
+            ibge?: string;
         };
+    };
+    intermediary?: {
+        taxId: string;
+        name: string;
+        municipalRegistration?: string;
+    };
+    construction?: {
+        art?: string;
+        workCode?: string;
+    };
+    substitution?: {
+        replacedKey?: string;
+        reasonCode?: string;
+        reason?: string;
     };
     /**
      * Alias legado de cityServiceCode
@@ -287,7 +370,6 @@ export type NfseCreateRequest = {
      * @deprecated
      */
     ibsOperationIndicator?: string;
-    [key: string]: unknown;
 };
 
 export type WebhookCreate = {
@@ -300,7 +382,82 @@ export type WebhookCreate = {
     events: {
         invoice?: Array<string>;
         cte?: Array<string>;
+        mdfe?: Array<string>;
     };
+};
+
+export type MdfeUnloadCity = {
+    cityCode: string;
+    city?: string;
+    cteAccessKeys?: Array<string>;
+    nfeAccessKeys?: Array<string>;
+    mdfeAccessKeys?: Array<string>;
+};
+
+export type MdfeDriver = {
+    name: string;
+    taxId: string;
+};
+
+export type MdfeVehicle = {
+    plate: string;
+    state?: string;
+    rntc?: string;
+    tare?: number;
+    capacityKg?: number;
+    capacityM3?: number;
+};
+
+export type MdfeModal = {
+    kind?: '1' | '2' | '3' | '4';
+    rntrc?: string;
+    vehicle?: MdfeVehicle;
+    trailers?: Array<MdfeVehicle>;
+    drivers?: Array<MdfeDriver>;
+};
+
+export type MdfeEmitRequest = {
+    externalId?: string;
+    ufStart: string;
+    ufEnd: string;
+    municipalityStartIbge: string;
+    municipalityEndIbge: string;
+    cargoTotalAmount: number;
+    cargoQuantity: number;
+    cargoUnit?: string;
+    documents: Array<MdfeUnloadCity>;
+    modal?: MdfeModal;
+    drivers?: Array<MdfeDriver>;
+    insurance?: Array<{
+        [key: string]: unknown;
+    }>;
+    additional?: {
+        [key: string]: unknown;
+    };
+    techResponsible?: {
+        [key: string]: unknown;
+    };
+    payments?: Array<{
+        [key: string]: unknown;
+    }>;
+    issueDate?: string;
+};
+
+export type MdfeCancelRequest = {
+    justification: string;
+};
+
+export type MdfeCloseRequest = {
+    cityCode: string;
+    state: string;
+    closedAt?: string;
+};
+
+export type MdfePayment = {
+    responsibleTaxId?: string;
+    responsibleName?: string;
+    amount?: number;
+    method?: string;
 };
 
 /**
@@ -588,7 +745,7 @@ export type CompanyStatusResponses = {
 
 export type CompanyEnvironmentData = {
     body?: {
-        [key: string]: unknown;
+        environment?: 'production' | 'homologation';
     };
     path: {
         /**
@@ -600,11 +757,11 @@ export type CompanyEnvironmentData = {
     url: '/companies/{companyId}/environment';
 };
 
-export type CompanyEnvironmentResponses = {
+export type CompanyEnvironmentErrors = {
     /**
-     * Ambiente atualizado
+     * Endpoint descontinuado
      */
-    200: unknown;
+    410: unknown;
 };
 
 export type CustomersListData = {
@@ -999,6 +1156,14 @@ export type NfeListResponses = {
 
 export type NfeCreateData = {
     body: {
+        items: Array<ProductEmitItem>;
+        recipient: {
+            taxId: string;
+            name: string;
+            email?: string;
+            phone?: string;
+            address?: NfeAddress;
+        };
         /**
          * Dados de transporte inline (opcional). `freightModality` é obrigatório
          * quando `carrier` é enviado; `noShipping` com `carrier` retorna 400.
@@ -1015,7 +1180,46 @@ export type NfeCreateData = {
             value?: number;
             carrier?: TransportCarrier;
         };
-        [key: string]: unknown;
+        externalId?: string;
+        operationNature?: string;
+        /**
+         * @deprecated
+         */
+        nature?: string;
+        billing?: {
+            [key: string]: unknown;
+        };
+        additional?: {
+            [key: string]: unknown;
+        };
+        techResponsible?: {
+            [key: string]: unknown;
+        };
+        intermediary?: {
+            [key: string]: unknown;
+        };
+        autXml?: Array<{
+            [key: string]: unknown;
+        }>;
+        retirada?: {
+            [key: string]: unknown;
+        };
+        entrega?: {
+            [key: string]: unknown;
+        };
+        export?: {
+            [key: string]: unknown;
+        };
+        purchase?: {
+            [key: string]: unknown;
+        };
+        sugarcane?: {
+            [key: string]: unknown;
+        };
+        farming?: {
+            [key: string]: unknown;
+        };
+        nffRequest?: string;
     };
     headers?: {
         'Idempotency-Key'?: string;
@@ -1226,6 +1430,15 @@ export type NfceCreateData = {
         paymentMethod: 'credit_card' | 'debit_card' | 'pix' | 'bank_transfer' | 'cash' | 'bank_slip' | 'other';
         items: Array<ProductEmitItem>;
         recipient?: {
+            taxId?: string;
+            name?: string;
+            email?: string;
+            phone?: string;
+        };
+        additional?: {
+            [key: string]: unknown;
+        };
+        techResponsible?: {
             [key: string]: unknown;
         };
         externalId?: string;
@@ -1236,7 +1449,6 @@ export type NfceCreateData = {
         };
         accessKey?: string;
         transmit?: 'now' | 'later';
-        [key: string]: unknown;
     };
     headers?: {
         'Idempotency-Key'?: string;
@@ -1435,7 +1647,37 @@ export type CteListResponses = {
 
 export type CteCreateData = {
     body: {
-        [key: string]: unknown;
+        cfop: string;
+        nature: string;
+        shipper: {
+            [key: string]: unknown;
+        };
+        recipient: {
+            [key: string]: unknown;
+        };
+        municipalityStartIbge: string;
+        municipalityEndIbge: string;
+        cargoValue: number;
+        cargoProduct: string;
+        cargoQuantities: Array<{
+            [key: string]: unknown;
+        }>;
+        serviceAmount: number;
+        icms: {
+            [key: string]: unknown;
+        };
+        components?: Array<{
+            [key: string]: unknown;
+        }>;
+        complement?: {
+            [key: string]: unknown;
+        };
+        autXml?: Array<{
+            [key: string]: unknown;
+        }>;
+        techResponsible?: {
+            [key: string]: unknown;
+        };
     };
     headers?: {
         'Idempotency-Key'?: string;
@@ -1511,9 +1753,45 @@ export type CteGetResponses = {
     200: unknown;
 };
 
+export type CteConsultData = {
+    body?: never;
+    path: {
+        /**
+         * ID da empresa (CNPJ operacional) no path
+         */
+        companyId: string;
+        id: string;
+    };
+    query?: never;
+    url: '/companies/{companyId}/cte/{id}/consult';
+};
+
+export type CteConsultErrors = {
+    /**
+     * Chave de acesso ausente
+     */
+    422: unknown;
+};
+
+export type CteConsultResponses = {
+    /**
+     * Resultado da consulta SEFAZ
+     */
+    200: unknown;
+};
+
 export type CteOsCreateData = {
     body: {
-        [key: string]: unknown;
+        cfop: string;
+        nature: string;
+        serviceDescription: string;
+        serviceAmount: number;
+        icms: {
+            [key: string]: unknown;
+        };
+        components?: Array<{
+            [key: string]: unknown;
+        }>;
     };
     headers?: {
         'Idempotency-Key'?: string;
@@ -1538,6 +1816,212 @@ export type CteOsCreateErrors = {
 export type CteOsCreateResponses = {
     /**
      * CT-e OS enfileirado
+     */
+    200: unknown;
+};
+
+export type MdfeListData = {
+    body?: never;
+    path: {
+        /**
+         * ID da empresa (CNPJ operacional) no path
+         */
+        companyId: string;
+    };
+    query?: {
+        page?: number;
+        pageSize?: number;
+        status?: 'pending' | 'queued' | 'processing' | 'authorized' | 'rejected' | 'cancelled' | 'closed';
+    };
+    url: '/companies/{companyId}/mdfe';
+};
+
+export type MdfeListResponses = {
+    /**
+     * Lista paginada
+     */
+    200: unknown;
+};
+
+export type MdfeCreateData = {
+    body: MdfeEmitRequest;
+    headers?: {
+        'Idempotency-Key'?: string;
+    };
+    path: {
+        /**
+         * ID da empresa (CNPJ operacional) no path
+         */
+        companyId: string;
+    };
+    query?: never;
+    url: '/companies/{companyId}/mdfe';
+};
+
+export type MdfeCreateResponses = {
+    /**
+     * MDF-e enfileirado
+     */
+    200: unknown;
+};
+
+export type MdfeCancelData = {
+    body: MdfeCancelRequest;
+    path: {
+        /**
+         * ID da empresa (CNPJ operacional) no path
+         */
+        companyId: string;
+        id: string;
+    };
+    query?: never;
+    url: '/companies/{companyId}/mdfe/{id}';
+};
+
+export type MdfeCancelErrors = {
+    /**
+     * Status não permite cancelamento
+     */
+    422: unknown;
+};
+
+export type MdfeCancelResponses = {
+    /**
+     * Cancelamento enfileirado
+     */
+    200: unknown;
+};
+
+export type MdfeGetData = {
+    body?: never;
+    path: {
+        /**
+         * ID da empresa (CNPJ operacional) no path
+         */
+        companyId: string;
+        id: string;
+    };
+    query?: never;
+    url: '/companies/{companyId}/mdfe/{id}';
+};
+
+export type MdfeGetErrors = {
+    /**
+     * Não encontrado
+     */
+    404: unknown;
+};
+
+export type MdfeGetResponses = {
+    /**
+     * MDF-e
+     */
+    200: unknown;
+};
+
+export type MdfeConsultData = {
+    body?: never;
+    path: {
+        /**
+         * ID da empresa (CNPJ operacional) no path
+         */
+        companyId: string;
+        id: string;
+    };
+    query?: never;
+    url: '/companies/{companyId}/mdfe/{id}/consult';
+};
+
+export type MdfeConsultErrors = {
+    /**
+     * Chave de acesso ausente
+     */
+    422: unknown;
+};
+
+export type MdfeConsultResponses = {
+    /**
+     * Resultado da consulta SEFAZ
+     */
+    200: unknown;
+};
+
+export type MdfeCloseData = {
+    body: MdfeCloseRequest;
+    path: {
+        /**
+         * ID da empresa (CNPJ operacional) no path
+         */
+        companyId: string;
+        id: string;
+    };
+    query?: never;
+    url: '/companies/{companyId}/mdfe/{id}/close';
+};
+
+export type MdfeCloseResponses = {
+    /**
+     * Encerramento enfileirado
+     */
+    200: unknown;
+};
+
+export type MdfeAddDriverData = {
+    body: MdfeDriver;
+    path: {
+        /**
+         * ID da empresa (CNPJ operacional) no path
+         */
+        companyId: string;
+        id: string;
+    };
+    query?: never;
+    url: '/companies/{companyId}/mdfe/{id}/drivers';
+};
+
+export type MdfeAddDriverResponses = {
+    /**
+     * Evento enfileirado
+     */
+    200: unknown;
+};
+
+export type MdfeAddDocumentData = {
+    body: MdfeUnloadCity;
+    path: {
+        /**
+         * ID da empresa (CNPJ operacional) no path
+         */
+        companyId: string;
+        id: string;
+    };
+    query?: never;
+    url: '/companies/{companyId}/mdfe/{id}/documents';
+};
+
+export type MdfeAddDocumentResponses = {
+    /**
+     * Evento enfileirado
+     */
+    200: unknown;
+};
+
+export type MdfeAddPaymentData = {
+    body: MdfePayment;
+    path: {
+        /**
+         * ID da empresa (CNPJ operacional) no path
+         */
+        companyId: string;
+        id: string;
+    };
+    query?: never;
+    url: '/companies/{companyId}/mdfe/{id}/payments';
+};
+
+export type MdfeAddPaymentResponses = {
+    /**
+     * Evento enfileirado
      */
     200: unknown;
 };

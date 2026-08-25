@@ -21,6 +21,13 @@ import type {
   CteCreateData,
   CteListData,
   CteOsCreateData,
+  MdfeAddDocumentData,
+  MdfeAddDriverData,
+  MdfeAddPaymentData,
+  MdfeCancelData,
+  MdfeCloseData,
+  MdfeCreateData,
+  MdfeListData,
   CompanyCertificateUploadData,
   CompanyEnvironmentData,
   InvoicesCancelData,
@@ -275,6 +282,17 @@ export class CompanyContext {
   readonly nfe: CompanyResource<NfeListData, NfeCreateData>
   readonly nfce: CompanyResource<NfceListData, NfceCreateData>
   readonly cte: CompanyResource<CteListData, CteCreateData>
+  readonly mdfe: {
+    list: (query?: QueryOf<MdfeListData>) => Promise<unknown>
+    create: (body: BodyOf<MdfeCreateData>, idempotencyKey?: string) => Promise<unknown>
+    get: (id: string) => Promise<unknown>
+    cancel: (id: string, body: BodyOf<MdfeCancelData>) => Promise<unknown>
+    consult: (id: string) => Promise<unknown>
+    close: (id: string, body: BodyOf<MdfeCloseData>) => Promise<unknown>
+    addDriver: (id: string, body: BodyOf<MdfeAddDriverData>) => Promise<unknown>
+    addDocument: (id: string, body: BodyOf<MdfeAddDocumentData>) => Promise<unknown>
+    addPayment: (id: string, body: BodyOf<MdfeAddPaymentData>) => Promise<unknown>
+  }
   readonly customers: CompanyResource<
     CustomersListData,
     CustomersCreateData,
@@ -339,6 +357,88 @@ export class CompanyContext {
       get: api.cteGet,
       delete: api.cteCancel
     })
+    this.mdfe = {
+      list: (query) =>
+        callApi(() =>
+          api.mdfeList({
+            client,
+            throwOnError: true,
+            path: { companyId },
+            query
+          })
+        ),
+      create: (body, idempotencyKey) =>
+        callApi(() =>
+          api.mdfeCreate({
+            client,
+            throwOnError: true,
+            path: { companyId },
+            body,
+            headers: idempotencyKey ? { 'Idempotency-Key': idempotencyKey } : undefined
+          })
+        ),
+      get: (id) =>
+        callApi(() =>
+          api.mdfeGet({
+            client,
+            throwOnError: true,
+            path: { companyId, id }
+          })
+        ),
+      cancel: (id, body) =>
+        callApi(() =>
+          api.mdfeCancel({
+            client,
+            throwOnError: true,
+            path: { companyId, id },
+            body
+          })
+        ),
+      consult: (id) =>
+        callApi(() =>
+          api.mdfeConsult({
+            client,
+            throwOnError: true,
+            path: { companyId, id }
+          })
+        ),
+      close: (id, body) =>
+        callApi(() =>
+          api.mdfeClose({
+            client,
+            throwOnError: true,
+            path: { companyId, id },
+            body
+          })
+        ),
+      addDriver: (id, body) =>
+        callApi(() =>
+          api.mdfeAddDriver({
+            client,
+            throwOnError: true,
+            path: { companyId, id },
+            body
+          })
+        ),
+      addDocument: (id, body) =>
+        callApi(() =>
+          api.mdfeAddDocument({
+            client,
+            throwOnError: true,
+            path: { companyId, id },
+            body
+          })
+        ),
+      addPayment: (id, body) =>
+        callApi(() =>
+          api.mdfeAddPayment({
+            client,
+            throwOnError: true,
+            path: { companyId, id },
+            body
+          })
+        )
+    }
     this.customers = new CompanyResource(client, companyId, {
       list: api.customersList,
       create: api.customersCreate,
@@ -505,6 +605,7 @@ export class CompanyContext {
     )
   }
 
+  /** @deprecated Public emission is always production. This endpoint returns 410. */
   setEnvironment(environment: 'development' | 'production') {
     return callApi(() =>
       api.companyEnvironment({
