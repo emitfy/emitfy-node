@@ -44,6 +44,36 @@ export type InvoiceUpdateRequest = {
     issueMode?: 'draft' | 'immediate' | 'scheduled';
     scheduledAt?: string;
     sendEmail?: boolean;
+    /**
+     * Só NFS-e. Troca o tomador com o mesmo formato do `POST .../nfse` (`taxId` vira o documento do cliente). Vincula/cria o cliente no cadastro e grava no snapshot da nota o que foi enviado; campos omitidos herdam do cadastro. Não combine com `commercial.customer`.
+     *
+     */
+    borrower?: {
+        taxId?: string;
+        name: string;
+        email: string;
+        phone?: string;
+        address?: {
+            street?: string;
+            number?: string;
+            complement?: string;
+            district?: string;
+            city?: string;
+            state?: string;
+            zipcode?: string;
+        };
+    };
+    /**
+     * Só NF-e/NFC-e. Troca o destinatário com o mesmo formato do create (NF-e exige `taxId` e `name`; na NFC-e tudo é opcional e o padrão é consumidor final). Não combine com `commercial.customer`.
+     *
+     */
+    recipient?: {
+        taxId?: string;
+        name?: string;
+        email?: string;
+        phone?: string;
+        address?: NfeAddress;
+    };
 };
 
 export type NfeCorrectionRequest = {
@@ -741,27 +771,6 @@ export type CompanyStatusResponses = {
      * Status fiscal / módulos (+ nfse.auth)
      */
     200: unknown;
-};
-
-export type CompanyEnvironmentData = {
-    body?: {
-        environment?: 'production' | 'homologation';
-    };
-    path: {
-        /**
-         * ID da empresa (CNPJ operacional) no path
-         */
-        companyId: string;
-    };
-    query?: never;
-    url: '/companies/{companyId}/environment';
-};
-
-export type CompanyEnvironmentErrors = {
-    /**
-     * Endpoint descontinuado
-     */
-    410: unknown;
 };
 
 export type CustomersListData = {
@@ -2091,6 +2100,11 @@ export type InvoicesUpdateErrors = {
      * Não editável ou conflito de version
      */
     409: unknown;
+    /**
+     * Validação (`VALIDATION_ERROR`): campo desconhecido, tomador inválido ou do tipo errado (`borrower` em NF-e/NFC-e, `recipient` em NFS-e).
+     *
+     */
+    422: unknown;
 };
 
 export type InvoicesUpdateResponses = {

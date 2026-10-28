@@ -29,7 +29,6 @@ import type {
   MdfeCreateData,
   MdfeListData,
   CompanyCertificateUploadData,
-  CompanyEnvironmentData,
   InvoicesCancelData,
   InvoicesListData,
   InvoicesSendEmailData,
@@ -601,18 +600,6 @@ export class CompanyContext {
         client: this.client,
         throwOnError: true,
         path: { companyId: this.companyId }
-      })
-    )
-  }
-
-  /** @deprecated Public emission is always production. This endpoint returns 410. */
-  setEnvironment(environment: 'development' | 'production') {
-    return callApi(() =>
-      api.companyEnvironment({
-        client: this.client,
-        throwOnError: true,
-        path: { companyId: this.companyId },
-        body: { environment } as BodyOf<CompanyEnvironmentData>
       })
     )
   }
