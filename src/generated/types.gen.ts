@@ -13,6 +13,90 @@ export type ErrorBody = {
     };
 };
 
+/**
+ * Resposta do POST de NFS-e / NF-e (emissão assíncrona — acompanhe via webhook ou GET).
+ */
+export type InvoiceCreateAccepted = {
+    success?: true;
+    data?: {
+        id?: string;
+        /**
+         * Igual a `id`
+         */
+        invoiceId?: string;
+        status?: 'pending' | 'queued' | 'processing' | 'authorized' | 'rejected' | 'cancelled';
+        type?: 'nfse' | 'nfe';
+        externalId?: string;
+        amount?: number;
+    };
+};
+
+/**
+ * Lista dos atalhos `/nfse` e `/nfe`.
+ */
+export type InvoiceTypedList = {
+    success?: true;
+    data?: {
+        items?: Array<{
+            id?: string;
+            status?: 'pending' | 'queued' | 'processing' | 'authorized' | 'rejected' | 'cancelled';
+            type?: string;
+            amount?: number;
+            emissionDate?: string;
+            createdAt?: string;
+        }>;
+        pagination?: TypedListPagination;
+    };
+};
+
+/**
+ * GET do atalho `/nfse/{id}`.
+ */
+export type InvoiceTypedDetail = {
+    success?: true;
+    data?: {
+        id?: string;
+        status?: 'pending' | 'queued' | 'processing' | 'authorized' | 'rejected' | 'cancelled';
+        type?: string;
+        amount?: number;
+        emissionDate?: string;
+        cancellationDate?: string;
+        /**
+         * Dados fiscais (número, série, código de verificação, RPS, protocolo…)
+         */
+        fiscal?: {
+            [key: string]: unknown;
+        };
+        createdAt?: string;
+        updatedAt?: string;
+    };
+};
+
+export type NfceDocument = {
+    id?: string;
+    type?: 'nfce';
+    kind?: 'nfce';
+    model?: '65';
+    status?: 'pending' | 'queued' | 'processing' | 'authorized' | 'rejected' | 'cancelled';
+    apiStatus?: 'received' | 'queued' | 'transmitting' | 'authorized' | 'rejected' | 'denied' | 'cancelled';
+    issueMode?: 'normal' | 'offlineContingency';
+    amount?: number;
+    accessKey?: string;
+    number?: number;
+    series?: number;
+    contingency?: {
+        startedAt?: string;
+        reason?: string;
+    };
+    emissionDate?: string;
+    cancellationDate?: string;
+    fiscal?: {
+        [key: string]: unknown;
+    };
+    createdAt?: string;
+    updatedAt?: string;
+};
+
 export type SuccessEnvelope = {
     success: true;
     /**
@@ -86,9 +170,201 @@ export type NfeCorrectionRequest = {
 export type NumberInutilizationRequest = {
     series: number;
     rangeStart: number;
+    /**
+     * Deve ser maior ou igual a `rangeStart`.
+     */
     rangeEnd: number;
     justification: string;
+    /**
+     * Ano da inutilização. Padrão = ano corrente.
+     */
     year?: number;
+};
+
+/**
+ * Faixa inutilizada e homologada pela SEFAZ.
+ */
+export type NumberInutilizationResult = {
+    confirmed?: true;
+    protocol?: string;
+    message?: string;
+    /**
+     * ID do registro no histórico
+     */
+    id?: string;
+};
+
+export type NumberInutilizationRecord = {
+    id?: string;
+    model?: '55' | '65';
+    series?: number;
+    rangeStart?: number;
+    rangeEnd?: number;
+    year?: number;
+    justification?: string;
+    /**
+     * `false` = recusada pela SEFAZ (ver `cStat`/`message`).
+     */
+    confirmed?: boolean;
+    cStat?: number;
+    message?: string;
+    protocol?: string;
+    /**
+     * Ambiente em que a inutilização foi enviada (`test` = homologação, no sandbox).
+     */
+    environment?: 'production' | 'test';
+    createdAt?: string;
+};
+
+export type NumberInutilizationList = {
+    success?: true;
+    data?: {
+        /**
+         * Mais recentes primeiro. Inclui as recusadas (`confirmed:false`).
+         */
+        items?: Array<NumberInutilizationRecord>;
+        pagination?: {
+            page?: number;
+            pageSize?: number;
+        };
+    };
+};
+
+/**
+ * Paginação das listas por tipo (`/nfse`, `/nfe`, `/nfce`, `/cte`, `/mdfe`).
+ */
+export type TypedListPagination = {
+    page?: number;
+    pageSize?: number;
+    total?: number;
+};
+
+/**
+ * Paginação das listas por cursor (`/invoices`, `/customers`, `/products`).
+ */
+export type CursorPageInfo = {
+    page?: number;
+    pages?: number;
+    total?: number;
+    limit?: number;
+};
+
+/**
+ * Resposta 202 dos DELETE tipados (`/nfse/{id}`, `/nfe/{id}`, `/nfce/{id}`). O cancelamento é assíncrono: logo após o 202 a nota ainda costuma estar `authorized`; o resultado final chega no webhook `*.cancelled` (NFS-e/NF-e) ou no GET (`status: cancelled`).
+ *
+ */
+export type InvoiceCancelAccepted = {
+    success?: true;
+    data?: {
+        id?: string;
+        status?: 'pending' | 'queued' | 'processing' | 'authorized' | 'rejected' | 'cancelled';
+        apiStatus?: 'received' | 'queued' | 'transmitting' | 'authorized' | 'rejected' | 'denied' | 'cancelled';
+        cancelEnqueued?: true;
+    };
+};
+
+/**
+ * Resposta 200 de cancelamento de CT-e / MDF-e (enfileirado).
+ */
+export type TransportDocumentAccepted = {
+    success?: true;
+    data?: {
+        id?: string;
+        status?: 'processing';
+        model?: string;
+        externalId?: string;
+    };
+};
+
+export type DfeTechResponsible = {
+    taxId: string;
+    name: string;
+    email: string;
+    phone: string;
+    csrtId?: string;
+    csrtHash?: string;
+};
+
+export type DfeAutXml = {
+    taxId: string;
+};
+
+export type DfeComponent = {
+    name: string;
+    amount: number;
+};
+
+export type DfeAddressLayout = {
+    street?: string;
+    number?: string;
+    complement?: string;
+    district?: string;
+    city?: string;
+    state?: string;
+    zipcode?: string;
+    cityCode?: string;
+    countryCode?: string;
+    country?: string;
+    phone?: string;
+    email?: string;
+};
+
+export type CteAddress = {
+    street: string;
+    number: string;
+    complement?: string;
+    district: string;
+    city: string;
+    state: string;
+    zipcode: string;
+    /**
+     * Código IBGE do município
+     */
+    ibge: string;
+};
+
+/**
+ * Participante do CT-e (remetente, destinatário, expedidor, recebedor, tomador).
+ */
+export type CteParty = {
+    /**
+     * CPF ou CNPJ
+     */
+    taxId: string;
+    name: string;
+    stateRegistration?: string;
+    email?: string;
+    address: CteAddress;
+};
+
+export type CteCargoQuantity = {
+    /**
+     * Unidade de medida (ex.: 01 = KG)
+     */
+    unitCode: string;
+    unitType: string;
+    quantity: number;
+};
+
+export type CteIcms = {
+    /**
+     * CST ou CSOSN conforme o regime
+     */
+    cst: string;
+    rate?: number;
+    baseAmount?: number;
+    amount?: number;
+};
+
+export type CteEmitAccepted = {
+    success?: true;
+    data?: {
+        id?: string;
+        status?: string;
+        model?: '57' | '67';
+        externalId?: string;
+        serviceAmount?: number;
+    };
 };
 
 export type NfeAddress = {
@@ -145,7 +421,7 @@ export type PublicInvoiceResource = {
      */
     taxId?: string;
     type: 'nfse' | 'nfe' | 'nfce';
-    status: string;
+    status: 'pending' | 'queued' | 'processing' | 'authorized' | 'rejected' | 'cancelled';
     /**
      * Concorrência para PATCH
      */
@@ -204,15 +480,22 @@ export type ProductEmitItem = {
     name?: string;
     category?: string;
     description: string;
+    /**
+     * Descrição na nota (xProd). Default = description
+     */
     fiscalDescription?: string;
     guarantee?: number;
     ncm?: string;
     cfop?: string;
     cfopInternal?: string;
     cfopExternal?: string;
+    cfopExternalNonTaxpayer?: string;
     cfopInternational?: string;
     quantity: number;
     unitValue: number;
+    /**
+     * Alias legado de commercialUnit
+     */
     unit?: string;
     commercialUnit?: string;
     taxableUnit?: string;
@@ -220,10 +503,25 @@ export type ProductEmitItem = {
     icmsOrigin?: string;
     icmsCst?: string;
     icmsTaxRate?: number;
+    icmsModBc?: string;
+    icmsTaxBenefitCode?: string;
     pisCst?: string;
     pisTaxRate?: number;
     cofinsCst?: string;
     cofinsTaxRate?: number;
+    ipiCst?: string;
+    ipiTaxRate?: number;
+    ipiLegalCode?: string;
+    cest?: string;
+    fci?: string;
+    nve?: Array<string>;
+    extipi?: string;
+    orderNumber?: string;
+    orderItem?: number;
+    freight?: number;
+    insurance?: number;
+    discount?: number;
+    other?: number;
     taxClassification?: string;
     ibsCst?: string;
     cbsCst?: string;
@@ -254,6 +552,15 @@ export type ProductEmitItem = {
     additionalInfo?: string;
 };
 
+export type NfseTaxEntry = {
+    rate?: number;
+    isWithheld?: boolean;
+};
+
+/**
+ * Além dos campos `required`, a validação exige: `cityServiceCode` (ou o alias `serviceCode`), `federalServiceCode` (ou `serviceItemCode`) e `iss.rate` (ou `taxes.iss.rate`; 0 é válido). Com `serviceLocation` `3`, `cityIbge` (IBGE de 7 dígitos) é obrigatório. Falha → 422 `VALIDATION_ERROR`. Campo desconhecido também → 422.
+ *
+ */
 export type NfseCreateRequest = {
     /**
      * Discriminação completa na nota
@@ -270,22 +577,25 @@ export type NfseCreateRequest = {
     /**
      * Default other_service
      */
-    category?: string;
+    category?: 'online_course' | 'consulting' | 'subscription' | 'saas' | 'online_event' | 'professional_service' | 'other_service' | 'affiliate_infoproducts' | 'affiliate_betting' | 'marketing_agency' | 'copywriter' | 'systems_development' | 'graphic_designer' | 'dropshipping_supplier' | 'dropshipping_consumer' | 'traffic_manager' | 'digital_influencer' | 'infoproducer' | 'physical_product' | 'digital_book' | 'digital_content' | 'membership' | 'software' | 'other_product';
     guarantee?: number;
     /**
-     * Código municipal do serviço
+     * Código municipal do serviço (obrigatório, ou o alias `serviceCode`)
      */
-    cityServiceCode: string;
+    cityServiceCode?: string;
     /**
-     * Item LC 116 (cTribNac)
+     * Item LC 116 (cTribNac) — obrigatório, ou o alias `serviceItemCode`
      */
-    federalServiceCode: string;
+    federalServiceCode?: string;
     /**
      * Código NBS (reforma)
      */
     nbs?: string;
     cnaeCode?: string;
-    iss: {
+    /**
+     * ISS canônico. `rate` obrigatório (0 permitido), salvo se enviado em `taxes.iss`.
+     */
+    iss?: {
         rate: number;
         isWithheld?: boolean;
     };
@@ -303,41 +613,62 @@ export type NfseCreateRequest = {
          */
         operationIndicator?: string;
     };
-    natureOfOperation?: string;
-    serviceLocation?: string;
-    municipalityOfIncidence?: string;
+    /**
+     * Natureza da operação. Default 1.
+     */
+    natureOfOperation?: '1' | '2' | '3' | '4' | '5' | '6';
+    /**
+     * Local de prestação. `1` município da empresa (default), `2` município do tomador, `3` outro município (exige `cityIbge`).
+     *
+     */
+    serviceLocation?: '1' | '2' | '3';
+    /**
+     * Município de incidência do ISS. Default 0.
+     */
+    municipalityOfIncidence?: '0' | '1' | '2';
+    /**
+     * IBGE (7 dígitos) do local de prestação. Obrigatório com `serviceLocation` `3`.
+     */
+    cityIbge?: string;
+    /**
+     * Data de competência (ISO 8601 com offset).
+     */
+    competenceDate?: string;
+    /**
+     * Deduções da base de cálculo. Default 0.
+     */
+    deductions?: number;
+    exigibility?: string;
+    additionalInfo?: string;
     /**
      * Retenções federais opcionais (pis/cofins/csll/ir/inss). ISS canônico é iss no topo.
      */
     taxes?: {
-        iss?: {
-            rate?: number;
-            isWithheld?: boolean;
-        };
-        pis?: {
-            [key: string]: unknown;
-        };
-        cofins?: {
-            [key: string]: unknown;
-        };
-        csll?: {
-            [key: string]: unknown;
-        };
-        ir?: {
-            [key: string]: unknown;
-        };
-        inss?: {
-            [key: string]: unknown;
-        };
+        iss?: NfseTaxEntry;
+        pis?: NfseTaxEntry;
+        cofins?: NfseTaxEntry;
+        csll?: NfseTaxEntry;
+        ir?: NfseTaxEntry;
+        inss?: NfseTaxEntry;
     };
     amount: number;
     issueDate?: string;
+    /**
+     * Idempotência (o header `Idempotency-Key` tem prioridade)
+     */
     externalId?: string;
     borrower: {
+        /**
+         * CPF ou CNPJ do tomador
+         */
         taxId?: string;
         name: string;
         email: string;
         phone?: string;
+        /**
+         * Endereço do tomador. Não aceita código IBGE (`cityCode`/`ibge`) — campo desconhecido retorna 422.
+         *
+         */
         address?: {
             street?: string;
             number?: string;
@@ -346,21 +677,23 @@ export type NfseCreateRequest = {
             city?: string;
             state?: string;
             zipcode?: string;
-            cityCode?: string;
-            ibge?: string;
         };
     };
     intermediary?: {
         taxId: string;
         name: string;
         municipalRegistration?: string;
+        address?: DfeAddressLayout;
     };
     construction?: {
         art?: string;
         workCode?: string;
+        cib?: string;
+        municipalRegistration?: string;
+        address?: DfeAddressLayout;
     };
     substitution?: {
-        replacedKey?: string;
+        replacedKey: string;
         reasonCode?: string;
         reason?: string;
     };
@@ -409,10 +742,13 @@ export type WebhookCreate = {
         key: string;
         value: string;
     }>;
+    /**
+     * Informe ao menos um evento (422 se todas as listas vierem vazias).
+     */
     events: {
-        invoice?: Array<string>;
-        cte?: Array<string>;
-        mdfe?: Array<string>;
+        invoice?: Array<'nfse.authorized' | 'nfse.cancelled' | 'nfse.rejected' | 'nfe.authorized' | 'nfe.cancelled' | 'nfe.rejected'>;
+        cte?: Array<'cte.authorized' | 'cte.cancelled' | 'cte.rejected'>;
+        mdfe?: Array<'mdfe.authorized' | 'mdfe.cancelled' | 'mdfe.rejected' | 'mdfe.closed'>;
     };
 };
 
@@ -459,17 +795,26 @@ export type MdfeEmitRequest = {
     modal?: MdfeModal;
     drivers?: Array<MdfeDriver>;
     insurance?: Array<{
-        [key: string]: unknown;
+        response?: string;
+        insurerName?: string;
+        insurerTaxId?: string;
+        policyNumber?: string;
+        averbation?: string;
     }>;
+    predominantProduct?: {
+        type?: string;
+        description?: string;
+        ncm?: string;
+        ean?: string;
+    };
+    seals?: Array<string>;
+    autXml?: Array<DfeAutXml>;
     additional?: {
-        [key: string]: unknown;
+        fisco?: string;
+        complement?: string;
     };
-    techResponsible?: {
-        [key: string]: unknown;
-    };
-    payments?: Array<{
-        [key: string]: unknown;
-    }>;
+    techResponsible?: DfeTechResponsible;
+    payments?: Array<MdfePayment>;
     issueDate?: string;
 };
 
@@ -478,6 +823,9 @@ export type MdfeCancelRequest = {
 };
 
 export type MdfeCloseRequest = {
+    /**
+     * IBGE do município de encerramento
+     */
     cityCode: string;
     state: string;
     closedAt?: string;
@@ -486,12 +834,17 @@ export type MdfeCloseRequest = {
 export type MdfePayment = {
     responsibleTaxId?: string;
     responsibleName?: string;
+    components?: Array<{
+        type: string;
+        amount: number;
+    }>;
     amount?: number;
     method?: string;
 };
 
 /**
- * ID da empresa (CNPJ operacional) no path
+ * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+ *
  */
 export type CompanyId = string;
 
@@ -502,6 +855,43 @@ export type IdempotencyKey = string;
 export type Page = number;
 
 export type PageSize = number;
+
+/**
+ * Navegação por cursor. `first` (padrão) volta para a primeira página e ignora `cursor`; `next` usa como `cursor` o `id` do último item da página atual; `prev` usa o `id` do primeiro item; `last` vai para a última página. `page` só é ecoado/ajustado em `pageInfo`.
+ *
+ */
+export type CursorAction = 'first' | 'next' | 'prev' | 'last';
+
+/**
+ * `id` do item de referência (usado com `action=next|prev`).
+ */
+export type Cursor = string;
+
+/**
+ * Início do período (epoch em ms; dia inclusivo em America/Sao_Paulo). Só filtra com `endDate`.
+ */
+export type StartDate = number;
+
+/**
+ * Fim do período (epoch em ms; dia inclusivo em America/Sao_Paulo). Só filtra com `startDate`.
+ */
+export type EndDate = number;
+
+/**
+ * Filtro de status. Aliases: `canceled` → `cancelled`; `error`/`failed` → `rejected`.
+ *
+ */
+export type InvoiceTypeListStatus = 'pending' | 'processing' | 'authorized' | 'rejected' | 'cancelled' | 'canceled' | 'error' | 'failed';
+
+/**
+ * `1` = força download com nome `nota-<número>.<ext>` e sem cache.
+ */
+export type AssetDownload = '1';
+
+/**
+ * `1`/`true` = regenera o PDF antes de entregar.
+ */
+export type AssetRegenerate = '1' | 'true';
 
 export type WebhooksListData = {
     body?: never;
@@ -633,7 +1023,8 @@ export type CompaniesDeleteData = {
     body?: never;
     path: {
         /**
-         * ID da empresa (CNPJ operacional) no path
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
          */
         companyId: string;
     };
@@ -652,7 +1043,8 @@ export type CompaniesGetData = {
     body?: never;
     path: {
         /**
-         * ID da empresa (CNPJ operacional) no path
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
          */
         companyId: string;
     };
@@ -680,7 +1072,8 @@ export type CompaniesUpdateData = {
     };
     path: {
         /**
-         * ID da empresa (CNPJ operacional) no path
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
          */
         companyId: string;
     };
@@ -699,7 +1092,8 @@ export type CompanyCertificateDeleteData = {
     body?: never;
     path: {
         /**
-         * ID da empresa (CNPJ operacional) no path
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
          */
         companyId: string;
     };
@@ -718,7 +1112,8 @@ export type CompanyCertificateGetData = {
     body?: never;
     path: {
         /**
-         * ID da empresa (CNPJ operacional) no path
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
          */
         companyId: string;
     };
@@ -739,7 +1134,8 @@ export type CompanyCertificateUploadData = {
     };
     path: {
         /**
-         * ID da empresa (CNPJ operacional) no path
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
          */
         companyId: string;
     };
@@ -758,7 +1154,8 @@ export type CompanyStatusData = {
     body?: never;
     path: {
         /**
-         * ID da empresa (CNPJ operacional) no path
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
          */
         companyId: string;
     };
@@ -777,21 +1174,32 @@ export type CustomersListData = {
     body?: never;
     path: {
         /**
-         * ID da empresa (CNPJ operacional) no path
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
          */
         companyId: string;
     };
     query?: {
+        limit?: number;
+        /**
+         * Navegação por cursor. `first` (padrão) volta para a primeira página e ignora `cursor`; `next` usa como `cursor` o `id` do último item da página atual; `prev` usa o `id` do primeiro item; `last` vai para a última página. `page` só é ecoado/ajustado em `pageInfo`.
+         *
+         */
+        action?: 'first' | 'next' | 'prev' | 'last';
+        /**
+         * `id` do item de referência (usado com `action=next|prev`).
+         */
+        cursor?: string;
         page?: number;
-        pageSize?: number;
         search?: string;
+        filter?: 'all' | 'pf' | 'pj' | 'complete' | 'incomplete';
     };
     url: '/companies/{companyId}/customers';
 };
 
 export type CustomersListResponses = {
     /**
-     * Lista paginada
+     * Lista por cursor (`items`, `pageInfo`, `stats`)
      */
     200: unknown;
 };
@@ -802,7 +1210,8 @@ export type CustomersCreateData = {
     };
     path: {
         /**
-         * ID da empresa (CNPJ operacional) no path
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
          */
         companyId: string;
     };
@@ -830,7 +1239,8 @@ export type CustomersDeleteData = {
     body?: never;
     path: {
         /**
-         * ID da empresa (CNPJ operacional) no path
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
          */
         companyId: string;
         id: string;
@@ -850,7 +1260,8 @@ export type CustomersGetData = {
     body?: never;
     path: {
         /**
-         * ID da empresa (CNPJ operacional) no path
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
          */
         companyId: string;
         id: string;
@@ -879,7 +1290,8 @@ export type CustomersUpdateData = {
     };
     path: {
         /**
-         * ID da empresa (CNPJ operacional) no path
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
          */
         companyId: string;
         id: string;
@@ -899,22 +1311,35 @@ export type ProductsListData = {
     body?: never;
     path: {
         /**
-         * ID da empresa (CNPJ operacional) no path
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
          */
         companyId: string;
     };
     query?: {
+        limit?: number;
+        /**
+         * Navegação por cursor. `first` (padrão) volta para a primeira página e ignora `cursor`; `next` usa como `cursor` o `id` do último item da página atual; `prev` usa o `id` do primeiro item; `last` vai para a última página. `page` só é ecoado/ajustado em `pageInfo`.
+         *
+         */
+        action?: 'first' | 'next' | 'prev' | 'last';
+        /**
+         * `id` do item de referência (usado com `action=next|prev`).
+         */
+        cursor?: string;
         page?: number;
-        pageSize?: number;
         search?: string;
-        type?: string;
+        /**
+         * Valor fora da lista → 400 `TYPE_INVALID`
+         */
+        type?: 'service' | 'product' | 'split';
     };
     url: '/companies/{companyId}/products';
 };
 
 export type ProductsListResponses = {
     /**
-     * Lista paginada
+     * Lista por cursor (`items`, `pageInfo` com `hasMore`)
      */
     200: unknown;
 };
@@ -925,7 +1350,8 @@ export type ProductsCreateData = {
     };
     path: {
         /**
-         * ID da empresa (CNPJ operacional) no path
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
          */
         companyId: string;
     };
@@ -944,7 +1370,8 @@ export type ProductsDeleteData = {
     body?: never;
     path: {
         /**
-         * ID da empresa (CNPJ operacional) no path
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
          */
         companyId: string;
         id: string;
@@ -964,7 +1391,8 @@ export type ProductsGetData = {
     body?: never;
     path: {
         /**
-         * ID da empresa (CNPJ operacional) no path
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
          */
         companyId: string;
         id: string;
@@ -986,7 +1414,8 @@ export type ProductsUpdateData = {
     };
     path: {
         /**
-         * ID da empresa (CNPJ operacional) no path
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
          */
         companyId: string;
         id: string;
@@ -1006,24 +1435,31 @@ export type NfseListData = {
     body?: never;
     path: {
         /**
-         * ID da empresa (CNPJ operacional) no path
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
          */
         companyId: string;
     };
     query?: {
         page?: number;
         pageSize?: number;
-        status?: 'processing' | 'authorized' | 'rejected' | 'canceled';
+        /**
+         * Filtro de status. Aliases: `canceled` → `cancelled`; `error`/`failed` → `rejected`.
+         *
+         */
+        status?: 'pending' | 'processing' | 'authorized' | 'rejected' | 'cancelled' | 'canceled' | 'error' | 'failed';
     };
     url: '/companies/{companyId}/nfse';
 };
 
 export type NfseListResponses = {
     /**
-     * Lista paginada
+     * Lista paginada (mais recentes primeiro)
      */
-    200: unknown;
+    200: InvoiceTypedList;
 };
+
+export type NfseListResponse = NfseListResponses[keyof NfseListResponses];
 
 export type NfseCreateData = {
     body: NfseCreateRequest;
@@ -1032,7 +1468,8 @@ export type NfseCreateData = {
     };
     path: {
         /**
-         * ID da empresa (CNPJ operacional) no path
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
          */
         companyId: string;
     };
@@ -1040,18 +1477,35 @@ export type NfseCreateData = {
     url: '/companies/{companyId}/nfse';
 };
 
+export type NfseCreateErrors = {
+    /**
+     * `SUBSCRIPTION_REQUIRED` ou `FREE_PLAN_LIMIT_REACHED`
+     */
+    402: ErrorBody;
+    /**
+     * `VALIDATION_ERROR`, `NFSE_CERTIFICATE_MISSING` ou `NFSE_PREFECTURE_CREDENTIALS_MISSING`
+     *
+     */
+    422: ErrorBody;
+};
+
+export type NfseCreateError = NfseCreateErrors[keyof NfseCreateErrors];
+
 export type NfseCreateResponses = {
     /**
-     * NFS-e enfileirada
+     * NFS-e criada e enfileirada (ou existente, se a chave de idempotência já foi usada)
      */
-    200: unknown;
+    200: InvoiceCreateAccepted;
 };
+
+export type NfseCreateResponse = NfseCreateResponses[keyof NfseCreateResponses];
 
 export type NfseCancelData = {
     body?: never;
     path: {
         /**
-         * ID da empresa (CNPJ operacional) no path
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
          */
         companyId: string;
         id: string;
@@ -1062,23 +1516,37 @@ export type NfseCancelData = {
 
 export type NfseCancelErrors = {
     /**
-     * Status não permite cancelamento
+     * `INVOICE_NOT_FOUND`
      */
-    422: unknown;
+    404: unknown;
+    /**
+     * `INVALID_INVOICE_STATUS` (nota não autorizada) ou `NFSE_PROVIDER_ID_MISSING`
+     *
+     */
+    422: ErrorBody;
+    /**
+     * `CANCEL_ENQUEUE_FAILED`
+     */
+    502: unknown;
 };
+
+export type NfseCancelError = NfseCancelErrors[keyof NfseCancelErrors];
 
 export type NfseCancelResponses = {
     /**
      * Cancelamento enfileirado
      */
-    200: unknown;
+    202: InvoiceCancelAccepted;
 };
+
+export type NfseCancelResponse = NfseCancelResponses[keyof NfseCancelResponses];
 
 export type NfseGetData = {
     body?: never;
     path: {
         /**
-         * ID da empresa (CNPJ operacional) no path
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
          */
         companyId: string;
         id: string;
@@ -1089,79 +1557,137 @@ export type NfseGetData = {
 
 export type NfseGetErrors = {
     /**
-     * Não encontrada
+     * `INVOICE_NOT_FOUND`
      */
     404: unknown;
 };
 
 export type NfseGetResponses = {
     /**
-     * NFS-e
+     * NFS-e (DTO do atalho; o resource completo fica em `GET .../invoices/{id}`)
      */
-    200: unknown;
+    200: InvoiceTypedDetail;
 };
+
+export type NfseGetResponse = NfseGetResponses[keyof NfseGetResponses];
 
 export type NfseXmlData = {
     body?: never;
     path: {
         /**
-         * ID da empresa (CNPJ operacional) no path
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
          */
         companyId: string;
         id: string;
     };
-    query?: never;
+    query?: {
+        /**
+         * `1` = força download com nome `nota-<número>.<ext>` e sem cache.
+         */
+        download?: '1';
+    };
     url: '/companies/{companyId}/nfse/{id}/xml';
 };
 
+export type NfseXmlErrors = {
+    /**
+     * `INVOICE_ASSETS_UNAVAILABLE` (arquivo só existe após autorização ou cancelamento confirmado) ou `INVOICE_TYPE_UNSUPPORTED`
+     *
+     */
+    400: ErrorBody;
+    /**
+     * `INVOICE_NOT_FOUND`
+     */
+    404: unknown;
+};
+
+export type NfseXmlError = NfseXmlErrors[keyof NfseXmlErrors];
+
 export type NfseXmlResponses = {
     /**
-     * XML ou URL do XML
+     * Arquivo XML (stream, `Content-Disposition: attachment`)
      */
-    200: unknown;
+    200: Blob | File;
 };
+
+export type NfseXmlResponse = NfseXmlResponses[keyof NfseXmlResponses];
 
 export type NfsePdfData = {
     body?: never;
     path: {
         /**
-         * ID da empresa (CNPJ operacional) no path
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
          */
         companyId: string;
         id: string;
     };
-    query?: never;
+    query?: {
+        /**
+         * `1` = força download com nome `nota-<número>.<ext>` e sem cache.
+         */
+        download?: '1';
+        /**
+         * `1`/`true` = regenera o PDF antes de entregar.
+         */
+        regenerate?: '1' | 'true';
+    };
     url: '/companies/{companyId}/nfse/{id}/pdf';
 };
 
+export type NfsePdfErrors = {
+    /**
+     * `INVOICE_ASSETS_UNAVAILABLE` (arquivo só existe após autorização ou cancelamento confirmado) ou `INVOICE_TYPE_UNSUPPORTED`
+     *
+     */
+    400: ErrorBody;
+    /**
+     * `INVOICE_NOT_FOUND`
+     */
+    404: unknown;
+};
+
+export type NfsePdfError = NfsePdfErrors[keyof NfsePdfErrors];
+
 export type NfsePdfResponses = {
     /**
-     * PDF ou URL do PDF
+     * Arquivo PDF (stream, `Content-Disposition: attachment`)
      */
-    200: unknown;
+    200: Blob | File;
 };
+
+export type NfsePdfResponse = NfsePdfResponses[keyof NfsePdfResponses];
 
 export type NfeListData = {
     body?: never;
     path: {
         /**
-         * ID da empresa (CNPJ operacional) no path
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
          */
         companyId: string;
     };
     query?: {
         page?: number;
         pageSize?: number;
+        /**
+         * Filtro de status. Aliases: `canceled` → `cancelled`; `error`/`failed` → `rejected`.
+         *
+         */
+        status?: 'pending' | 'processing' | 'authorized' | 'rejected' | 'cancelled' | 'canceled' | 'error' | 'failed';
     };
     url: '/companies/{companyId}/nfe';
 };
 
 export type NfeListResponses = {
     /**
-     * Lista paginada
+     * Lista paginada (mais recentes primeiro)
      */
-    200: unknown;
+    200: InvoiceTypedList;
 };
+
+export type NfeListResponse = NfeListResponses[keyof NfeListResponses];
 
 export type NfeCreateData = {
     body: {
@@ -1175,7 +1701,7 @@ export type NfeCreateData = {
         };
         /**
          * Dados de transporte inline (opcional). `freightModality` é obrigatório
-         * quando `carrier` é enviado; `noShipping` com `carrier` retorna 400.
+         * quando `carrier` é enviado; `noShipping` com `carrier` retorna 422 (`VALIDATION_ERROR`).
          *
          */
         transport?: {
@@ -1189,31 +1715,64 @@ export type NfeCreateData = {
             value?: number;
             carrier?: TransportCarrier;
         };
+        /**
+         * Idempotência (o header `Idempotency-Key` tem prioridade)
+         */
         externalId?: string;
         operationNature?: string;
         /**
+         * Alias legado de operationNature
+         *
          * @deprecated
          */
         nature?: string;
+        operationType?: 'outgoing' | 'incoming';
+        printType?: 'nfeNormalPortrait' | 'nfeNormalLandscape' | 'nfeSimplified';
+        consumerType?: 'normal' | 'finalConsumer';
+        presenceType?: 'presential' | 'internet' | 'telephone' | 'delivery' | 'others';
+        ibsConsumptionCityCode?: string;
+        /**
+         * Inscrição estadual da empresa (multi-IE) usada na emissão
+         */
+        stateRegistrationId?: string;
+        cfop?: string;
+        issueDate?: string;
+        /**
+         * Grupo ide (campos avançados)
+         */
+        ide?: {
+            [key: string]: unknown;
+        };
+        avulsa?: {
+            [key: string]: unknown;
+        };
+        retirada?: {
+            taxId?: string;
+            name?: string;
+            stateRegistration?: string;
+            address?: DfeAddressLayout;
+        };
+        entrega?: {
+            taxId?: string;
+            name?: string;
+            stateRegistration?: string;
+            address?: DfeAddressLayout;
+        };
+        autXml?: Array<DfeAutXml>;
         billing?: {
             [key: string]: unknown;
         };
-        additional?: {
+        payments?: Array<{
             [key: string]: unknown;
-        };
-        techResponsible?: {
-            [key: string]: unknown;
-        };
+        }>;
+        /**
+         * Troco
+         */
+        change?: number;
         intermediary?: {
             [key: string]: unknown;
         };
-        autXml?: Array<{
-            [key: string]: unknown;
-        }>;
-        retirada?: {
-            [key: string]: unknown;
-        };
-        entrega?: {
+        additional?: {
             [key: string]: unknown;
         };
         export?: {
@@ -1225,17 +1784,25 @@ export type NfeCreateData = {
         sugarcane?: {
             [key: string]: unknown;
         };
+        techResponsible?: DfeTechResponsible;
+        nffRequest?: string;
         farming?: {
             [key: string]: unknown;
         };
-        nffRequest?: string;
+        /**
+         * Override de totais
+         */
+        totals?: {
+            [key: string]: unknown;
+        };
     };
     headers?: {
         'Idempotency-Key'?: string;
     };
     path: {
         /**
-         * ID da empresa (CNPJ operacional) no path
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
          */
         companyId: string;
     };
@@ -1243,18 +1810,34 @@ export type NfeCreateData = {
     url: '/companies/{companyId}/nfe';
 };
 
+export type NfeCreateErrors = {
+    /**
+     * `SUBSCRIPTION_REQUIRED` ou `FREE_PLAN_LIMIT_REACHED`
+     */
+    402: ErrorBody;
+    /**
+     * `VALIDATION_ERROR` ou `NFE_CERTIFICATE_MISSING`
+     */
+    422: ErrorBody;
+};
+
+export type NfeCreateError = NfeCreateErrors[keyof NfeCreateErrors];
+
 export type NfeCreateResponses = {
     /**
-     * NF-e enfileirada
+     * NF-e criada e enfileirada (ou existente, se a chave de idempotência já foi usada)
      */
-    200: unknown;
+    200: InvoiceCreateAccepted;
 };
+
+export type NfeCreateResponse = NfeCreateResponses[keyof NfeCreateResponses];
 
 export type NfeCancelData = {
     body?: never;
     path: {
         /**
-         * ID da empresa (CNPJ operacional) no path
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
          */
         companyId: string;
         id: string;
@@ -1265,29 +1848,53 @@ export type NfeCancelData = {
 
 export type NfeCancelErrors = {
     /**
-     * Status não permite cancelamento
+     * `INVOICE_NOT_FOUND`
      */
-    422: unknown;
+    404: unknown;
+    /**
+     * `NFE_CANCEL_NOT_ALLOWED` (prazo de cancelamento ou regra fiscal da nota)
+     */
+    409: ErrorBody;
+    /**
+     * `INVALID_INVOICE_STATUS` (nota não autorizada) ou `NFE_ACCESS_KEY_MISSING`
+     */
+    422: ErrorBody;
+    /**
+     * `CANCEL_ENQUEUE_FAILED`
+     */
+    502: unknown;
 };
+
+export type NfeCancelError = NfeCancelErrors[keyof NfeCancelErrors];
 
 export type NfeCancelResponses = {
     /**
      * Cancelamento enfileirado
      */
-    200: unknown;
+    202: InvoiceCancelAccepted;
 };
+
+export type NfeCancelResponse = NfeCancelResponses[keyof NfeCancelResponses];
 
 export type NfeGetData = {
     body?: never;
     path: {
         /**
-         * ID da empresa (CNPJ operacional) no path
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
          */
         companyId: string;
         id: string;
     };
     query?: never;
     url: '/companies/{companyId}/nfe/{id}';
+};
+
+export type NfeGetErrors = {
+    /**
+     * `INVOICE_NOT_FOUND`
+     */
+    404: unknown;
 };
 
 export type NfeGetResponses = {
@@ -1297,7 +1904,30 @@ export type NfeGetResponses = {
     200: {
         success?: true;
         data?: {
+            id?: string;
+            status?: 'pending' | 'queued' | 'processing' | 'authorized' | 'rejected' | 'cancelled';
+            type?: 'nfe';
+            amount?: number;
             transport?: TransportDetail;
+            emissionDate?: string;
+            cancellationDate?: string;
+            /**
+             * Dados fiscais (número, série, chave de acesso, protocolo…)
+             */
+            fiscal?: {
+                [key: string]: unknown;
+            };
+            /**
+             * Cartas de correção registradas
+             */
+            corrections?: Array<{
+                sequence?: number;
+                text?: string;
+                protocol?: string;
+                registeredAt?: string;
+            }>;
+            createdAt?: string;
+            updatedAt?: string;
             [key: string]: unknown;
         };
     };
@@ -1309,47 +1939,96 @@ export type NfeXmlData = {
     body?: never;
     path: {
         /**
-         * ID da empresa (CNPJ operacional) no path
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
          */
         companyId: string;
         id: string;
     };
-    query?: never;
+    query?: {
+        /**
+         * `1` = força download com nome `nota-<número>.<ext>` e sem cache.
+         */
+        download?: '1';
+    };
     url: '/companies/{companyId}/nfe/{id}/xml';
 };
 
+export type NfeXmlErrors = {
+    /**
+     * `INVOICE_ASSETS_UNAVAILABLE` (arquivo só existe após autorização ou cancelamento confirmado) ou `INVOICE_TYPE_UNSUPPORTED`
+     *
+     */
+    400: ErrorBody;
+    /**
+     * `INVOICE_NOT_FOUND`
+     */
+    404: unknown;
+};
+
+export type NfeXmlError = NfeXmlErrors[keyof NfeXmlErrors];
+
 export type NfeXmlResponses = {
     /**
-     * XML ou URL do XML
+     * Arquivo XML (stream, `Content-Disposition: attachment`)
      */
-    200: unknown;
+    200: Blob | File;
 };
+
+export type NfeXmlResponse = NfeXmlResponses[keyof NfeXmlResponses];
 
 export type NfePdfData = {
     body?: never;
     path: {
         /**
-         * ID da empresa (CNPJ operacional) no path
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
          */
         companyId: string;
         id: string;
     };
-    query?: never;
+    query?: {
+        /**
+         * `1` = força download com nome `nota-<número>.<ext>` e sem cache.
+         */
+        download?: '1';
+        /**
+         * `1`/`true` = regenera o PDF antes de entregar.
+         */
+        regenerate?: '1' | 'true';
+    };
     url: '/companies/{companyId}/nfe/{id}/pdf';
 };
 
+export type NfePdfErrors = {
+    /**
+     * `INVOICE_ASSETS_UNAVAILABLE` (arquivo só existe após autorização ou cancelamento confirmado) ou `INVOICE_TYPE_UNSUPPORTED`
+     *
+     */
+    400: ErrorBody;
+    /**
+     * `INVOICE_NOT_FOUND`
+     */
+    404: unknown;
+};
+
+export type NfePdfError = NfePdfErrors[keyof NfePdfErrors];
+
 export type NfePdfResponses = {
     /**
-     * PDF ou URL do PDF
+     * Arquivo PDF (stream, `Content-Disposition: attachment`)
      */
-    200: unknown;
+    200: Blob | File;
 };
+
+export type NfePdfResponse = NfePdfResponses[keyof NfePdfResponses];
 
 export type NfeRejectionXmlData = {
     body?: never;
     path: {
         /**
-         * ID da empresa (CNPJ operacional) no path
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
          */
         companyId: string;
         id: string;
@@ -1358,18 +2037,23 @@ export type NfeRejectionXmlData = {
     url: '/companies/{companyId}/nfe/{id}/rejection-xml';
 };
 
-export type NfeRejectionXmlResponses = {
+export type NfeRejectionXmlErrors = {
     /**
-     * XML de rejeição
+     * `INVOICE_NOT_REJECTED` — só para notas rejeitadas
      */
-    200: unknown;
+    400: unknown;
+    /**
+     * `INVOICE_NOT_FOUND` ou `REJECTION_XML_NOT_FOUND`
+     */
+    404: unknown;
 };
 
 export type NfeCorrectionData = {
     body: NfeCorrectionRequest;
     path: {
         /**
-         * ID da empresa (CNPJ operacional) no path
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
          */
         companyId: string;
         id: string;
@@ -1380,23 +2064,76 @@ export type NfeCorrectionData = {
 
 export type NfeCorrectionErrors = {
     /**
-     * Tipo não é NF-e ou texto inválido
+     * `INVOICE_TYPE_NOT_NFE`
      */
     400: unknown;
+    /**
+     * `INVOICE_NOT_FOUND`
+     */
+    404: unknown;
+    /**
+     * `INVOICE_NOT_AUTHORIZED` ou `NFE_CORRECTION_NOT_ALLOWED`
+     */
+    409: unknown;
+    /**
+     * `VALIDATION_ERROR` (texto fora de 15–1000), `NFE_CORRECTION_INVALID`, `NFE_ACCESS_KEY_MISSING` ou `NFE_CORRECTION_REJECTED` (SEFAZ recusou)
+     *
+     */
+    422: unknown;
 };
 
 export type NfeCorrectionResponses = {
     /**
-     * CC-e protocolada
+     * CC-e registrada na SEFAZ
      */
-    200: unknown;
+    200: {
+        success?: true;
+        data?: {
+            confirmed?: true;
+            sequence?: number;
+            protocol?: string;
+            message?: string;
+            /**
+             * Texto acumulado enviado (correções anteriores + esta)
+             */
+            cumulativeText?: string;
+        };
+    };
 };
+
+export type NfeCorrectionResponse = NfeCorrectionResponses[keyof NfeCorrectionResponses];
+
+export type NfeInutilizationsListData = {
+    body?: never;
+    path: {
+        /**
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
+         */
+        companyId: string;
+    };
+    query?: {
+        page?: number;
+        pageSize?: number;
+    };
+    url: '/companies/{companyId}/nfe/inutilizations';
+};
+
+export type NfeInutilizationsListResponses = {
+    /**
+     * Histórico paginado
+     */
+    200: NumberInutilizationList;
+};
+
+export type NfeInutilizationsListResponse = NfeInutilizationsListResponses[keyof NfeInutilizationsListResponses];
 
 export type NfeInutilizeData = {
     body: NumberInutilizationRequest;
     path: {
         /**
-         * ID da empresa (CNPJ operacional) no path
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
          */
         companyId: string;
     };
@@ -1404,24 +2141,44 @@ export type NfeInutilizeData = {
     url: '/companies/{companyId}/nfe/inutilizations';
 };
 
+export type NfeInutilizeErrors = {
+    /**
+     * `VALIDATION_ERROR` ou `NFE_INUTILIZATION_REJECTED` (SEFAZ recusou; o registro fica no histórico com `confirmed:false`)
+     *
+     */
+    422: ErrorBody;
+};
+
+export type NfeInutilizeError = NfeInutilizeErrors[keyof NfeInutilizeErrors];
+
 export type NfeInutilizeResponses = {
     /**
      * Faixa inutilizada
      */
-    200: unknown;
+    200: {
+        success?: true;
+        data?: NumberInutilizationResult;
+    };
 };
+
+export type NfeInutilizeResponse = NfeInutilizeResponses[keyof NfeInutilizeResponses];
 
 export type NfceListData = {
     body?: never;
     path: {
         /**
-         * ID da empresa (CNPJ operacional) no path
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
          */
         companyId: string;
     };
     query?: {
         page?: number;
         pageSize?: number;
+        /**
+         * Filtro de status. Aqui o cancelado é `canceled` (o valor `cancelled` não é aceito neste filtro); `error` → `rejected`.
+         *
+         */
         status?: 'pending' | 'processing' | 'authorized' | 'rejected' | 'canceled' | 'error';
     };
     url: '/companies/{companyId}/nfce';
@@ -1429,34 +2186,76 @@ export type NfceListData = {
 
 export type NfceListResponses = {
     /**
-     * Lista paginada
+     * Lista paginada (itens no formato do GET da NFC-e)
      */
-    200: unknown;
+    200: {
+        success?: true;
+        data?: {
+            items?: Array<NfceDocument>;
+            pagination?: TypedListPagination;
+        };
+    };
 };
 
+export type NfceListResponse = NfceListResponses[keyof NfceListResponses];
+
 export type NfceCreateData = {
+    /**
+     * Com `issueMode: offlineContingency` a validação exige `contingency`, `accessKey` (44 dígitos, modelo 65, tpEmis 9), `number`, `series` e `issuedAt` (ou `issueDate`). Falha → 422 `VALIDATION_ERROR`.
+     *
+     */
     body: {
         paymentMethod: 'credit_card' | 'debit_card' | 'pix' | 'bank_transfer' | 'cash' | 'bank_slip' | 'other';
         items: Array<ProductEmitItem>;
+        /**
+         * Opcional (padrão consumidor final); todos os campos opcionais.
+         */
         recipient?: {
             taxId?: string;
             name?: string;
             email?: string;
             phone?: string;
+            address?: NfeAddress;
         };
+        nature?: string;
+        cfop?: string;
+        issueDate?: string;
         additional?: {
             [key: string]: unknown;
         };
-        techResponsible?: {
-            [key: string]: unknown;
-        };
+        techResponsible?: DfeTechResponsible;
+        /**
+         * Idempotência (o header `Idempotency-Key` tem prioridade)
+         */
         externalId?: string;
         issueMode?: 'normal' | 'offlineContingency';
         contingency?: {
-            startedAt?: string;
-            reason?: string;
+            startedAt: string;
+            reason: string;
         };
+        /**
+         * Chave de 44 dígitos gerada pelo PDV (contingência offline)
+         */
         accessKey?: string;
+        /**
+         * Número da NFC-e atribuído pelo PDV (contingência offline)
+         */
+        number?: number;
+        /**
+         * Série da NFC-e atribuída pelo PDV (contingência offline)
+         */
+        series?: number;
+        /**
+         * Data/hora de emissão (dhEmi) do cupom impresso em contingência
+         */
+        issuedAt?: string;
+        /**
+         * XML já assinado pelo PDV (contingência offline), quando houver
+         */
+        signedXml?: string;
+        /**
+         * `later` = cria sem transmitir; envie depois com `POST .../nfce/{id}/transmit`
+         */
         transmit?: 'now' | 'later';
     };
     headers?: {
@@ -1464,7 +2263,8 @@ export type NfceCreateData = {
     };
     path: {
         /**
-         * ID da empresa (CNPJ operacional) no path
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
          */
         companyId: string;
     };
@@ -1472,22 +2272,48 @@ export type NfceCreateData = {
     url: '/companies/{companyId}/nfce';
 };
 
+export type NfceCreateErrors = {
+    /**
+     * `SUBSCRIPTION_REQUIRED` ou `FREE_PLAN_LIMIT_REACHED`
+     */
+    402: ErrorBody;
+    /**
+     * `VALIDATION_ERROR`, `NFCE_CERTIFICATE_MISSING` ou `NFCE_CSC_MISSING`
+     */
+    422: ErrorBody;
+};
+
+export type NfceCreateError = NfceCreateErrors[keyof NfceCreateErrors];
+
 export type NfceCreateResponses = {
     /**
-     * NFC-e existente (idempotência)
+     * NFC-e já existente (mesma chave de idempotência ou mesma `accessKey` de contingência)
+     *
      */
-    200: unknown;
+    200: {
+        success?: true;
+        data?: NfceDocument;
+    };
     /**
-     * NFC-e criada
+     * NFC-e criada (transmissão enfileirada, ou aguardando `transmit` se `transmit=later`)
      */
-    202: unknown;
+    202: {
+        success?: true;
+        data?: NfceDocument & {
+            externalId?: string;
+            alreadyExists?: boolean;
+        };
+    };
 };
+
+export type NfceCreateResponse = NfceCreateResponses[keyof NfceCreateResponses];
 
 export type NfceCancelData = {
     body?: never;
     path: {
         /**
-         * ID da empresa (CNPJ operacional) no path
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
          */
         companyId: string;
         id: string;
@@ -1498,23 +2324,36 @@ export type NfceCancelData = {
 
 export type NfceCancelErrors = {
     /**
-     * Status não permite cancelamento
+     * `INVOICE_NOT_FOUND`
      */
-    422: unknown;
+    404: unknown;
+    /**
+     * `INVALID_INVOICE_STATUS` (nota não autorizada) ou `NFCE_ACCESS_KEY_MISSING`
+     */
+    422: ErrorBody;
+    /**
+     * `CANCEL_ENQUEUE_FAILED`
+     */
+    502: unknown;
 };
+
+export type NfceCancelError = NfceCancelErrors[keyof NfceCancelErrors];
 
 export type NfceCancelResponses = {
     /**
      * Cancelamento enfileirado
      */
-    202: unknown;
+    202: InvoiceCancelAccepted;
 };
+
+export type NfceCancelResponse = NfceCancelResponses[keyof NfceCancelResponses];
 
 export type NfceGetData = {
     body?: never;
     path: {
         /**
-         * ID da empresa (CNPJ operacional) no path
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
          */
         companyId: string;
         id: string;
@@ -1525,7 +2364,7 @@ export type NfceGetData = {
 
 export type NfceGetErrors = {
     /**
-     * Não encontrada
+     * `INVOICE_NOT_FOUND`
      */
     404: unknown;
 };
@@ -1534,14 +2373,20 @@ export type NfceGetResponses = {
     /**
      * NFC-e
      */
-    200: unknown;
+    200: {
+        success?: true;
+        data?: NfceDocument;
+    };
 };
+
+export type NfceGetResponse = NfceGetResponses[keyof NfceGetResponses];
 
 export type NfceTransmitData = {
     body?: never;
     path: {
         /**
-         * ID da empresa (CNPJ operacional) no path
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
          */
         companyId: string;
         id: string;
@@ -1552,22 +2397,35 @@ export type NfceTransmitData = {
 
 export type NfceTransmitErrors = {
     /**
-     * Status não permite transmitir
+     * `INVOICE_TYPE_NOT_NFCE`
+     */
+    400: unknown;
+    /**
+     * `INVOICE_NOT_FOUND`
+     */
+    404: unknown;
+    /**
+     * `INVALID_DOCUMENT_STATUS` (status não permite transmitir)
      */
     409: unknown;
     /**
-     * Validação de contingência falhou
+     * `NFCE_MODULE_NOT_READY`, `NFCE_CERTIFICATE_MISSING` ou validação de contingência (`NFCE_CONTINGENCY_INCOMPLETE`, `NFCE_CONTINGENCY_REASON_TOO_SHORT`, `NFCE_CONTINGENCY_ACCESS_KEY_REQUIRED`, `NFCE_CONTINGENCY_ACCESS_KEY_MODEL`…)
+     *
      */
     422: unknown;
+    /**
+     * `TRANSMIT_ENQUEUE_FAILED`
+     */
+    502: unknown;
 };
 
 export type NfceTransmitResponses = {
     /**
-     * Já autorizada ou já na fila
+     * Já autorizada ou já na fila (`enqueued:false`)
      */
     200: unknown;
     /**
-     * Transmissão enfileirada
+     * Transmissão enfileirada (`enqueued:true`)
      */
     202: unknown;
 };
@@ -1576,47 +2434,121 @@ export type NfceXmlData = {
     body?: never;
     path: {
         /**
-         * ID da empresa (CNPJ operacional) no path
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
          */
         companyId: string;
         id: string;
     };
-    query?: never;
+    query?: {
+        /**
+         * `1` = força download com nome `nota-<número>.<ext>` e sem cache.
+         */
+        download?: '1';
+    };
     url: '/companies/{companyId}/nfce/{id}/xml';
 };
 
+export type NfceXmlErrors = {
+    /**
+     * `INVOICE_ASSETS_UNAVAILABLE` (arquivo só existe após autorização ou cancelamento confirmado) ou `INVOICE_TYPE_UNSUPPORTED`
+     *
+     */
+    400: ErrorBody;
+    /**
+     * `INVOICE_NOT_FOUND`
+     */
+    404: unknown;
+};
+
+export type NfceXmlError = NfceXmlErrors[keyof NfceXmlErrors];
+
 export type NfceXmlResponses = {
     /**
-     * XML ou URL do XML
+     * Arquivo XML (stream, `Content-Disposition: attachment`)
      */
-    200: unknown;
+    200: Blob | File;
 };
+
+export type NfceXmlResponse = NfceXmlResponses[keyof NfceXmlResponses];
 
 export type NfcePdfData = {
     body?: never;
     path: {
         /**
-         * ID da empresa (CNPJ operacional) no path
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
          */
         companyId: string;
         id: string;
     };
-    query?: never;
+    query?: {
+        /**
+         * `1` = força download com nome `nota-<número>.<ext>` e sem cache.
+         */
+        download?: '1';
+        /**
+         * `1`/`true` = regenera o PDF antes de entregar.
+         */
+        regenerate?: '1' | 'true';
+    };
     url: '/companies/{companyId}/nfce/{id}/pdf';
 };
 
+export type NfcePdfErrors = {
+    /**
+     * `INVOICE_ASSETS_UNAVAILABLE` (arquivo só existe após autorização ou cancelamento confirmado) ou `INVOICE_TYPE_UNSUPPORTED`
+     *
+     */
+    400: ErrorBody;
+    /**
+     * `INVOICE_NOT_FOUND`
+     */
+    404: unknown;
+};
+
+export type NfcePdfError = NfcePdfErrors[keyof NfcePdfErrors];
+
 export type NfcePdfResponses = {
     /**
-     * PDF ou URL do PDF
+     * Arquivo PDF (stream, `Content-Disposition: attachment`)
      */
-    200: unknown;
+    200: Blob | File;
 };
+
+export type NfcePdfResponse = NfcePdfResponses[keyof NfcePdfResponses];
+
+export type NfceInutilizationsListData = {
+    body?: never;
+    path: {
+        /**
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
+         */
+        companyId: string;
+    };
+    query?: {
+        page?: number;
+        pageSize?: number;
+    };
+    url: '/companies/{companyId}/nfce/inutilizations';
+};
+
+export type NfceInutilizationsListResponses = {
+    /**
+     * Histórico paginado
+     */
+    200: NumberInutilizationList;
+};
+
+export type NfceInutilizationsListResponse = NfceInutilizationsListResponses[keyof NfceInutilizationsListResponses];
 
 export type NfceInutilizeData = {
     body: NumberInutilizationRequest;
     path: {
         /**
-         * ID da empresa (CNPJ operacional) no path
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
          */
         companyId: string;
     };
@@ -1624,18 +2556,34 @@ export type NfceInutilizeData = {
     url: '/companies/{companyId}/nfce/inutilizations';
 };
 
+export type NfceInutilizeErrors = {
+    /**
+     * `VALIDATION_ERROR` ou `NFCE_INUTILIZATION_REJECTED` (SEFAZ recusou; o registro fica no histórico com `confirmed:false`)
+     *
+     */
+    422: ErrorBody;
+};
+
+export type NfceInutilizeError = NfceInutilizeErrors[keyof NfceInutilizeErrors];
+
 export type NfceInutilizeResponses = {
     /**
      * Faixa inutilizada
      */
-    200: unknown;
+    200: {
+        success?: true;
+        data?: NumberInutilizationResult;
+    };
 };
+
+export type NfceInutilizeResponse = NfceInutilizeResponses[keyof NfceInutilizeResponses];
 
 export type CteListData = {
     body?: never;
     path: {
         /**
-         * ID da empresa (CNPJ operacional) no path
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
          */
         companyId: string;
     };
@@ -1643,6 +2591,18 @@ export type CteListData = {
         page?: number;
         pageSize?: number;
         status?: 'pending' | 'queued' | 'processing' | 'authorized' | 'rejected' | 'cancelled';
+        /**
+         * `57` = CT-e (padrão), `67` = CT-e OS. Sem `model=67` a lista não traz CT-e OS.
+         */
+        model?: '57' | '67';
+        /**
+         * Início do período (epoch em ms; dia inclusivo em America/Sao_Paulo). Só filtra com `endDate`.
+         */
+        startDate?: number;
+        /**
+         * Fim do período (epoch em ms; dia inclusivo em America/Sao_Paulo). Só filtra com `startDate`.
+         */
+        endDate?: number;
     };
     url: '/companies/{companyId}/cte';
 };
@@ -1651,49 +2611,79 @@ export type CteListResponses = {
     /**
      * Lista paginada
      */
-    200: unknown;
+    200: {
+        success?: true;
+        data?: {
+            items?: Array<{
+                id?: string;
+                status?: string;
+                model?: '57' | '67';
+                externalId?: string;
+                serviceAmount?: number;
+                accessKey?: string;
+                number?: number;
+                series?: number;
+                shipperName?: string;
+                recipientName?: string;
+                xmlUrl?: string;
+                createdAt?: string;
+                [key: string]: unknown;
+            }>;
+            pagination?: TypedListPagination;
+        };
+    };
 };
+
+export type CteListResponse = CteListResponses[keyof CteListResponses];
 
 export type CteCreateData = {
     body: {
+        /**
+         * Idempotência. Obrigatório se não enviar o header `Idempotency-Key` (400 `CTE_EXTERNAL_ID_REQUIRED`).
+         */
+        externalId?: string;
         cfop: string;
         nature: string;
-        shipper: {
-            [key: string]: unknown;
-        };
-        recipient: {
-            [key: string]: unknown;
-        };
+        /**
+         * Tipo do serviço (tpServ). Default 0.
+         */
+        serviceType?: string;
+        /**
+         * Tomador (toma). `4` = outro — informe `takerParty`.
+         */
+        taker?: '0' | '1' | '2' | '3' | '4';
+        shipper: CteParty;
+        recipient: CteParty;
+        dispatcher?: CteParty;
+        receiver?: CteParty;
+        takerParty?: CteParty;
         municipalityStartIbge: string;
         municipalityEndIbge: string;
         cargoValue: number;
         cargoProduct: string;
-        cargoQuantities: Array<{
-            [key: string]: unknown;
-        }>;
+        cargoQuantities: Array<CteCargoQuantity>;
+        linkedNfeAccessKeys?: Array<string>;
         serviceAmount: number;
-        icms: {
-            [key: string]: unknown;
-        };
-        components?: Array<{
-            [key: string]: unknown;
-        }>;
+        icms: CteIcms;
+        rntrc?: string;
         complement?: {
-            [key: string]: unknown;
+            character?: string;
+            extraInfo?: string;
+            origin?: string;
+            destination?: string;
         };
-        autXml?: Array<{
-            [key: string]: unknown;
-        }>;
-        techResponsible?: {
-            [key: string]: unknown;
-        };
+        components?: Array<DfeComponent>;
+        autXml?: Array<DfeAutXml>;
+        techResponsible?: DfeTechResponsible;
+        modal?: string;
     };
     headers?: {
         'Idempotency-Key'?: string;
     };
     path: {
         /**
-         * ID da empresa (CNPJ operacional) no path
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
          */
         companyId: string;
     };
@@ -1701,18 +2691,43 @@ export type CteCreateData = {
     url: '/companies/{companyId}/cte';
 };
 
+export type CteCreateErrors = {
+    /**
+     * `CTE_EXTERNAL_ID_REQUIRED`
+     */
+    400: unknown;
+    /**
+     * `SUBSCRIPTION_REQUIRED` ou `FREE_PLAN_LIMIT_REACHED`
+     */
+    402: unknown;
+    /**
+     * `CTE_NOT_ENABLED` (CT-e não liberado para a empresa)
+     */
+    403: unknown;
+    /**
+     * `VALIDATION_ERROR`, `CTE_INACTIVE` (desativado no painel), `CTE_CERTIFICATE_MISSING` ou `CTE_TAKER_PARTY_REQUIRED`
+     *
+     */
+    422: ErrorBody;
+};
+
+export type CteCreateError = CteCreateErrors[keyof CteCreateErrors];
+
 export type CteCreateResponses = {
     /**
-     * CT-e enfileirado
+     * CT-e criado e enfileirado (ou existente, se o `externalId` já foi usado)
      */
-    200: unknown;
+    200: CteEmitAccepted;
 };
+
+export type CteCreateResponse = CteCreateResponses[keyof CteCreateResponses];
 
 export type CteCancelData = {
     body?: never;
     path: {
         /**
-         * ID da empresa (CNPJ operacional) no path
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
          */
         companyId: string;
         id: string;
@@ -1723,23 +2738,34 @@ export type CteCancelData = {
 
 export type CteCancelErrors = {
     /**
-     * Status não permite cancelamento
+     * `CTE_NOT_FOUND`
+     */
+    404: unknown;
+    /**
+     * `CTE_NOT_CANCELLABLE` (só CT-e autorizado)
      */
     422: unknown;
+    /**
+     * `CTE_CANCEL_QUEUE_FAILED`
+     */
+    503: unknown;
 };
 
 export type CteCancelResponses = {
     /**
      * Cancelamento enfileirado
      */
-    200: unknown;
+    200: TransportDocumentAccepted;
 };
+
+export type CteCancelResponse = CteCancelResponses[keyof CteCancelResponses];
 
 export type CteGetData = {
     body?: never;
     path: {
         /**
-         * ID da empresa (CNPJ operacional) no path
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
          */
         companyId: string;
         id: string;
@@ -1750,14 +2776,14 @@ export type CteGetData = {
 
 export type CteGetErrors = {
     /**
-     * Não encontrado
+     * `CTE_NOT_FOUND`
      */
     404: unknown;
 };
 
 export type CteGetResponses = {
     /**
-     * CT-e
+     * CT-e (vale para modelo 57 e 67)
      */
     200: unknown;
 };
@@ -1766,7 +2792,8 @@ export type CteConsultData = {
     body?: never;
     path: {
         /**
-         * ID da empresa (CNPJ operacional) no path
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
          */
         companyId: string;
         id: string;
@@ -1777,7 +2804,11 @@ export type CteConsultData = {
 
 export type CteConsultErrors = {
     /**
-     * Chave de acesso ausente
+     * `CTE_NOT_FOUND`
+     */
+    404: unknown;
+    /**
+     * `CTE_ACCESS_KEY_MISSING`
      */
     422: unknown;
 };
@@ -1791,23 +2822,44 @@ export type CteConsultResponses = {
 
 export type CteOsCreateData = {
     body: {
+        /**
+         * Idempotência. Obrigatório se não enviar o header `Idempotency-Key` (400 `CTE_EXTERNAL_ID_REQUIRED`).
+         */
+        externalId?: string;
         cfop: string;
         nature: string;
+        /**
+         * `6` transporte de pessoas, `7` de valores, `8` excesso de bagagem
+         */
+        serviceType?: '6' | '7' | '8';
+        /**
+         * Tomador do serviço (obrigatório exceto `serviceType` `8`)
+         */
+        takerParty?: CteParty;
+        municipalityStartIbge?: string;
+        municipalityEndIbge?: string;
+        routeUfs?: Array<string>;
         serviceDescription: string;
+        serviceQuantity?: number;
         serviceAmount: number;
-        icms: {
-            [key: string]: unknown;
-        };
-        components?: Array<{
-            [key: string]: unknown;
-        }>;
+        icms: CteIcms;
+        /**
+         * Termo de Autorização de Fretamento (12 dígitos)
+         */
+        taf?: string;
+        /**
+         * Registro estadual (25 dígitos) — alternativa ao `taf`
+         */
+        stateAgencyRegistration?: string;
+        components?: Array<DfeComponent>;
     };
     headers?: {
         'Idempotency-Key'?: string;
     };
     path: {
         /**
-         * ID da empresa (CNPJ operacional) no path
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
          */
         companyId: string;
     };
@@ -1817,23 +2869,36 @@ export type CteOsCreateData = {
 
 export type CteOsCreateErrors = {
     /**
-     * Validação ou módulo inativo
+     * `CTE_EXTERNAL_ID_REQUIRED`
      */
-    422: unknown;
+    400: unknown;
+    /**
+     * `SUBSCRIPTION_REQUIRED` ou `FREE_PLAN_LIMIT_REACHED`
+     */
+    402: unknown;
+    /**
+     * `VALIDATION_ERROR` ou `CTE_TAKER_PARTY_REQUIRED`
+     */
+    422: ErrorBody;
 };
+
+export type CteOsCreateError = CteOsCreateErrors[keyof CteOsCreateErrors];
 
 export type CteOsCreateResponses = {
     /**
-     * CT-e OS enfileirado
+     * CT-e OS criado e enfileirado (ou existente, se o `externalId` já foi usado)
      */
-    200: unknown;
+    200: CteEmitAccepted;
 };
+
+export type CteOsCreateResponse = CteOsCreateResponses[keyof CteOsCreateResponses];
 
 export type MdfeListData = {
     body?: never;
     path: {
         /**
-         * ID da empresa (CNPJ operacional) no path
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
          */
         companyId: string;
     };
@@ -1841,6 +2906,14 @@ export type MdfeListData = {
         page?: number;
         pageSize?: number;
         status?: 'pending' | 'queued' | 'processing' | 'authorized' | 'rejected' | 'cancelled' | 'closed';
+        /**
+         * Início do período (epoch em ms; dia inclusivo em America/Sao_Paulo). Só filtra com `endDate`.
+         */
+        startDate?: number;
+        /**
+         * Fim do período (epoch em ms; dia inclusivo em America/Sao_Paulo). Só filtra com `startDate`.
+         */
+        endDate?: number;
     };
     url: '/companies/{companyId}/mdfe';
 };
@@ -1849,8 +2922,30 @@ export type MdfeListResponses = {
     /**
      * Lista paginada
      */
-    200: unknown;
+    200: {
+        success?: true;
+        data?: {
+            items?: Array<{
+                id?: string;
+                status?: string;
+                model?: '58';
+                externalId?: string;
+                cargoTotalAmount?: number;
+                accessKey?: string;
+                number?: number;
+                series?: number;
+                ufStart?: string;
+                ufEnd?: string;
+                xmlUrl?: string;
+                pdfUrl?: string;
+                createdAt?: string;
+            }>;
+            pagination?: TypedListPagination;
+        };
+    };
 };
+
+export type MdfeListResponse = MdfeListResponses[keyof MdfeListResponses];
 
 export type MdfeCreateData = {
     body: MdfeEmitRequest;
@@ -1859,7 +2954,8 @@ export type MdfeCreateData = {
     };
     path: {
         /**
-         * ID da empresa (CNPJ operacional) no path
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
          */
         companyId: string;
     };
@@ -1867,18 +2963,51 @@ export type MdfeCreateData = {
     url: '/companies/{companyId}/mdfe';
 };
 
+export type MdfeCreateErrors = {
+    /**
+     * `MDFE_EXTERNAL_ID_REQUIRED` (sem `Idempotency-Key` nem `externalId`)
+     */
+    400: unknown;
+    /**
+     * `SUBSCRIPTION_REQUIRED` ou `FREE_PLAN_LIMIT_REACHED`
+     */
+    402: unknown;
+    /**
+     * `MDFE_NOT_ENABLED` (MDF-e não liberado para a empresa)
+     */
+    403: unknown;
+    /**
+     * `VALIDATION_ERROR`, `MDFE_INACTIVE` (desativado no painel) ou `MDFE_CERTIFICATE_MISSING`
+     */
+    422: ErrorBody;
+};
+
+export type MdfeCreateError = MdfeCreateErrors[keyof MdfeCreateErrors];
+
 export type MdfeCreateResponses = {
     /**
-     * MDF-e enfileirado
+     * MDF-e criado e enfileirado (ou existente, se o `externalId` já foi usado)
      */
-    200: unknown;
+    200: {
+        success?: true;
+        data?: {
+            id?: string;
+            status?: string;
+            model?: '58';
+            externalId?: string;
+            cargoTotalAmount?: number;
+        };
+    };
 };
+
+export type MdfeCreateResponse = MdfeCreateResponses[keyof MdfeCreateResponses];
 
 export type MdfeCancelData = {
     body: MdfeCancelRequest;
     path: {
         /**
-         * ID da empresa (CNPJ operacional) no path
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
          */
         companyId: string;
         id: string;
@@ -1889,23 +3018,34 @@ export type MdfeCancelData = {
 
 export type MdfeCancelErrors = {
     /**
-     * Status não permite cancelamento
+     * `MDFE_NOT_FOUND`
+     */
+    404: unknown;
+    /**
+     * `VALIDATION_ERROR` (justificativa) ou `MDFE_NOT_CANCELLABLE` (só MDF-e autorizado)
      */
     422: unknown;
+    /**
+     * `MDFE_CANCEL_QUEUE_FAILED`
+     */
+    503: unknown;
 };
 
 export type MdfeCancelResponses = {
     /**
      * Cancelamento enfileirado
      */
-    200: unknown;
+    200: TransportDocumentAccepted;
 };
+
+export type MdfeCancelResponse = MdfeCancelResponses[keyof MdfeCancelResponses];
 
 export type MdfeGetData = {
     body?: never;
     path: {
         /**
-         * ID da empresa (CNPJ operacional) no path
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
          */
         companyId: string;
         id: string;
@@ -1916,7 +3056,7 @@ export type MdfeGetData = {
 
 export type MdfeGetErrors = {
     /**
-     * Não encontrado
+     * `MDFE_NOT_FOUND`
      */
     404: unknown;
 };
@@ -1932,7 +3072,8 @@ export type MdfeConsultData = {
     body?: never;
     path: {
         /**
-         * ID da empresa (CNPJ operacional) no path
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
          */
         companyId: string;
         id: string;
@@ -1943,7 +3084,11 @@ export type MdfeConsultData = {
 
 export type MdfeConsultErrors = {
     /**
-     * Chave de acesso ausente
+     * `MDFE_NOT_FOUND`
+     */
+    404: unknown;
+    /**
+     * `MDFE_ACCESS_KEY_MISSING`
      */
     422: unknown;
 };
@@ -1959,7 +3104,8 @@ export type MdfeCloseData = {
     body: MdfeCloseRequest;
     path: {
         /**
-         * ID da empresa (CNPJ operacional) no path
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
          */
         companyId: string;
         id: string;
@@ -1968,18 +3114,36 @@ export type MdfeCloseData = {
     url: '/companies/{companyId}/mdfe/{id}/close';
 };
 
+export type MdfeCloseErrors = {
+    /**
+     * `MDFE_NOT_FOUND`
+     */
+    404: unknown;
+    /**
+     * `VALIDATION_ERROR` ou `MDFE_NOT_CLOSABLE` (só MDF-e autorizado)
+     */
+    422: unknown;
+    /**
+     * `MDFE_EVENT_QUEUE_FAILED`
+     */
+    503: unknown;
+};
+
 export type MdfeCloseResponses = {
     /**
      * Encerramento enfileirado
      */
-    200: unknown;
+    200: TransportDocumentAccepted;
 };
+
+export type MdfeCloseResponse = MdfeCloseResponses[keyof MdfeCloseResponses];
 
 export type MdfeAddDriverData = {
     body: MdfeDriver;
     path: {
         /**
-         * ID da empresa (CNPJ operacional) no path
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
          */
         companyId: string;
         id: string;
@@ -1988,18 +3152,36 @@ export type MdfeAddDriverData = {
     url: '/companies/{companyId}/mdfe/{id}/drivers';
 };
 
+export type MdfeAddDriverErrors = {
+    /**
+     * `MDFE_NOT_FOUND`
+     */
+    404: unknown;
+    /**
+     * `VALIDATION_ERROR` ou `MDFE_NOT_EVENTABLE` (só MDF-e autorizado)
+     */
+    422: unknown;
+    /**
+     * `MDFE_EVENT_QUEUE_FAILED`
+     */
+    503: unknown;
+};
+
 export type MdfeAddDriverResponses = {
     /**
      * Evento enfileirado
      */
-    200: unknown;
+    200: TransportDocumentAccepted;
 };
+
+export type MdfeAddDriverResponse = MdfeAddDriverResponses[keyof MdfeAddDriverResponses];
 
 export type MdfeAddDocumentData = {
     body: MdfeUnloadCity;
     path: {
         /**
-         * ID da empresa (CNPJ operacional) no path
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
          */
         companyId: string;
         id: string;
@@ -2008,18 +3190,36 @@ export type MdfeAddDocumentData = {
     url: '/companies/{companyId}/mdfe/{id}/documents';
 };
 
+export type MdfeAddDocumentErrors = {
+    /**
+     * `MDFE_NOT_FOUND`
+     */
+    404: unknown;
+    /**
+     * `VALIDATION_ERROR` ou `MDFE_NOT_EVENTABLE` (só MDF-e autorizado)
+     */
+    422: unknown;
+    /**
+     * `MDFE_EVENT_QUEUE_FAILED`
+     */
+    503: unknown;
+};
+
 export type MdfeAddDocumentResponses = {
     /**
      * Evento enfileirado
      */
-    200: unknown;
+    200: TransportDocumentAccepted;
 };
+
+export type MdfeAddDocumentResponse = MdfeAddDocumentResponses[keyof MdfeAddDocumentResponses];
 
 export type MdfeAddPaymentData = {
     body: MdfePayment;
     path: {
         /**
-         * ID da empresa (CNPJ operacional) no path
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
          */
         companyId: string;
         id: string;
@@ -2028,40 +3228,98 @@ export type MdfeAddPaymentData = {
     url: '/companies/{companyId}/mdfe/{id}/payments';
 };
 
+export type MdfeAddPaymentErrors = {
+    /**
+     * `MDFE_NOT_FOUND`
+     */
+    404: unknown;
+    /**
+     * `VALIDATION_ERROR` ou `MDFE_NOT_EVENTABLE` (só MDF-e autorizado)
+     */
+    422: unknown;
+    /**
+     * `MDFE_EVENT_QUEUE_FAILED`
+     */
+    503: unknown;
+};
+
 export type MdfeAddPaymentResponses = {
     /**
      * Evento enfileirado
      */
-    200: unknown;
+    200: TransportDocumentAccepted;
 };
+
+export type MdfeAddPaymentResponse = MdfeAddPaymentResponses[keyof MdfeAddPaymentResponses];
 
 export type InvoicesListData = {
     body?: never;
     path: {
         /**
-         * ID da empresa (CNPJ operacional) no path
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
          */
         companyId: string;
     };
     query?: {
+        limit?: number;
+        /**
+         * Navegação por cursor. `first` (padrão) volta para a primeira página e ignora `cursor`; `next` usa como `cursor` o `id` do último item da página atual; `prev` usa o `id` do primeiro item; `last` vai para a última página. `page` só é ecoado/ajustado em `pageInfo`.
+         *
+         */
+        action?: 'first' | 'next' | 'prev' | 'last';
+        /**
+         * `id` do item de referência (usado com `action=next|prev`).
+         */
+        cursor?: string;
         page?: number;
-        pageSize?: number;
+        /**
+         * Status canônico; aliases: `canceled` → `cancelled`, `error`/`failed` → `rejected`, `queued` → `processing`.
+         */
+        status?: string;
+        type?: 'nfse' | 'nfe' | 'nfce';
+        search?: string;
+        integrationId?: string;
+        /**
+         * Início do período (epoch em ms; dia inclusivo em America/Sao_Paulo). Só filtra com `endDate`.
+         */
+        startDate?: number;
+        /**
+         * Fim do período (epoch em ms; dia inclusivo em America/Sao_Paulo). Só filtra com `startDate`.
+         */
+        endDate?: number;
     };
     url: '/companies/{companyId}/invoices';
 };
 
 export type InvoicesListResponses = {
     /**
-     * Lista paginada
+     * Lista por cursor (mais recentes primeiro). Itens no formato `PublicInvoiceResource` sem `items`. Paginação em `pageInfo` (não em `pagination`).
+     *
      */
-    200: unknown;
+    200: {
+        success?: true;
+        data?: {
+            items?: Array<PublicInvoiceResource>;
+            pageInfo?: CursorPageInfo;
+            /**
+             * Totais agregados do filtro
+             */
+            statistics?: {
+                [key: string]: unknown;
+            };
+        };
+    };
 };
+
+export type InvoicesListResponse = InvoicesListResponses[keyof InvoicesListResponses];
 
 export type InvoicesGetData = {
     body?: never;
     path: {
         /**
-         * ID da empresa (CNPJ operacional) no path
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
          */
         companyId: string;
         id: string;
@@ -2086,7 +3344,8 @@ export type InvoicesUpdateData = {
     body: InvoiceUpdateRequest;
     path: {
         /**
-         * ID da empresa (CNPJ operacional) no path
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
          */
         companyId: string;
         id: string;
@@ -2118,7 +3377,8 @@ export type InvoicesEmitData = {
     body?: never;
     path: {
         /**
-         * ID da empresa (CNPJ operacional) no path
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
          */
         companyId: string;
         id: string;
@@ -2146,12 +3406,11 @@ export type InvoicesEmitResponses = {
 };
 
 export type InvoicesCancelData = {
-    body?: {
-        [key: string]: unknown;
-    };
+    body?: never;
     path: {
         /**
-         * ID da empresa (CNPJ operacional) no path
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
          */
         companyId: string;
         id: string;
@@ -2162,29 +3421,62 @@ export type InvoicesCancelData = {
 
 export type InvoicesCancelErrors = {
     /**
-     * Status não permite cancelamento
+     * `INVOICE_NOT_FOUND`
      */
-    409: unknown;
+    404: unknown;
+    /**
+     * `INVOICE_ALREADY_CANCELLED` (já cancelada ou cancelamento em andamento), `INVOICE_CANNOT_BE_CANCELLED` (não autorizada / em processamento), `NFE_CANCEL_NOT_ALLOWED` (prazo ou regra fiscal da NF-e) ou `INVOICE_INTEGRATION_ID_MISSING`
+     *
+     */
+    409: ErrorBody;
+    /**
+     * `CANCEL_TASK_ENQUEUE_FAILED`
+     */
+    503: unknown;
 };
+
+export type InvoicesCancelError = InvoicesCancelErrors[keyof InvoicesCancelErrors];
 
 export type InvoicesCancelResponses = {
     /**
      * Cancelamento enfileirado
      */
-    200: unknown;
+    200: {
+        success?: true;
+        data?: {
+            id?: string;
+            status?: 'processing';
+            outcome?: 'fiscal_cancel_enqueued';
+        };
+    };
 };
+
+export type InvoicesCancelResponse = InvoicesCancelResponses[keyof InvoicesCancelResponses];
 
 export type InvoicesConsultData = {
     body?: never;
     path: {
         /**
-         * ID da empresa (CNPJ operacional) no path
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
          */
         companyId: string;
         id: string;
     };
     query?: never;
     url: '/companies/{companyId}/invoices/{id}/consult';
+};
+
+export type InvoicesConsultErrors = {
+    /**
+     * `NFCE_CONSULT_UNSUPPORTED`, `INVOICE_ACCESS_KEY_MISSING`, `INVOICE_PROVIDER_ID_MISSING` ou `INVOICE_NUMBER_MISSING`
+     *
+     */
+    400: unknown;
+    /**
+     * `INVOICE_NOT_FOUND`
+     */
+    404: unknown;
 };
 
 export type InvoicesConsultResponses = {
@@ -2198,7 +3490,8 @@ export type InvoicesEventsData = {
     body?: never;
     path: {
         /**
-         * ID da empresa (CNPJ operacional) no path
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
          */
         companyId: string;
         id: string;
@@ -2215,12 +3508,11 @@ export type InvoicesEventsResponses = {
 };
 
 export type InvoicesSendEmailData = {
-    body?: {
-        [key: string]: unknown;
-    };
+    body?: never;
     path: {
         /**
-         * ID da empresa (CNPJ operacional) no path
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
          */
         companyId: string;
         id: string;
@@ -2229,18 +3521,37 @@ export type InvoicesSendEmailData = {
     url: '/companies/{companyId}/invoices/{id}/send-borrower-email';
 };
 
+export type InvoicesSendEmailErrors = {
+    /**
+     * `INVOICE_TYPE_NOT_SUPPORTED` (NFC-e) ou `INVOICE_NOT_AUTHORIZED`
+     */
+    400: unknown;
+    /**
+     * `INVOICE_NOT_FOUND`
+     */
+    404: unknown;
+};
+
 export type InvoicesSendEmailResponses = {
     /**
-     * E-mail enviado ou enfileirado
+     * E-mail enviado
      */
-    200: unknown;
+    200: {
+        success?: true;
+        data?: {
+            sent?: true;
+        };
+    };
 };
+
+export type InvoicesSendEmailResponse = InvoicesSendEmailResponses[keyof InvoicesSendEmailResponses];
 
 export type ReceivedNfesListData = {
     body?: never;
     path: {
         /**
-         * ID da empresa (CNPJ operacional) no path
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
          */
         companyId: string;
     };
@@ -2264,7 +3575,8 @@ export type ReceivedNfesSyncData = {
     body?: never;
     path: {
         /**
-         * ID da empresa (CNPJ operacional) no path
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
          */
         companyId: string;
     };
@@ -2294,7 +3606,8 @@ export type ReceivedNfesGetData = {
     body?: never;
     path: {
         /**
-         * ID da empresa (CNPJ operacional) no path
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
          */
         companyId: string;
         id: string;
@@ -2314,7 +3627,8 @@ export type ReceivedNfesXmlData = {
     body?: never;
     path: {
         /**
-         * ID da empresa (CNPJ operacional) no path
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
          */
         companyId: string;
         id: string;
@@ -2340,7 +3654,8 @@ export type ReceivedNfesManifestData = {
     };
     path: {
         /**
-         * ID da empresa (CNPJ operacional) no path
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
          */
         companyId: string;
         id: string;
