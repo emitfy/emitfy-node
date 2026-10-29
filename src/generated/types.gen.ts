@@ -250,7 +250,7 @@ export type CursorPageInfo = {
 };
 
 /**
- * Resposta 202 dos DELETE tipados (`/nfse/{id}`, `/nfe/{id}`, `/nfce/{id}`). O cancelamento é assíncrono: logo após o 202 a nota ainda costuma estar `authorized`; o resultado final chega no webhook `*.cancelled` (NFS-e/NF-e) ou no GET (`status: cancelled`).
+ * Resposta 202 dos DELETE tipados (`/nfse/{id}`, `/nfe/{id}`, `/nfce/{id}`). O cancelamento é assíncrono: logo após o 202 a nota vem `processing` (apiStatus `transmitting`); o resultado final chega no webhook `*.cancelled` (NFS-e/NF-e) ou no GET (`status: cancelled`).
  *
  */
 export type InvoiceCancelAccepted = {
@@ -918,7 +918,8 @@ export type WebhooksCreateData = {
 
 export type WebhooksCreateResponses = {
     /**
-     * Webhook criado
+     * Webhook criado. `data.signingSecret` (`whsec_…`) é o segredo da assinatura HMAC enviada em `X-Emitfy-Signature` (também em `GET /webhooks/{id}`).
+     *
      */
     200: SuccessEnvelope;
 };
@@ -941,6 +942,25 @@ export type WebhooksDeleteResponses = {
     200: unknown;
 };
 
+export type WebhooksGetData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/webhooks/{id}';
+};
+
+export type WebhooksGetResponses = {
+    /**
+     * Webhook com `signingSecret` (criado na hora para webhooks anteriores à assinatura). Cada entrega leva `X-Emitfy-Signature: t=<unix>,v1=<hex HMAC-SHA256(secret, "<t>.<corpo bruto>")>`; rejeite `t` com mais de 5 min de diferença.
+     *
+     */
+    200: SuccessEnvelope;
+};
+
+export type WebhooksGetResponse = WebhooksGetResponses[keyof WebhooksGetResponses];
+
 export type WebhooksUpdateData = {
     body?: WebhookCreate;
     path: {
@@ -956,6 +976,24 @@ export type WebhooksUpdateResponses = {
      */
     200: unknown;
 };
+
+export type WebhooksRotateSigningSecretData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/webhooks/{id}/signing-secret';
+};
+
+export type WebhooksRotateSigningSecretResponses = {
+    /**
+     * `{ id, signingSecret }`
+     */
+    200: SuccessEnvelope;
+};
+
+export type WebhooksRotateSigningSecretResponse = WebhooksRotateSigningSecretResponses[keyof WebhooksRotateSigningSecretResponses];
 
 export type WebhooksSetActiveData = {
     body: {
