@@ -3598,6 +3598,14 @@ export type ReceivedNfesListData = {
         limit?: number;
         search?: string;
         status?: 'pending' | 'science' | 'confirmed' | 'unknown' | 'notPerformed';
+        /**
+         * Início do período de emissão (`issuedOn`). `YYYY-MM-DD` = dia civil de Brasília (00:00 BRT); também aceita ISO 8601 ou epoch ms (recortado ao dia em BRT).
+         */
+        startDate?: string;
+        /**
+         * Fim do período de emissão, inclusivo (23:59:59.999 BRT do dia informado).
+         */
+        endDate?: string;
     };
     url: '/companies/{companyId}/received-nfes';
 };
@@ -3638,6 +3646,54 @@ export type ReceivedNfesSyncResponses = {
      * Sync aceito
      */
     202: unknown;
+};
+
+export type ReceivedNfesFetchByKeyData = {
+    body: {
+        /**
+         * Chave de acesso NF-e (44 dígitos; modelo 55; DV módulo 11)
+         */
+        accessKey: string;
+    };
+    path: {
+        /**
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
+         */
+        companyId: string;
+    };
+    query?: never;
+    url: '/companies/{companyId}/received-nfes/fetch-by-key';
+};
+
+export type ReceivedNfesFetchByKeyErrors = {
+    /**
+     * `INBOUND_NFE_NOT_ENABLED`
+     */
+    403: unknown;
+    /**
+     * `RECEIVED_NFE_KEY_NOT_FOUND` (cStat 137)
+     */
+    404: unknown;
+    /**
+     * `RECEIVED_NFE_SYNC_RUNNING` (sincronização em andamento)
+     */
+    409: unknown;
+    /**
+     * `RECEIVED_NFE_KEY_INVALID`, `NFE_CERTIFICATE_MISSING`, `NFE_NOT_ACTIVE`, `RECEIVED_NFE_KEY_EXPIRED` (632), `RECEIVED_NFE_KEY_NOT_RECIPIENT` (640), `RECEIVED_NFE_KEY_ISSUER` (641) ou `RECEIVED_NFE_KEY_REJECTED`
+     */
+    422: unknown;
+    /**
+     * `NFE_CONSUMO_INDEVIDO` (656 ou bloqueio vigente)
+     */
+    429: unknown;
+};
+
+export type ReceivedNfesFetchByKeyResponses = {
+    /**
+     * { item, schema (resNFe|procNFe), created, scienceSent, message }
+     */
+    200: unknown;
 };
 
 export type ReceivedNfesGetData = {
