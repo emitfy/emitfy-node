@@ -4,6 +4,83 @@ export type ClientOptions = {
     baseUrl: 'https://api.emitfy.com/v1' | (string & {});
 };
 
+/**
+ * Configuração de CT-e e CT-e OS da empresa (só pela API).
+ */
+export type CteSettings = {
+    /**
+     * Liberação comercial. `false` = não pode ativar.
+     */
+    released?: boolean;
+    /**
+     * Emissão de CT-e e CT-e OS ligada.
+     */
+    active?: boolean;
+    /**
+     * RNTRC do emitente (8 dígitos) ou vazio.
+     */
+    rntrc?: string;
+    /**
+     * Série do CT-e (modelo 57)
+     */
+    series?: number;
+    /**
+     * Próximo número do CT-e (modelo 57)
+     */
+    number?: number;
+    /**
+     * Série do CT-e OS (modelo 67). `null` = ainda não definida (parte da série do CT-e).
+     */
+    osSeries?: number;
+    /**
+     * Próximo número do CT-e OS. `null` = ainda não definido (parte do número atual do CT-e).
+     */
+    osNumber?: number;
+};
+
+/**
+ * Campos ausentes ficam como estão. Campo desconhecido → 422.
+ */
+export type CteSettingsPatch = {
+    active?: boolean;
+    /**
+     * 8 dígitos; `""` limpa.
+     */
+    rntrc?: string;
+    series?: number;
+    number?: number;
+    osSeries?: number;
+    osNumber?: number;
+};
+
+/**
+ * Configuração de MDF-e da empresa (só pela API).
+ */
+export type MdfeSettings = {
+    /**
+     * Liberação comercial. `false` = não pode ativar.
+     */
+    released?: boolean;
+    /**
+     * Emissão de MDF-e ligada.
+     */
+    active?: boolean;
+    series?: number;
+    /**
+     * Próximo número do MDF-e
+     */
+    number?: number;
+};
+
+/**
+ * Campos ausentes ficam como estão. Campo desconhecido → 422.
+ */
+export type MdfeSettingsPatch = {
+    active?: boolean;
+    series?: number;
+    number?: number;
+};
+
 export type ErrorBody = {
     success: false;
     error: {
@@ -2616,6 +2693,78 @@ export type NfceInutilizeResponses = {
 
 export type NfceInutilizeResponse = NfceInutilizeResponses[keyof NfceInutilizeResponses];
 
+export type CteSettingsGetData = {
+    body?: never;
+    path: {
+        /**
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
+         */
+        companyId: string;
+    };
+    query?: never;
+    url: '/companies/{companyId}/cte/settings';
+};
+
+export type CteSettingsGetResponses = {
+    /**
+     * Configuração atual
+     */
+    200: {
+        success?: true;
+        data?: CteSettings;
+    };
+};
+
+export type CteSettingsGetResponse = CteSettingsGetResponses[keyof CteSettingsGetResponses];
+
+export type CteSettingsUpdateData = {
+    body: CteSettingsPatch;
+    path: {
+        /**
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
+         */
+        companyId: string;
+    };
+    query?: {
+        /**
+         * `1` aceita voltar o próximo número na mesma série.
+         */
+        confirmNumber?: '1';
+    };
+    url: '/companies/{companyId}/cte/settings';
+};
+
+export type CteSettingsUpdateErrors = {
+    /**
+     * `COMPANY_SETTINGS_FORBIDDEN` (sem permissão) ou `CTE_NOT_ENABLED` (não liberado para a empresa)
+     */
+    403: ErrorBody;
+    /**
+     * `CTE_NUMBER_REGRESSION` ou `CTE_OS_NUMBER_REGRESSION` (número menor que o atual)
+     */
+    409: ErrorBody;
+    /**
+     * `VALIDATION_ERROR` (corpo vazio, campo desconhecido ou fora da faixa)
+     */
+    422: ErrorBody;
+};
+
+export type CteSettingsUpdateError = CteSettingsUpdateErrors[keyof CteSettingsUpdateErrors];
+
+export type CteSettingsUpdateResponses = {
+    /**
+     * Configuração salva
+     */
+    200: {
+        success?: true;
+        data?: CteSettings;
+    };
+};
+
+export type CteSettingsUpdateResponse = CteSettingsUpdateResponses[keyof CteSettingsUpdateResponses];
+
 export type CteListData = {
     body?: never;
     path: {
@@ -2743,7 +2892,7 @@ export type CteCreateErrors = {
      */
     403: unknown;
     /**
-     * `VALIDATION_ERROR`, `CTE_INACTIVE` (desativado no painel), `CTE_CERTIFICATE_MISSING` ou `CTE_TAKER_PARTY_REQUIRED`
+     * `VALIDATION_ERROR`, `CTE_INACTIVE` (desativado; ative em `PATCH /cte/settings`), `CTE_CERTIFICATE_MISSING` ou `CTE_TAKER_PARTY_REQUIRED`
      *
      */
     422: ErrorBody;
@@ -2931,6 +3080,78 @@ export type CteOsCreateResponses = {
 
 export type CteOsCreateResponse = CteOsCreateResponses[keyof CteOsCreateResponses];
 
+export type MdfeSettingsGetData = {
+    body?: never;
+    path: {
+        /**
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
+         */
+        companyId: string;
+    };
+    query?: never;
+    url: '/companies/{companyId}/mdfe/settings';
+};
+
+export type MdfeSettingsGetResponses = {
+    /**
+     * Configuração atual
+     */
+    200: {
+        success?: true;
+        data?: MdfeSettings;
+    };
+};
+
+export type MdfeSettingsGetResponse = MdfeSettingsGetResponses[keyof MdfeSettingsGetResponses];
+
+export type MdfeSettingsUpdateData = {
+    body: MdfeSettingsPatch;
+    path: {
+        /**
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
+         */
+        companyId: string;
+    };
+    query?: {
+        /**
+         * `1` aceita voltar o próximo número na mesma série.
+         */
+        confirmNumber?: '1';
+    };
+    url: '/companies/{companyId}/mdfe/settings';
+};
+
+export type MdfeSettingsUpdateErrors = {
+    /**
+     * `COMPANY_SETTINGS_FORBIDDEN` (sem permissão) ou `MDFE_NOT_ENABLED` (não liberado para a empresa)
+     */
+    403: ErrorBody;
+    /**
+     * `MDFE_NUMBER_REGRESSION` (número menor que o atual)
+     */
+    409: ErrorBody;
+    /**
+     * `VALIDATION_ERROR` (corpo vazio, campo desconhecido ou fora da faixa)
+     */
+    422: ErrorBody;
+};
+
+export type MdfeSettingsUpdateError = MdfeSettingsUpdateErrors[keyof MdfeSettingsUpdateErrors];
+
+export type MdfeSettingsUpdateResponses = {
+    /**
+     * Configuração salva
+     */
+    200: {
+        success?: true;
+        data?: MdfeSettings;
+    };
+};
+
+export type MdfeSettingsUpdateResponse = MdfeSettingsUpdateResponses[keyof MdfeSettingsUpdateResponses];
+
 export type MdfeListData = {
     body?: never;
     path: {
@@ -3015,7 +3236,7 @@ export type MdfeCreateErrors = {
      */
     403: unknown;
     /**
-     * `VALIDATION_ERROR`, `MDFE_INACTIVE` (desativado no painel) ou `MDFE_CERTIFICATE_MISSING`
+     * `VALIDATION_ERROR`, `MDFE_INACTIVE` (desativado; ative em `PATCH /mdfe/settings`) ou `MDFE_CERTIFICATE_MISSING`
      */
     422: ErrorBody;
 };

@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.js';
 import { type Client, type ClientMeta, formDataBodySerializer, type Options as Options2, type RequestResult, type TDataShape } from './client/index.js';
-import type { ApiCredentialsStatusData, ApiCredentialsStatusResponses, CompaniesCreateData, CompaniesCreateResponses, CompaniesDeleteData, CompaniesDeleteResponses, CompaniesGetData, CompaniesGetErrors, CompaniesGetResponses, CompaniesListData, CompaniesListResponses, CompaniesUpdateData, CompaniesUpdateResponses, CompanyCertificateDeleteData, CompanyCertificateDeleteResponses, CompanyCertificateGetData, CompanyCertificateGetResponses, CompanyCertificateUploadData, CompanyCertificateUploadResponses, CompanyStatusData, CompanyStatusResponses, CteCancelData, CteCancelErrors, CteCancelResponses, CteConsultData, CteConsultErrors, CteConsultResponses, CteCreateData, CteCreateErrors, CteCreateResponses, CteGetData, CteGetErrors, CteGetResponses, CteListData, CteListResponses, CteOsCreateData, CteOsCreateErrors, CteOsCreateResponses, CustomersCreateData, CustomersCreateErrors, CustomersCreateResponses, CustomersDeleteData, CustomersDeleteResponses, CustomersGetData, CustomersGetErrors, CustomersGetResponses, CustomersListData, CustomersListResponses, CustomersUpdateData, CustomersUpdateResponses, InvoicesCancelData, InvoicesCancelErrors, InvoicesCancelResponses, InvoicesConsultData, InvoicesConsultErrors, InvoicesConsultResponses, InvoicesEmitData, InvoicesEmitErrors, InvoicesEmitResponses, InvoicesEventsData, InvoicesEventsResponses, InvoicesGetData, InvoicesGetResponses, InvoicesListData, InvoicesListResponses, InvoicesSendEmailData, InvoicesSendEmailErrors, InvoicesSendEmailResponses, InvoicesUpdateData, InvoicesUpdateErrors, InvoicesUpdateResponses, MdfeAddDocumentData, MdfeAddDocumentErrors, MdfeAddDocumentResponses, MdfeAddDriverData, MdfeAddDriverErrors, MdfeAddDriverResponses, MdfeAddPaymentData, MdfeAddPaymentErrors, MdfeAddPaymentResponses, MdfeCancelData, MdfeCancelErrors, MdfeCancelResponses, MdfeCloseData, MdfeCloseErrors, MdfeCloseResponses, MdfeConsultData, MdfeConsultErrors, MdfeConsultResponses, MdfeCreateData, MdfeCreateErrors, MdfeCreateResponses, MdfeGetData, MdfeGetErrors, MdfeGetResponses, MdfeListData, MdfeListResponses, NfceCancelData, NfceCancelErrors, NfceCancelResponses, NfceCreateData, NfceCreateErrors, NfceCreateResponses, NfceGetData, NfceGetErrors, NfceGetResponses, NfceInutilizationsListData, NfceInutilizationsListResponses, NfceInutilizeData, NfceInutilizeErrors, NfceInutilizeResponses, NfceListData, NfceListResponses, NfcePdfData, NfcePdfErrors, NfcePdfResponses, NfceTransmitData, NfceTransmitErrors, NfceTransmitResponses, NfceXmlData, NfceXmlErrors, NfceXmlResponses, NfeCancelData, NfeCancelErrors, NfeCancelResponses, NfeCorrectionData, NfeCorrectionErrors, NfeCorrectionResponses, NfeCreateData, NfeCreateErrors, NfeCreateResponses, NfeGetData, NfeGetErrors, NfeGetResponses, NfeInutilizationsListData, NfeInutilizationsListResponses, NfeInutilizeData, NfeInutilizeErrors, NfeInutilizeResponses, NfeListData, NfeListResponses, NfePdfData, NfePdfErrors, NfePdfResponses, NfeRejectionXmlData, NfeRejectionXmlErrors, NfeXmlData, NfeXmlErrors, NfeXmlResponses, NfseCancelData, NfseCancelErrors, NfseCancelResponses, NfseCreateData, NfseCreateErrors, NfseCreateResponses, NfseGetData, NfseGetErrors, NfseGetResponses, NfseListData, NfseListResponses, NfsePdfData, NfsePdfErrors, NfsePdfResponses, NfseXmlData, NfseXmlErrors, NfseXmlResponses, ProductsCreateData, ProductsCreateResponses, ProductsDeleteData, ProductsDeleteResponses, ProductsGetData, ProductsGetResponses, ProductsListData, ProductsListResponses, ProductsUpdateData, ProductsUpdateResponses, ReceivedNfesFetchByKeyData, ReceivedNfesFetchByKeyErrors, ReceivedNfesFetchByKeyResponses, ReceivedNfesGetData, ReceivedNfesGetResponses, ReceivedNfesListData, ReceivedNfesListResponses, ReceivedNfesManifestData, ReceivedNfesManifestResponses, ReceivedNfesSyncData, ReceivedNfesSyncErrors, ReceivedNfesSyncResponses, ReceivedNfesXmlData, ReceivedNfesXmlResponses, UtilsFiscalSuggestionsData, UtilsFiscalSuggestionsResponses, UtilsLookupCnpjData, UtilsLookupCnpjErrors, UtilsLookupCnpjResponses, UtilsLookupZipcodeData, UtilsLookupZipcodeErrors, UtilsLookupZipcodeResponses, UtilsSearchCestData, UtilsSearchCestResponses, UtilsSearchCfopData, UtilsSearchCfopResponses, UtilsSearchCnaeData, UtilsSearchCnaeResponses, UtilsSearchFederalServicesData, UtilsSearchFederalServicesResponses, UtilsSearchIbsOperationIndicatorData, UtilsSearchIbsOperationIndicatorResponses, UtilsSearchNbsData, UtilsSearchNbsResponses, UtilsSearchNcmData, UtilsSearchNcmResponses, UtilsSearchTaxClassCodeData, UtilsSearchTaxClassCodeResponses, WebhooksCreateData, WebhooksCreateResponses, WebhooksDeleteData, WebhooksDeleteResponses, WebhooksGetData, WebhooksGetResponses, WebhooksListData, WebhooksListResponses, WebhooksRotateSigningSecretData, WebhooksRotateSigningSecretResponses, WebhooksSetActiveData, WebhooksSetActiveResponses, WebhooksUpdateData, WebhooksUpdateResponses } from './types.gen.js';
+import type { ApiCredentialsStatusData, ApiCredentialsStatusResponses, CompaniesCreateData, CompaniesCreateResponses, CompaniesDeleteData, CompaniesDeleteResponses, CompaniesGetData, CompaniesGetErrors, CompaniesGetResponses, CompaniesListData, CompaniesListResponses, CompaniesUpdateData, CompaniesUpdateResponses, CompanyCertificateDeleteData, CompanyCertificateDeleteResponses, CompanyCertificateGetData, CompanyCertificateGetResponses, CompanyCertificateUploadData, CompanyCertificateUploadResponses, CompanyStatusData, CompanyStatusResponses, CteCancelData, CteCancelErrors, CteCancelResponses, CteConsultData, CteConsultErrors, CteConsultResponses, CteCreateData, CteCreateErrors, CteCreateResponses, CteGetData, CteGetErrors, CteGetResponses, CteListData, CteListResponses, CteOsCreateData, CteOsCreateErrors, CteOsCreateResponses, CteSettingsGetData, CteSettingsGetResponses, CteSettingsUpdateData, CteSettingsUpdateErrors, CteSettingsUpdateResponses, CustomersCreateData, CustomersCreateErrors, CustomersCreateResponses, CustomersDeleteData, CustomersDeleteResponses, CustomersGetData, CustomersGetErrors, CustomersGetResponses, CustomersListData, CustomersListResponses, CustomersUpdateData, CustomersUpdateResponses, InvoicesCancelData, InvoicesCancelErrors, InvoicesCancelResponses, InvoicesConsultData, InvoicesConsultErrors, InvoicesConsultResponses, InvoicesEmitData, InvoicesEmitErrors, InvoicesEmitResponses, InvoicesEventsData, InvoicesEventsResponses, InvoicesGetData, InvoicesGetResponses, InvoicesListData, InvoicesListResponses, InvoicesSendEmailData, InvoicesSendEmailErrors, InvoicesSendEmailResponses, InvoicesUpdateData, InvoicesUpdateErrors, InvoicesUpdateResponses, MdfeAddDocumentData, MdfeAddDocumentErrors, MdfeAddDocumentResponses, MdfeAddDriverData, MdfeAddDriverErrors, MdfeAddDriverResponses, MdfeAddPaymentData, MdfeAddPaymentErrors, MdfeAddPaymentResponses, MdfeCancelData, MdfeCancelErrors, MdfeCancelResponses, MdfeCloseData, MdfeCloseErrors, MdfeCloseResponses, MdfeConsultData, MdfeConsultErrors, MdfeConsultResponses, MdfeCreateData, MdfeCreateErrors, MdfeCreateResponses, MdfeGetData, MdfeGetErrors, MdfeGetResponses, MdfeListData, MdfeListResponses, MdfeSettingsGetData, MdfeSettingsGetResponses, MdfeSettingsUpdateData, MdfeSettingsUpdateErrors, MdfeSettingsUpdateResponses, NfceCancelData, NfceCancelErrors, NfceCancelResponses, NfceCreateData, NfceCreateErrors, NfceCreateResponses, NfceGetData, NfceGetErrors, NfceGetResponses, NfceInutilizationsListData, NfceInutilizationsListResponses, NfceInutilizeData, NfceInutilizeErrors, NfceInutilizeResponses, NfceListData, NfceListResponses, NfcePdfData, NfcePdfErrors, NfcePdfResponses, NfceTransmitData, NfceTransmitErrors, NfceTransmitResponses, NfceXmlData, NfceXmlErrors, NfceXmlResponses, NfeCancelData, NfeCancelErrors, NfeCancelResponses, NfeCorrectionData, NfeCorrectionErrors, NfeCorrectionResponses, NfeCreateData, NfeCreateErrors, NfeCreateResponses, NfeGetData, NfeGetErrors, NfeGetResponses, NfeInutilizationsListData, NfeInutilizationsListResponses, NfeInutilizeData, NfeInutilizeErrors, NfeInutilizeResponses, NfeListData, NfeListResponses, NfePdfData, NfePdfErrors, NfePdfResponses, NfeRejectionXmlData, NfeRejectionXmlErrors, NfeXmlData, NfeXmlErrors, NfeXmlResponses, NfseCancelData, NfseCancelErrors, NfseCancelResponses, NfseCreateData, NfseCreateErrors, NfseCreateResponses, NfseGetData, NfseGetErrors, NfseGetResponses, NfseListData, NfseListResponses, NfsePdfData, NfsePdfErrors, NfsePdfResponses, NfseXmlData, NfseXmlErrors, NfseXmlResponses, ProductsCreateData, ProductsCreateResponses, ProductsDeleteData, ProductsDeleteResponses, ProductsGetData, ProductsGetResponses, ProductsListData, ProductsListResponses, ProductsUpdateData, ProductsUpdateResponses, ReceivedNfesFetchByKeyData, ReceivedNfesFetchByKeyErrors, ReceivedNfesFetchByKeyResponses, ReceivedNfesGetData, ReceivedNfesGetResponses, ReceivedNfesListData, ReceivedNfesListResponses, ReceivedNfesManifestData, ReceivedNfesManifestResponses, ReceivedNfesSyncData, ReceivedNfesSyncErrors, ReceivedNfesSyncResponses, ReceivedNfesXmlData, ReceivedNfesXmlResponses, UtilsFiscalSuggestionsData, UtilsFiscalSuggestionsResponses, UtilsLookupCnpjData, UtilsLookupCnpjErrors, UtilsLookupCnpjResponses, UtilsLookupZipcodeData, UtilsLookupZipcodeErrors, UtilsLookupZipcodeResponses, UtilsSearchCestData, UtilsSearchCestResponses, UtilsSearchCfopData, UtilsSearchCfopResponses, UtilsSearchCnaeData, UtilsSearchCnaeResponses, UtilsSearchFederalServicesData, UtilsSearchFederalServicesResponses, UtilsSearchIbsOperationIndicatorData, UtilsSearchIbsOperationIndicatorResponses, UtilsSearchNbsData, UtilsSearchNbsResponses, UtilsSearchNcmData, UtilsSearchNcmResponses, UtilsSearchTaxClassCodeData, UtilsSearchTaxClassCodeResponses, WebhooksCreateData, WebhooksCreateResponses, WebhooksDeleteData, WebhooksDeleteResponses, WebhooksGetData, WebhooksGetResponses, WebhooksListData, WebhooksListResponses, WebhooksRotateSigningSecretData, WebhooksRotateSigningSecretResponses, WebhooksSetActiveData, WebhooksSetActiveResponses, WebhooksUpdateData, WebhooksUpdateResponses } from './types.gen.js';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -587,6 +587,34 @@ export const nfceInutilize = <ThrowOnError extends boolean = false>(options: Opt
 });
 
 /**
+ * Get CT-e e CT-e OS settings
+ *
+ * Configuração de CT-e e CT-e OS da empresa. CT-e e CT-e OS não aparece no painel: ativação e configuração são só por esta rota.
+ *
+ */
+export const cteSettingsGet = <ThrowOnError extends boolean = false>(options: Options<CteSettingsGetData, ThrowOnError>): RequestResult<CteSettingsGetResponses, unknown, ThrowOnError> => (options.client ?? client).get<CteSettingsGetResponses, unknown, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }, { name: 'X-Api-Secret', type: 'apiKey' }],
+    url: '/companies/{companyId}/cte/settings',
+    ...options
+});
+
+/**
+ * Enable, disable or configure CT-e e CT-e OS
+ *
+ * Liga/desliga a emissão e ajusta a numeração e o RNTRC. Só o titular ou um administrador da empresa. O próximo número só sobe; número menor na mesma série responde 409, salvo `?confirmNumber=1`. Série nova grava o número informado.
+ *
+ */
+export const cteSettingsUpdate = <ThrowOnError extends boolean = false>(options: Options<CteSettingsUpdateData, ThrowOnError>): RequestResult<CteSettingsUpdateResponses, CteSettingsUpdateErrors, ThrowOnError> => (options.client ?? client).patch<CteSettingsUpdateResponses, CteSettingsUpdateErrors, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }, { name: 'X-Api-Secret', type: 'apiKey' }],
+    url: '/companies/{companyId}/cte/settings',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
  * List CT-e
  */
 export const cteList = <ThrowOnError extends boolean = false>(options: Options<CteListData, ThrowOnError>): RequestResult<CteListResponses, unknown, ThrowOnError> => (options.client ?? client).get<CteListResponses, unknown, ThrowOnError>({
@@ -646,6 +674,34 @@ export const cteConsult = <ThrowOnError extends boolean = false>(options: Option
 export const cteOsCreate = <ThrowOnError extends boolean = false>(options: Options<CteOsCreateData, ThrowOnError>): RequestResult<CteOsCreateResponses, CteOsCreateErrors, ThrowOnError> => (options.client ?? client).post<CteOsCreateResponses, CteOsCreateErrors, ThrowOnError>({
     security: [{ name: 'X-Api-Key', type: 'apiKey' }, { name: 'X-Api-Secret', type: 'apiKey' }],
     url: '/companies/{companyId}/cte-os',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Get MDF-e settings
+ *
+ * Configuração de MDF-e da empresa. MDF-e não aparece no painel: ativação e configuração são só por esta rota.
+ *
+ */
+export const mdfeSettingsGet = <ThrowOnError extends boolean = false>(options: Options<MdfeSettingsGetData, ThrowOnError>): RequestResult<MdfeSettingsGetResponses, unknown, ThrowOnError> => (options.client ?? client).get<MdfeSettingsGetResponses, unknown, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }, { name: 'X-Api-Secret', type: 'apiKey' }],
+    url: '/companies/{companyId}/mdfe/settings',
+    ...options
+});
+
+/**
+ * Enable, disable or configure MDF-e
+ *
+ * Liga/desliga a emissão e ajusta a numeração. Só o titular ou um administrador da empresa. O próximo número só sobe; número menor na mesma série responde 409, salvo `?confirmNumber=1`. Série nova grava o número informado.
+ *
+ */
+export const mdfeSettingsUpdate = <ThrowOnError extends boolean = false>(options: Options<MdfeSettingsUpdateData, ThrowOnError>): RequestResult<MdfeSettingsUpdateResponses, MdfeSettingsUpdateErrors, ThrowOnError> => (options.client ?? client).patch<MdfeSettingsUpdateResponses, MdfeSettingsUpdateErrors, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }, { name: 'X-Api-Secret', type: 'apiKey' }],
+    url: '/companies/{companyId}/mdfe/settings',
     ...options,
     headers: {
         'Content-Type': 'application/json',
