@@ -213,7 +213,7 @@ export const customersList = <ThrowOnError extends boolean = false>(options: Opt
 /**
  * Create customer
  *
- * Cria um novo cliente. Retorna 409 (`CUSTOMER_DOCUMENT_EXISTS` / `CUSTOMER_EMAIL_EXISTS`) se já existir cliente com o mesmo documento ou e-mail. Para atualizar, use `PUT /companies/{companyId}/customers/{id}`.
+ * Cria um novo cliente. Retorna 409 (`CUSTOMER_DOCUMENT_EXISTS`) se já existir cliente com o mesmo CPF/CNPJ, ou 409 (`CUSTOMER_EMAIL_EXISTS`) se o e-mail já existir e os documentos não forem distintos. O mesmo e-mail pode ser usado em clientes com CPF/CNPJ diferentes. Para atualizar, use `PUT /companies/{companyId}/customers/{id}`.
  */
 export const customersCreate = <ThrowOnError extends boolean = false>(options: Options<CustomersCreateData, ThrowOnError>): RequestResult<CustomersCreateResponses, CustomersCreateErrors, ThrowOnError> => (options.client ?? client).post<CustomersCreateResponses, CustomersCreateErrors, ThrowOnError>({
     security: [{ name: 'X-Api-Key', type: 'apiKey' }, { name: 'X-Api-Secret', type: 'apiKey' }],
