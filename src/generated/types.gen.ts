@@ -3816,6 +3816,9 @@ export type ReceivedNfesListData = {
     };
     query?: {
         page?: number;
+        /**
+         * Itens por página (1–100). Padrão 20.
+         */
         limit?: number;
         search?: string;
         status?: 'pending' | 'science' | 'confirmed' | 'unknown' | 'notPerformed';
@@ -3838,6 +3841,70 @@ export type ReceivedNfesListResponses = {
     200: unknown;
 };
 
+export type ReceivedNfesSummaryData = {
+    body?: never;
+    path: {
+        /**
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
+         */
+        companyId: string;
+    };
+    query?: {
+        search?: string;
+        startDate?: string;
+        endDate?: string;
+    };
+    url: '/companies/{companyId}/received-nfes/summary';
+};
+
+export type ReceivedNfesSummaryResponses = {
+    /**
+     * `{ count, amount, byStatus: { pending, science, confirmed, unknown, notPerformed } }`
+     */
+    200: unknown;
+};
+
+export type ReceivedNfesDownloadData = {
+    body?: never;
+    path: {
+        /**
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
+         */
+        companyId: string;
+    };
+    query?: {
+        format?: 'xml' | 'pdf' | 'both';
+        ids?: string;
+        search?: string;
+        status?: 'pending' | 'science' | 'confirmed' | 'unknown' | 'notPerformed';
+        startDate?: string;
+        endDate?: string;
+    };
+    url: '/companies/{companyId}/received-nfes/download';
+};
+
+export type ReceivedNfesDownloadErrors = {
+    /**
+     * `RECEIVED_DOCS_EMPTY` (nenhuma nota no filtro)
+     */
+    404: unknown;
+    /**
+     * `RECEIVED_DOCS_TOO_MANY` (acima do limite do formato)
+     */
+    422: unknown;
+};
+
+export type ReceivedNfesDownloadResponses = {
+    /**
+     * `application/zip`. Cabeçalhos `X-Emitfy-Notes` (notas no arquivo) e `X-Emitfy-Missing-Xml` (notas sem XML completo).
+     */
+    200: Blob | File;
+};
+
+export type ReceivedNfesDownloadResponse = ReceivedNfesDownloadResponses[keyof ReceivedNfesDownloadResponses];
+
 export type ReceivedNfesSyncData = {
     body?: never;
     path: {
@@ -3857,12 +3924,20 @@ export type ReceivedNfesSyncErrors = {
      */
     422: unknown;
     /**
+     * `RECEIVED_DOCS_PAUSED` (sincronização pausada pelo suporte Emitfy)
+     */
+    423: unknown;
+    /**
      * Falha ao enfileirar
      */
     503: unknown;
 };
 
 export type ReceivedNfesSyncResponses = {
+    /**
+     * `{ accepted: false, skipped: true, skipReason, availableAt, message }`
+     */
+    200: unknown;
     /**
      * Sync aceito
      */
@@ -3889,10 +3964,6 @@ export type ReceivedNfesFetchByKeyData = {
 
 export type ReceivedNfesFetchByKeyErrors = {
     /**
-     * `INBOUND_NFE_NOT_ENABLED`
-     */
-    403: unknown;
-    /**
      * `RECEIVED_NFE_KEY_NOT_FOUND` (cStat 137)
      */
     404: unknown;
@@ -3904,6 +3975,10 @@ export type ReceivedNfesFetchByKeyErrors = {
      * `RECEIVED_NFE_KEY_INVALID`, `NFE_CERTIFICATE_MISSING`, `NFE_NOT_ACTIVE`, `RECEIVED_NFE_KEY_EXPIRED` (632), `RECEIVED_NFE_KEY_NOT_RECIPIENT` (640), `RECEIVED_NFE_KEY_ISSUER` (641) ou `RECEIVED_NFE_KEY_REJECTED`
      */
     422: unknown;
+    /**
+     * `RECEIVED_DOCS_PAUSED` (sincronização pausada pelo suporte Emitfy)
+     */
+    423: unknown;
     /**
      * `NFE_CONSUMO_INDEVIDO` (656 ou bloqueio vigente)
      */
@@ -3959,6 +4034,29 @@ export type ReceivedNfesXmlResponses = {
     200: unknown;
 };
 
+export type ReceivedNfesPdfData = {
+    body?: never;
+    path: {
+        /**
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
+         */
+        companyId: string;
+        id: string;
+    };
+    query?: never;
+    url: '/companies/{companyId}/received-nfes/{id}/pdf';
+};
+
+export type ReceivedNfesPdfResponses = {
+    /**
+     * `application/pdf` (DANFE gerado a partir do XML salvo)
+     */
+    200: Blob | File;
+};
+
+export type ReceivedNfesPdfResponse = ReceivedNfesPdfResponses[keyof ReceivedNfesPdfResponses];
+
 export type ReceivedNfesManifestData = {
     body: {
         type: 'confirmed' | 'unknown' | 'notPerformed';
@@ -3982,6 +4080,273 @@ export type ReceivedNfesManifestData = {
 export type ReceivedNfesManifestResponses = {
     /**
      * NF-e recebida atualizada após evento SEFAZ
+     */
+    200: unknown;
+};
+
+export type ReceivedNfsesListData = {
+    body?: never;
+    path: {
+        /**
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
+         */
+        companyId: string;
+    };
+    query?: {
+        page?: number;
+        /**
+         * Itens por página (1–100). Padrão 20.
+         */
+        limit?: number;
+        /**
+         * Prestador, CNPJ/CPF, número ou chave de acesso.
+         */
+        search?: string;
+        /**
+         * `cancelled` inclui as substituídas.
+         */
+        status?: 'normal' | 'cancelled' | 'substituted';
+        role?: 'tomador' | 'intermediario';
+        /**
+         * Início do período de emissão (`YYYY-MM-DD`, dia civil de Brasília).
+         */
+        startDate?: string;
+        /**
+         * Fim do período de emissão, inclusivo.
+         */
+        endDate?: string;
+    };
+    url: '/companies/{companyId}/received-nfses';
+};
+
+export type ReceivedNfsesListResponses = {
+    /**
+     * `{ items, pageInfo, sync }`
+     */
+    200: unknown;
+};
+
+export type ReceivedNfsesSummaryData = {
+    body?: never;
+    path: {
+        /**
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
+         */
+        companyId: string;
+    };
+    query?: {
+        search?: string;
+        role?: 'tomador' | 'intermediario';
+        startDate?: string;
+        endDate?: string;
+    };
+    url: '/companies/{companyId}/received-nfses/summary';
+};
+
+export type ReceivedNfsesSummaryResponses = {
+    /**
+     * `{ count, normalCount, serviceAmount, issWithheldAmount, issWithheldCount, cancelledCount, cancelledAmount }`
+     */
+    200: unknown;
+};
+
+export type ReceivedNfsesDownloadData = {
+    body?: never;
+    path: {
+        /**
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
+         */
+        companyId: string;
+    };
+    query?: {
+        format?: 'xml' | 'pdf' | 'both';
+        ids?: string;
+        search?: string;
+        status?: 'normal' | 'cancelled' | 'substituted';
+        role?: 'tomador' | 'intermediario';
+        startDate?: string;
+        endDate?: string;
+    };
+    url: '/companies/{companyId}/received-nfses/download';
+};
+
+export type ReceivedNfsesDownloadErrors = {
+    /**
+     * `RECEIVED_DOCS_EMPTY`
+     */
+    404: unknown;
+    /**
+     * `RECEIVED_DOCS_TOO_MANY`
+     */
+    422: unknown;
+};
+
+export type ReceivedNfsesDownloadResponses = {
+    /**
+     * `application/zip` com `X-Emitfy-Notes` e `X-Emitfy-Missing-Xml`.
+     */
+    200: Blob | File;
+};
+
+export type ReceivedNfsesDownloadResponse = ReceivedNfsesDownloadResponses[keyof ReceivedNfsesDownloadResponses];
+
+export type ReceivedNfsesSyncData = {
+    body?: never;
+    path: {
+        /**
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
+         */
+        companyId: string;
+    };
+    query?: never;
+    url: '/companies/{companyId}/received-nfses/sync';
+};
+
+export type ReceivedNfsesSyncErrors = {
+    /**
+     * `NFSE_CERTIFICATE_MISSING`
+     */
+    422: unknown;
+    /**
+     * `RECEIVED_DOCS_PAUSED`
+     */
+    423: unknown;
+    /**
+     * `RECEIVED_NFSE_SYNC_ENQUEUE_FAILED`
+     */
+    503: unknown;
+};
+
+export type ReceivedNfsesSyncResponses = {
+    /**
+     * `{ accepted: false, skipped: true, skipReason, availableAt, message }`
+     */
+    200: unknown;
+    /**
+     * Sync aceito (ou já em andamento, com `alreadyRunning`)
+     */
+    202: unknown;
+};
+
+export type ReceivedNfsesGetData = {
+    body?: never;
+    path: {
+        /**
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
+         */
+        companyId: string;
+        id: string;
+    };
+    query?: never;
+    url: '/companies/{companyId}/received-nfses/{id}';
+};
+
+export type ReceivedNfsesGetErrors = {
+    /**
+     * `RECEIVED_NFSE_NOT_FOUND`
+     */
+    404: unknown;
+};
+
+export type ReceivedNfsesGetResponses = {
+    /**
+     * NFS-e recebida
+     */
+    200: unknown;
+};
+
+export type ReceivedNfsesXmlData = {
+    body?: never;
+    path: {
+        /**
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
+         */
+        companyId: string;
+        id: string;
+    };
+    query?: never;
+    url: '/companies/{companyId}/received-nfses/{id}/xml';
+};
+
+export type ReceivedNfsesXmlResponses = {
+    /**
+     * `{ xml, accessKey }`
+     */
+    200: unknown;
+};
+
+export type ReceivedNfsesPdfData = {
+    body?: never;
+    path: {
+        /**
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
+         */
+        companyId: string;
+        id: string;
+    };
+    query?: never;
+    url: '/companies/{companyId}/received-nfses/{id}/pdf';
+};
+
+export type ReceivedNfsesPdfResponses = {
+    /**
+     * `application/pdf`
+     */
+    200: Blob | File;
+};
+
+export type ReceivedNfsesPdfResponse = ReceivedNfsesPdfResponses[keyof ReceivedNfsesPdfResponses];
+
+export type ReceivedDocsSettingsGetData = {
+    body?: never;
+    path: {
+        /**
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
+         */
+        companyId: string;
+    };
+    query?: never;
+    url: '/companies/{companyId}/received-docs/settings';
+};
+
+export type ReceivedDocsSettingsGetResponses = {
+    /**
+     * `{ paused, nfe: { periodicSync }, nfse: { periodicSync } }`. `paused` = sincronização pausada pelo suporte Emitfy.
+     */
+    200: unknown;
+};
+
+export type ReceivedDocsSettingsUpdateData = {
+    body: {
+        nfe?: {
+            periodicSync: boolean;
+        };
+        nfse?: {
+            periodicSync: boolean;
+        };
+    };
+    path: {
+        /**
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
+         */
+        companyId: string;
+    };
+    query?: never;
+    url: '/companies/{companyId}/received-docs/settings';
+};
+
+export type ReceivedDocsSettingsUpdateResponses = {
+    /**
+     * Configuração atualizada (mesmo formato do GET)
      */
     200: unknown;
 };

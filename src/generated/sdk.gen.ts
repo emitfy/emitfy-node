@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.js';
 import { type Client, type ClientMeta, formDataBodySerializer, type Options as Options2, type RequestResult, type TDataShape } from './client/index.js';
-import type { ApiCredentialsStatusData, ApiCredentialsStatusResponses, CompaniesCreateData, CompaniesCreateResponses, CompaniesDeleteData, CompaniesDeleteResponses, CompaniesGetData, CompaniesGetErrors, CompaniesGetResponses, CompaniesListData, CompaniesListResponses, CompaniesUpdateData, CompaniesUpdateResponses, CompanyCertificateDeleteData, CompanyCertificateDeleteResponses, CompanyCertificateGetData, CompanyCertificateGetResponses, CompanyCertificateUploadData, CompanyCertificateUploadResponses, CompanyStatusData, CompanyStatusResponses, CteCancelData, CteCancelErrors, CteCancelResponses, CteConsultData, CteConsultErrors, CteConsultResponses, CteCreateData, CteCreateErrors, CteCreateResponses, CteGetData, CteGetErrors, CteGetResponses, CteListData, CteListResponses, CteOsCreateData, CteOsCreateErrors, CteOsCreateResponses, CteSettingsGetData, CteSettingsGetResponses, CteSettingsUpdateData, CteSettingsUpdateErrors, CteSettingsUpdateResponses, CustomersCreateData, CustomersCreateErrors, CustomersCreateResponses, CustomersDeleteData, CustomersDeleteResponses, CustomersGetData, CustomersGetErrors, CustomersGetResponses, CustomersListData, CustomersListResponses, CustomersUpdateData, CustomersUpdateResponses, InvoicesCancelData, InvoicesCancelErrors, InvoicesCancelResponses, InvoicesConsultData, InvoicesConsultErrors, InvoicesConsultResponses, InvoicesEmitData, InvoicesEmitErrors, InvoicesEmitResponses, InvoicesEventsData, InvoicesEventsResponses, InvoicesGetData, InvoicesGetResponses, InvoicesListData, InvoicesListResponses, InvoicesSendEmailData, InvoicesSendEmailErrors, InvoicesSendEmailResponses, InvoicesUpdateData, InvoicesUpdateErrors, InvoicesUpdateResponses, MdfeAddDocumentData, MdfeAddDocumentErrors, MdfeAddDocumentResponses, MdfeAddDriverData, MdfeAddDriverErrors, MdfeAddDriverResponses, MdfeAddPaymentData, MdfeAddPaymentErrors, MdfeAddPaymentResponses, MdfeCancelData, MdfeCancelErrors, MdfeCancelResponses, MdfeCloseData, MdfeCloseErrors, MdfeCloseResponses, MdfeConsultData, MdfeConsultErrors, MdfeConsultResponses, MdfeCreateData, MdfeCreateErrors, MdfeCreateResponses, MdfeGetData, MdfeGetErrors, MdfeGetResponses, MdfeListData, MdfeListResponses, MdfeSettingsGetData, MdfeSettingsGetResponses, MdfeSettingsUpdateData, MdfeSettingsUpdateErrors, MdfeSettingsUpdateResponses, NfceCancelData, NfceCancelErrors, NfceCancelResponses, NfceCreateData, NfceCreateErrors, NfceCreateResponses, NfceGetData, NfceGetErrors, NfceGetResponses, NfceInutilizationsListData, NfceInutilizationsListResponses, NfceInutilizeData, NfceInutilizeErrors, NfceInutilizeResponses, NfceListData, NfceListResponses, NfcePdfData, NfcePdfErrors, NfcePdfResponses, NfceTransmitData, NfceTransmitErrors, NfceTransmitResponses, NfceXmlData, NfceXmlErrors, NfceXmlResponses, NfeCancelData, NfeCancelErrors, NfeCancelResponses, NfeCorrectionData, NfeCorrectionErrors, NfeCorrectionResponses, NfeCreateData, NfeCreateErrors, NfeCreateResponses, NfeGetData, NfeGetErrors, NfeGetResponses, NfeInutilizationsListData, NfeInutilizationsListResponses, NfeInutilizeData, NfeInutilizeErrors, NfeInutilizeResponses, NfeListData, NfeListResponses, NfePdfData, NfePdfErrors, NfePdfResponses, NfeRejectionXmlData, NfeRejectionXmlErrors, NfeXmlData, NfeXmlErrors, NfeXmlResponses, NfseCancelData, NfseCancelErrors, NfseCancelResponses, NfseCreateData, NfseCreateErrors, NfseCreateResponses, NfseGetData, NfseGetErrors, NfseGetResponses, NfseListData, NfseListResponses, NfsePdfData, NfsePdfErrors, NfsePdfResponses, NfseXmlData, NfseXmlErrors, NfseXmlResponses, ProductsCreateData, ProductsCreateResponses, ProductsDeleteData, ProductsDeleteResponses, ProductsGetData, ProductsGetResponses, ProductsListData, ProductsListResponses, ProductsUpdateData, ProductsUpdateResponses, ReceivedNfesFetchByKeyData, ReceivedNfesFetchByKeyErrors, ReceivedNfesFetchByKeyResponses, ReceivedNfesGetData, ReceivedNfesGetResponses, ReceivedNfesListData, ReceivedNfesListResponses, ReceivedNfesManifestData, ReceivedNfesManifestResponses, ReceivedNfesSyncData, ReceivedNfesSyncErrors, ReceivedNfesSyncResponses, ReceivedNfesXmlData, ReceivedNfesXmlResponses, UtilsFiscalSuggestionsData, UtilsFiscalSuggestionsResponses, UtilsLookupCnpjData, UtilsLookupCnpjErrors, UtilsLookupCnpjResponses, UtilsLookupZipcodeData, UtilsLookupZipcodeErrors, UtilsLookupZipcodeResponses, UtilsSearchCestData, UtilsSearchCestResponses, UtilsSearchCfopData, UtilsSearchCfopResponses, UtilsSearchCnaeData, UtilsSearchCnaeResponses, UtilsSearchFederalServicesData, UtilsSearchFederalServicesResponses, UtilsSearchIbsOperationIndicatorData, UtilsSearchIbsOperationIndicatorResponses, UtilsSearchNbsData, UtilsSearchNbsResponses, UtilsSearchNcmData, UtilsSearchNcmResponses, UtilsSearchTaxClassCodeData, UtilsSearchTaxClassCodeResponses, WebhooksCreateData, WebhooksCreateResponses, WebhooksDeleteData, WebhooksDeleteResponses, WebhooksGetData, WebhooksGetResponses, WebhooksListData, WebhooksListResponses, WebhooksRotateSigningSecretData, WebhooksRotateSigningSecretResponses, WebhooksSetActiveData, WebhooksSetActiveResponses, WebhooksUpdateData, WebhooksUpdateResponses } from './types.gen.js';
+import type { ApiCredentialsStatusData, ApiCredentialsStatusResponses, CompaniesCreateData, CompaniesCreateResponses, CompaniesDeleteData, CompaniesDeleteResponses, CompaniesGetData, CompaniesGetErrors, CompaniesGetResponses, CompaniesListData, CompaniesListResponses, CompaniesUpdateData, CompaniesUpdateResponses, CompanyCertificateDeleteData, CompanyCertificateDeleteResponses, CompanyCertificateGetData, CompanyCertificateGetResponses, CompanyCertificateUploadData, CompanyCertificateUploadResponses, CompanyStatusData, CompanyStatusResponses, CteCancelData, CteCancelErrors, CteCancelResponses, CteConsultData, CteConsultErrors, CteConsultResponses, CteCreateData, CteCreateErrors, CteCreateResponses, CteGetData, CteGetErrors, CteGetResponses, CteListData, CteListResponses, CteOsCreateData, CteOsCreateErrors, CteOsCreateResponses, CteSettingsGetData, CteSettingsGetResponses, CteSettingsUpdateData, CteSettingsUpdateErrors, CteSettingsUpdateResponses, CustomersCreateData, CustomersCreateErrors, CustomersCreateResponses, CustomersDeleteData, CustomersDeleteResponses, CustomersGetData, CustomersGetErrors, CustomersGetResponses, CustomersListData, CustomersListResponses, CustomersUpdateData, CustomersUpdateResponses, InvoicesCancelData, InvoicesCancelErrors, InvoicesCancelResponses, InvoicesConsultData, InvoicesConsultErrors, InvoicesConsultResponses, InvoicesEmitData, InvoicesEmitErrors, InvoicesEmitResponses, InvoicesEventsData, InvoicesEventsResponses, InvoicesGetData, InvoicesGetResponses, InvoicesListData, InvoicesListResponses, InvoicesSendEmailData, InvoicesSendEmailErrors, InvoicesSendEmailResponses, InvoicesUpdateData, InvoicesUpdateErrors, InvoicesUpdateResponses, MdfeAddDocumentData, MdfeAddDocumentErrors, MdfeAddDocumentResponses, MdfeAddDriverData, MdfeAddDriverErrors, MdfeAddDriverResponses, MdfeAddPaymentData, MdfeAddPaymentErrors, MdfeAddPaymentResponses, MdfeCancelData, MdfeCancelErrors, MdfeCancelResponses, MdfeCloseData, MdfeCloseErrors, MdfeCloseResponses, MdfeConsultData, MdfeConsultErrors, MdfeConsultResponses, MdfeCreateData, MdfeCreateErrors, MdfeCreateResponses, MdfeGetData, MdfeGetErrors, MdfeGetResponses, MdfeListData, MdfeListResponses, MdfeSettingsGetData, MdfeSettingsGetResponses, MdfeSettingsUpdateData, MdfeSettingsUpdateErrors, MdfeSettingsUpdateResponses, NfceCancelData, NfceCancelErrors, NfceCancelResponses, NfceCreateData, NfceCreateErrors, NfceCreateResponses, NfceGetData, NfceGetErrors, NfceGetResponses, NfceInutilizationsListData, NfceInutilizationsListResponses, NfceInutilizeData, NfceInutilizeErrors, NfceInutilizeResponses, NfceListData, NfceListResponses, NfcePdfData, NfcePdfErrors, NfcePdfResponses, NfceTransmitData, NfceTransmitErrors, NfceTransmitResponses, NfceXmlData, NfceXmlErrors, NfceXmlResponses, NfeCancelData, NfeCancelErrors, NfeCancelResponses, NfeCorrectionData, NfeCorrectionErrors, NfeCorrectionResponses, NfeCreateData, NfeCreateErrors, NfeCreateResponses, NfeGetData, NfeGetErrors, NfeGetResponses, NfeInutilizationsListData, NfeInutilizationsListResponses, NfeInutilizeData, NfeInutilizeErrors, NfeInutilizeResponses, NfeListData, NfeListResponses, NfePdfData, NfePdfErrors, NfePdfResponses, NfeRejectionXmlData, NfeRejectionXmlErrors, NfeXmlData, NfeXmlErrors, NfeXmlResponses, NfseCancelData, NfseCancelErrors, NfseCancelResponses, NfseCreateData, NfseCreateErrors, NfseCreateResponses, NfseGetData, NfseGetErrors, NfseGetResponses, NfseListData, NfseListResponses, NfsePdfData, NfsePdfErrors, NfsePdfResponses, NfseXmlData, NfseXmlErrors, NfseXmlResponses, ProductsCreateData, ProductsCreateResponses, ProductsDeleteData, ProductsDeleteResponses, ProductsGetData, ProductsGetResponses, ProductsListData, ProductsListResponses, ProductsUpdateData, ProductsUpdateResponses, ReceivedDocsSettingsGetData, ReceivedDocsSettingsGetResponses, ReceivedDocsSettingsUpdateData, ReceivedDocsSettingsUpdateResponses, ReceivedNfesDownloadData, ReceivedNfesDownloadErrors, ReceivedNfesDownloadResponses, ReceivedNfesFetchByKeyData, ReceivedNfesFetchByKeyErrors, ReceivedNfesFetchByKeyResponses, ReceivedNfesGetData, ReceivedNfesGetResponses, ReceivedNfesListData, ReceivedNfesListResponses, ReceivedNfesManifestData, ReceivedNfesManifestResponses, ReceivedNfesPdfData, ReceivedNfesPdfResponses, ReceivedNfesSummaryData, ReceivedNfesSummaryResponses, ReceivedNfesSyncData, ReceivedNfesSyncErrors, ReceivedNfesSyncResponses, ReceivedNfesXmlData, ReceivedNfesXmlResponses, ReceivedNfsesDownloadData, ReceivedNfsesDownloadErrors, ReceivedNfsesDownloadResponses, ReceivedNfsesGetData, ReceivedNfsesGetErrors, ReceivedNfsesGetResponses, ReceivedNfsesListData, ReceivedNfsesListResponses, ReceivedNfsesPdfData, ReceivedNfsesPdfResponses, ReceivedNfsesSummaryData, ReceivedNfsesSummaryResponses, ReceivedNfsesSyncData, ReceivedNfsesSyncErrors, ReceivedNfsesSyncResponses, ReceivedNfsesXmlData, ReceivedNfsesXmlResponses, UtilsFiscalSuggestionsData, UtilsFiscalSuggestionsResponses, UtilsLookupCnpjData, UtilsLookupCnpjErrors, UtilsLookupCnpjResponses, UtilsLookupZipcodeData, UtilsLookupZipcodeErrors, UtilsLookupZipcodeResponses, UtilsSearchCestData, UtilsSearchCestResponses, UtilsSearchCfopData, UtilsSearchCfopResponses, UtilsSearchCnaeData, UtilsSearchCnaeResponses, UtilsSearchFederalServicesData, UtilsSearchFederalServicesResponses, UtilsSearchIbsOperationIndicatorData, UtilsSearchIbsOperationIndicatorResponses, UtilsSearchNbsData, UtilsSearchNbsResponses, UtilsSearchNcmData, UtilsSearchNcmResponses, UtilsSearchTaxClassCodeData, UtilsSearchTaxClassCodeResponses, WebhooksCreateData, WebhooksCreateResponses, WebhooksDeleteData, WebhooksDeleteResponses, WebhooksGetData, WebhooksGetResponses, WebhooksListData, WebhooksListResponses, WebhooksRotateSigningSecretData, WebhooksRotateSigningSecretResponses, WebhooksSetActiveData, WebhooksSetActiveResponses, WebhooksUpdateData, WebhooksUpdateResponses } from './types.gen.js';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -919,7 +919,31 @@ export const receivedNfesList = <ThrowOnError extends boolean = false>(options: 
 });
 
 /**
+ * Received NF-e totals
+ *
+ * Totais das NF-e recebidas no filtro (`search`, `startDate`, `endDate`). Ignora `status`: devolve a contagem por manifestação.
+ */
+export const receivedNfesSummary = <ThrowOnError extends boolean = false>(options: Options<ReceivedNfesSummaryData, ThrowOnError>): RequestResult<ReceivedNfesSummaryResponses, unknown, ThrowOnError> => (options.client ?? client).get<ReceivedNfesSummaryResponses, unknown, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }, { name: 'X-Api-Secret', type: 'apiKey' }],
+    url: '/companies/{companyId}/received-nfes/summary',
+    ...options
+});
+
+/**
+ * Download received NF-e as .zip
+ *
+ * Gera um .zip com XML (`NFe_{chave}.xml`), DANFE (`DANFE_{chave}.pdf`) ou ambos. Use `ids` (até 500, separados por vírgula) ou os mesmos filtros da listagem. Cada chave de acesso entra uma vez. Limite: 1000 notas em XML, 300 com PDF. Notas só com resumo vão listadas em `notas-sem-xml.txt`.
+ */
+export const receivedNfesDownload = <ThrowOnError extends boolean = false>(options: Options<ReceivedNfesDownloadData, ThrowOnError>): RequestResult<ReceivedNfesDownloadResponses, ReceivedNfesDownloadErrors, ThrowOnError> => (options.client ?? client).get<ReceivedNfesDownloadResponses, ReceivedNfesDownloadErrors, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }, { name: 'X-Api-Secret', type: 'apiKey' }],
+    url: '/companies/{companyId}/received-nfes/download',
+    ...options
+});
+
+/**
  * Enqueue DistDFe sync
+ *
+ * Enfileira a consulta DistDFe na SEFAZ (com ciência da operação para resumos). Intervalo mínimo de 10 minutos entre sincronizações; dentro dele responde 200 com `skipped: true`, `skipReason: min_interval` e `availableAt`.
  */
 export const receivedNfesSync = <ThrowOnError extends boolean = false>(options: Options<ReceivedNfesSyncData, ThrowOnError>): RequestResult<ReceivedNfesSyncResponses, ReceivedNfesSyncErrors, ThrowOnError> => (options.client ?? client).post<ReceivedNfesSyncResponses, ReceivedNfesSyncErrors, ThrowOnError>({
     security: [{ name: 'X-Api-Key', type: 'apiKey' }, { name: 'X-Api-Secret', type: 'apiKey' }],
@@ -930,7 +954,7 @@ export const receivedNfesSync = <ThrowOnError extends boolean = false>(options: 
 /**
  * Fetch received NF-e by access key (DistDFe consChNFe)
  *
- * Consulta síncrona de uma NF-e pela chave de acesso (uma chamada SEFAZ). Não altera o cursor NSU do sync. Valida só formato/DV da chave. Se a SEFAZ devolver apenas o resumo (`resNFe`), a ciência da operação (`210210`) é enviada automaticamente; o XML completo fica disponível numa próxima busca/sincronização. Conta no limite de consultas da SEFAZ.
+ * Consulta síncrona de uma NF-e pela chave de acesso (uma chamada SEFAZ). Não altera o cursor NSU do sync. Valida só formato/DV da chave. Se a SEFAZ devolver apenas o resumo (`resNFe`), o Emitfy registra a ciência da operação (`210210`) na mesma chamada; o XML completo fica disponível numa próxima busca/sincronização. Conta no limite de consultas da SEFAZ.
  */
 export const receivedNfesFetchByKey = <ThrowOnError extends boolean = false>(options: Options<ReceivedNfesFetchByKeyData, ThrowOnError>): RequestResult<ReceivedNfesFetchByKeyResponses, ReceivedNfesFetchByKeyErrors, ThrowOnError> => (options.client ?? client).post<ReceivedNfesFetchByKeyResponses, ReceivedNfesFetchByKeyErrors, ThrowOnError>({
     security: [{ name: 'X-Api-Key', type: 'apiKey' }, { name: 'X-Api-Secret', type: 'apiKey' }],
@@ -961,11 +985,113 @@ export const receivedNfesXml = <ThrowOnError extends boolean = false>(options: O
 });
 
 /**
+ * Get received NF-e DANFE (PDF)
+ */
+export const receivedNfesPdf = <ThrowOnError extends boolean = false>(options: Options<ReceivedNfesPdfData, ThrowOnError>): RequestResult<ReceivedNfesPdfResponses, unknown, ThrowOnError> => (options.client ?? client).get<ReceivedNfesPdfResponses, unknown, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }, { name: 'X-Api-Secret', type: 'apiKey' }],
+    url: '/companies/{companyId}/received-nfes/{id}/pdf',
+    ...options
+});
+
+/**
  * Manifest recipient event
  */
 export const receivedNfesManifest = <ThrowOnError extends boolean = false>(options: Options<ReceivedNfesManifestData, ThrowOnError>): RequestResult<ReceivedNfesManifestResponses, unknown, ThrowOnError> => (options.client ?? client).post<ReceivedNfesManifestResponses, unknown, ThrowOnError>({
     security: [{ name: 'X-Api-Key', type: 'apiKey' }, { name: 'X-Api-Secret', type: 'apiKey' }],
     url: '/companies/{companyId}/received-nfes/{id}/manifest',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * List received NFS-e
+ *
+ * NFS-e do padrão nacional em que a empresa é tomadora ou intermediária. Cada chave de acesso aparece uma vez; cancelamento (`101101`) e substituição (`105102`) atualizam o `status`. Inclui `sync` (última sincronização, andamento e pausa pedida pelo ADN).
+ */
+export const receivedNfsesList = <ThrowOnError extends boolean = false>(options: Options<ReceivedNfsesListData, ThrowOnError>): RequestResult<ReceivedNfsesListResponses, unknown, ThrowOnError> => (options.client ?? client).get<ReceivedNfsesListResponses, unknown, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }, { name: 'X-Api-Secret', type: 'apiKey' }],
+    url: '/companies/{companyId}/received-nfses',
+    ...options
+});
+
+/**
+ * Received NFS-e totals
+ */
+export const receivedNfsesSummary = <ThrowOnError extends boolean = false>(options: Options<ReceivedNfsesSummaryData, ThrowOnError>): RequestResult<ReceivedNfsesSummaryResponses, unknown, ThrowOnError> => (options.client ?? client).get<ReceivedNfsesSummaryResponses, unknown, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }, { name: 'X-Api-Secret', type: 'apiKey' }],
+    url: '/companies/{companyId}/received-nfses/summary',
+    ...options
+});
+
+/**
+ * Download received NFS-e as .zip
+ *
+ * .zip com XML (`NFSe_{chave}.xml`), DANFSe (`DANFSe_{chave}.pdf`) ou ambos, por `ids` (até 500) ou pelos filtros da listagem. Cada chave entra uma vez. Limite: 1000 notas em XML, 300 com PDF.
+ */
+export const receivedNfsesDownload = <ThrowOnError extends boolean = false>(options: Options<ReceivedNfsesDownloadData, ThrowOnError>): RequestResult<ReceivedNfsesDownloadResponses, ReceivedNfsesDownloadErrors, ThrowOnError> => (options.client ?? client).get<ReceivedNfsesDownloadResponses, ReceivedNfsesDownloadErrors, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }, { name: 'X-Api-Secret', type: 'apiKey' }],
+    url: '/companies/{companyId}/received-nfses/download',
+    ...options
+});
+
+/**
+ * Enqueue ADN NFS-e sync
+ *
+ * Enfileira a consulta de distribuição do ADN (`/contribuintes/DFe/{NSU}`) com o certificado A1 da empresa. Intervalo mínimo de 10 minutos; dentro dele (ou durante uma pausa pedida pelo ADN) responde 200 com `skipped: true` e `availableAt`.
+ */
+export const receivedNfsesSync = <ThrowOnError extends boolean = false>(options: Options<ReceivedNfsesSyncData, ThrowOnError>): RequestResult<ReceivedNfsesSyncResponses, ReceivedNfsesSyncErrors, ThrowOnError> => (options.client ?? client).post<ReceivedNfsesSyncResponses, ReceivedNfsesSyncErrors, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }, { name: 'X-Api-Secret', type: 'apiKey' }],
+    url: '/companies/{companyId}/received-nfses/sync',
+    ...options
+});
+
+/**
+ * Get received NFS-e
+ */
+export const receivedNfsesGet = <ThrowOnError extends boolean = false>(options: Options<ReceivedNfsesGetData, ThrowOnError>): RequestResult<ReceivedNfsesGetResponses, ReceivedNfsesGetErrors, ThrowOnError> => (options.client ?? client).get<ReceivedNfsesGetResponses, ReceivedNfsesGetErrors, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }, { name: 'X-Api-Secret', type: 'apiKey' }],
+    url: '/companies/{companyId}/received-nfses/{id}',
+    ...options
+});
+
+/**
+ * Get received NFS-e XML
+ */
+export const receivedNfsesXml = <ThrowOnError extends boolean = false>(options: Options<ReceivedNfsesXmlData, ThrowOnError>): RequestResult<ReceivedNfsesXmlResponses, unknown, ThrowOnError> => (options.client ?? client).get<ReceivedNfsesXmlResponses, unknown, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }, { name: 'X-Api-Secret', type: 'apiKey' }],
+    url: '/companies/{companyId}/received-nfses/{id}/xml',
+    ...options
+});
+
+/**
+ * Get received NFS-e DANFSe (PDF)
+ */
+export const receivedNfsesPdf = <ThrowOnError extends boolean = false>(options: Options<ReceivedNfsesPdfData, ThrowOnError>): RequestResult<ReceivedNfsesPdfResponses, unknown, ThrowOnError> => (options.client ?? client).get<ReceivedNfsesPdfResponses, unknown, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }, { name: 'X-Api-Secret', type: 'apiKey' }],
+    url: '/companies/{companyId}/received-nfses/{id}/pdf',
+    ...options
+});
+
+/**
+ * Received documents settings
+ */
+export const receivedDocsSettingsGet = <ThrowOnError extends boolean = false>(options: Options<ReceivedDocsSettingsGetData, ThrowOnError>): RequestResult<ReceivedDocsSettingsGetResponses, unknown, ThrowOnError> => (options.client ?? client).get<ReceivedDocsSettingsGetResponses, unknown, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }, { name: 'X-Api-Secret', type: 'apiKey' }],
+    url: '/companies/{companyId}/received-docs/settings',
+    ...options
+});
+
+/**
+ * Update received documents settings
+ *
+ * Liga ou desliga "Sincronizar a cada 2 horas" por tipo.
+ */
+export const receivedDocsSettingsUpdate = <ThrowOnError extends boolean = false>(options: Options<ReceivedDocsSettingsUpdateData, ThrowOnError>): RequestResult<ReceivedDocsSettingsUpdateResponses, unknown, ThrowOnError> => (options.client ?? client).patch<ReceivedDocsSettingsUpdateResponses, unknown, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }, { name: 'X-Api-Secret', type: 'apiKey' }],
+    url: '/companies/{companyId}/received-docs/settings',
     ...options,
     headers: {
         'Content-Type': 'application/json',
