@@ -453,6 +453,12 @@ export type NfeAddress = {
     state?: string;
     zipcode?: string;
     cityCode?: string;
+    /**
+     * País do endereço (ISO 3166 alfa-2/alfa-3, nome ou código BACEN). Fora do Brasil exige
+     * `recipient.foreignId` (NF-e para o exterior: cPais/xPais do país, cMun 9999999, UF EX).
+     *
+     */
+    country?: string;
 };
 
 /**
@@ -581,6 +587,14 @@ export type ProductEmitItem = {
     icmsCst?: string;
     icmsTaxRate?: number;
     icmsModBc?: string;
+    /**
+     * cBenef (código de benefício fiscal da UF do emitente). Pré-validado por UF antes de emitir
+     * (422 `VALIDATION_ERROR` na rota / `NFE_BENEFIT_CODE_INVALID` na emissão, com `items.N.icmsTaxBenefitCode`):
+     * código de outra UF (rejeição 946); PR exige nos CST 20, 30, 40, 41, 50, 51, 53 e 70 (aceita "SEM CBENEF");
+     * RJ exige nos CST 20, 40, 51, 53 e 70 (não aceita "SEM CBENEF"); RS exige em todos os CST exceto 00 e 02
+     * ("SEM CBENEF" só fora do 20/70); DF e SC não aceitam "SEM CBENEF". Simples Nacional (CSOSN) só passa pela checagem de UF.
+     *
+     */
     icmsTaxBenefitCode?: string;
     pisCst?: string;
     pisTaxRate?: number;
@@ -1828,13 +1842,53 @@ export type NfeListResponse = NfeListResponses[keyof NfeListResponses];
 export type NfeCreateData = {
     body: {
         items: Array<ProductEmitItem>;
+        /**
+         * Destinatário (dest). Informe `taxId` (CPF/CNPJ) ou, no exterior, `foreignId` (idEstrangeiro) com
+         * `address.country` fora do Brasil — nunca os dois. Os campos fiscais valem só para esta nota e
+         * prevalecem sobre o cadastro do cliente (IE informada, ISENTO ou não contribuinte).
+         *
+         */
         recipient: {
-            taxId: string;
+            /**
+             * CPF ou CNPJ (obrigatório sem foreignId)
+             */
+            taxId?: string;
+            /**
+             * idEstrangeiro (passaporte/ID fiscal estrangeiro). Exige address.country ≠ Brasil; sem IE/SUFRAMA/IM (indIEDest 9)
+             */
+            foreignId?: string;
             name: string;
             email?: string;
+            /**
+             * enderDest/fone (6 a 14 dígitos; máscara é removida)
+             */
             phone?: string;
+            /**
+             * IE do destinatário (2 a 14 dígitos; máscara é removida) ou "ISENTO" (equivale a ieIndicator 2)
+             */
+            stateRegistration?: string;
+            /**
+             * indIEDest: 1|taxpayer (exige IE numérica), 2|exempt (sai sem a tag IE), 9|nonTaxpayer (sem IE; indFinal 1).
+             * Omitido: segue a IE informada ou a do cadastro.
+             *
+             */
+            ieIndicator?: 1 | 2 | 9 | 'taxpayer' | 'exempt' | 'nonTaxpayer' | '1' | '2' | '9';
+            /**
+             * dest/ISUF — inscrição SUFRAMA (8 ou 9 dígitos)
+             */
+            suframa?: string;
+            /**
+             * dest/IM (NF-e conjugada)
+             */
+            municipalRegistration?: string;
             address?: NfeAddress;
         };
+        /**
+         * Desconto da nota (venda), rateado pelos itens em vDesc sobre o valor líquido e somado ao `items[].discount`.
+         * Não pode passar do total dos itens menos os descontos dos itens, nem ser usado junto com `totals.discount` (422).
+         *
+         */
+        discount?: number;
         /**
          * Dados de transporte inline (opcional). `freightModality` é obrigatório
          * quando `carrier` é enviado; `noShipping` com `carrier` retorna 422 (`VALIDATION_ERROR`).
@@ -1935,9 +1989,60 @@ export type NfeCreateData = {
              */
             purpose?: 'normal' | 'complementary' | 'adjustment' | 'return';
             /**
-             * Chaves referenciadas (NFref/refNFe); obrigatório quando purpose ≠ normal
+             * Chaves de NF-e referenciadas (NFref/refNFe). Com purpose ≠ normal, informe referencedKeys ou references
              */
             referencedKeys?: Array<string>;
+            /**
+             * Documentos referenciados (NFref) de qualquer tipo, discriminados por `type`:
+             * `nfe` (refNFe) e `cte` (refCTe) com `key` de 44 dígitos; `nf` (refNF, modelo 01/02) e `producer`
+             * (refNFP, nota de produtor modelo 01/04, com `stateRegistration`) com state (UF ou código IBGE),
+             * yearMonth (AAMM, AAAAMM ou AAAA-MM), taxId, model, series (0–999) e number; `ecf` (refECF, cupom
+             * fiscal modelo 2B/2C/2D) com ecfNumber (1–3 dígitos) e cooNumber (1–6 dígitos).
+             *
+             */
+            references?: Array<{
+                type: 'nfe' | 'cte' | 'nf' | 'producer' | 'ecf';
+                /**
+                 * nfe/cte
+                 */
+                key?: string;
+                /**
+                 * nf/producer: UF ou código IBGE (cUF)
+                 */
+                state?: string;
+                /**
+                 * nf/producer: AAMM da emissão
+                 */
+                yearMonth?: string;
+                /**
+                 * nf: CNPJ; producer: CNPJ ou CPF
+                 */
+                taxId?: string;
+                /**
+                 * producer: IE do produtor ou ISENTO
+                 */
+                stateRegistration?: string;
+                /**
+                 * nf: 01/02; producer: 01/04; ecf: 2B/2C/2D
+                 */
+                model?: string;
+                /**
+                 * nf/producer: série (0–999)
+                 */
+                series?: string;
+                /**
+                 * nf/producer: número
+                 */
+                number?: number;
+                /**
+                 * ecf: nECF (número de ordem do ECF)
+                 */
+                ecfNumber?: string;
+                /**
+                 * ecf: nCOO
+                 */
+                cooNumber?: string;
+            }>;
             /**
              * dhSaiEnt (data/hora de saída ou entrada)
              */
@@ -1974,16 +2079,48 @@ export type NfeCreateData = {
         avulsa?: {
             [key: string]: unknown;
         };
+        /**
+         * Local de retirada (TLocal). IE é obrigatória pela NT 2026.007 para contribuinte (aceita "ISENTO");
+         * address exige street, number, district, city, state e cityCode (IBGE, 7 dígitos). Sem address.country, sai Brasil (1058).
+         *
+         */
         retirada?: {
+            /**
+             * CPF ou CNPJ
+             */
             taxId?: string;
             name?: string;
+            /**
+             * IE do local (2 a 14 dígitos) ou ISENTO
+             */
             stateRegistration?: string;
+            /**
+             * fone (6 a 14 dígitos)
+             */
+            phone?: string;
+            email?: string;
             address?: DfeAddressLayout;
         };
+        /**
+         * Local de entrega (TLocal). IE é obrigatória pela NT 2026.007 para contribuinte (aceita "ISENTO");
+         * address exige street, number, district, city, state e cityCode (IBGE, 7 dígitos). Sem address.country, sai Brasil (1058).
+         *
+         */
         entrega?: {
+            /**
+             * CPF ou CNPJ
+             */
             taxId?: string;
             name?: string;
+            /**
+             * IE do local (2 a 14 dígitos) ou ISENTO
+             */
             stateRegistration?: string;
+            /**
+             * fone (6 a 14 dígitos)
+             */
+            phone?: string;
+            email?: string;
             address?: DfeAddressLayout;
         };
         autXml?: Array<DfeAutXml>;
@@ -2016,6 +2153,21 @@ export type NfeCreateData = {
                  * dVenc (AAAA-MM-DD)
                  */
                 dueOn?: string;
+                /**
+                 * vDup
+                 */
+                amount: number;
+            }>;
+            /**
+             * Atalho das parcelas: gera `dup` numeradas 001, 002… e a fatura (nFat/vOrig/vLiq pelo vNF).
+             * Não combina com `duplicates`; a soma não pode passar do vNF (422).
+             *
+             */
+            installments?: Array<{
+                /**
+                 * dVenc (AAAA-MM-DD)
+                 */
+                dueOn: string;
                 /**
                  * vDup
                  */
@@ -2161,7 +2313,7 @@ export type NfeCreateErrors = {
      */
     402: ErrorBody;
     /**
-     * `VALIDATION_ERROR` ou `NFE_CERTIFICATE_MISSING`
+     * `VALIDATION_ERROR` (inclui cBenef inválido para a UF em `items.N.icmsTaxBenefitCode`) ou `NFE_CERTIFICATE_MISSING`
      */
     422: ErrorBody;
 };
@@ -2551,6 +2703,13 @@ export type NfceCreateData = {
      */
     body: {
         paymentMethod: 'credit_card' | 'debit_card' | 'pix' | 'bank_transfer' | 'cash' | 'bank_slip' | 'other';
+        /**
+         * Mesmo item da NF-e: `cest` (uma vez, antes do CFOP), `nve`, `extipi`, `discount`, `insurance`, `other`,
+         * `orderNumber`/`orderItem` e `additionalInfo` saem no prod/det e entram nos totais (vSeg/vDesc/vOutro).
+         * Grupos exclusivos da NF-e (`importDeclarations`, `exports`, `vehicle`, `weapons`, `taxReturn`, `icmsUfDest`)
+         * retornam 422 — emita uma NF-e (modelo 55).
+         *
+         */
         items: Array<ProductEmitItem>;
         /**
          * Opcional (padrão consumidor final); todos os campos opcionais.
