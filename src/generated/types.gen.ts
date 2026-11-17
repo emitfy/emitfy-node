@@ -589,15 +589,36 @@ export type ProductEmitItem = {
     ipiCst?: string;
     ipiTaxRate?: number;
     ipiLegalCode?: string;
+    /**
+     * CEST (7 dígitos). Sai uma única vez no `prod`; prevalece sobre o do cadastro
+     */
     cest?: string;
     fci?: string;
+    /**
+     * NF-e — Nomenclatura de Valor Aduaneiro (NVE, ex. AA0001), até 8 por item
+     */
     nve?: Array<string>;
+    /**
+     * NF-e — código EX da TIPI (EXTIPI), 2 ou 3 dígitos
+     */
     extipi?: string;
     orderNumber?: string;
     orderItem?: number;
+    /**
+     * vFrete do item (prevalece sobre o rateio)
+     */
     freight?: number;
+    /**
+     * NF-e — vSeg do item; soma em ICMSTot/vSeg e no vNF
+     */
     insurance?: number;
+    /**
+     * NF-e — vDesc do item (não pode passar do valor do item); soma em ICMSTot/vDesc
+     */
     discount?: number;
+    /**
+     * NF-e — vOutro (outras despesas acessórias) do item; soma em ICMSTot/vOutro e no vNF
+     */
     other?: number;
     taxClassification?: string;
     ibsCst?: string;
@@ -1825,11 +1846,49 @@ export type NfeCreateData = {
              */
             freightModality?: 'bySender' | 'byRecipient' | 'byThirdParties' | 'ownBySender' | 'ownByRecipient' | 'noShipping';
             /**
-             * Valor do frete; compõe o total quando por conta do emitente
+             * Valor do frete; compõe o total quando por conta do emitente.
+             * Sem `freightModality`, um valor maior que zero assume frete por conta do remetente (CIF, modFrete 0).
+             *
              */
             value?: number;
             carrier?: TransportCarrier;
+            /**
+             * Volumes (`transp/vol`); exige `freightModality`. Aceita também os nomes do leiaute (qVol, esp, marca, nVol, pesoL, pesoB)
+             */
+            volumes?: Array<{
+                /**
+                 * qVol
+                 */
+                quantity?: number;
+                /**
+                 * esp
+                 */
+                species?: string;
+                /**
+                 * marca
+                 */
+                brand?: string;
+                /**
+                 * nVol
+                 */
+                numbering?: string;
+                /**
+                 * pesoL (kg)
+                 */
+                netWeight?: number;
+                /**
+                 * pesoB (kg)
+                 */
+                grossWeight?: number;
+            }>;
         };
+        /**
+         * Atalho de forma de pagamento (um `detPag` com o valor total da nota).
+         * pix=17, credit_card=03, debit_card=04, cash=01, bank_slip=15, bank_transfer=18, no_payment=90, other=99.
+         * Com `payments[]`, os pagamentos detalhados prevalecem.
+         *
+         */
+        paymentMethod?: 'credit_card' | 'debit_card' | 'pix' | 'bank_transfer' | 'cash' | 'bank_slip' | 'other' | 'no_payment';
         /**
          * Idempotência (o header `Idempotency-Key` tem prioridade)
          */
@@ -1842,21 +1901,75 @@ export type NfeCreateData = {
          */
         nature?: string;
         operationType?: 'outgoing' | 'incoming';
+        /**
+         * tpImp do XML e orientação do DANFE (1 retrato, 2 paisagem). Omitido: orientação das configurações.
+         * `nfeSimplified` (tpImp 3) ainda não é suportado → 422.
+         *
+         */
         printType?: 'nfeNormalPortrait' | 'nfeNormalLandscape' | 'nfeSimplified';
+        /**
+         * indFinal. Omitido: 0 quando o destinatário tem IE (indIEDest 1) e 1 para isento (2) ou não contribuinte (9).
+         * Não contribuinte (indIEDest 9) sempre sai com indFinal 1 (rejeição 696), mesmo com `normal`.
+         *
+         */
         consumerType?: 'normal' | 'finalConsumer';
         presenceType?: 'presential' | 'internet' | 'telephone' | 'delivery' | 'others';
+        /**
+         * Reservado (cMunFGIBS, reforma tributária). Ainda não suportado → 422
+         */
         ibsConsumptionCityCode?: string;
         /**
-         * Inscrição estadual da empresa (multi-IE) usada na emissão
+         * Inscrição estadual da empresa (multi-IE) usada como emit/IE. Precisa existir no cadastro e ser da UF do emitente;
+         * IE de outra UF (IEST) ainda não é suportada → 422.
+         *
          */
         stateRegistrationId?: string;
         cfop?: string;
         issueDate?: string;
         /**
-         * Grupo ide (campos avançados)
+         * Grupo ide (campos avançados). Aceita os aliases SEFAZ finNFe, NFref e refNFe
          */
         ide?: {
-            [key: string]: unknown;
+            /**
+             * finNFe 1–4
+             */
+            purpose?: 'normal' | 'complementary' | 'adjustment' | 'return';
+            /**
+             * Chaves referenciadas (NFref/refNFe); obrigatório quando purpose ≠ normal
+             */
+            referencedKeys?: Array<string>;
+            /**
+             * dhSaiEnt (data/hora de saída ou entrada)
+             */
+            departureAt?: string;
+            /**
+             * cNF (8 dígitos
+             */
+            randomCode?: string;
+            /**
+             * idDest é calculado pelas UFs; valor divergente ou `international` → 422
+             */
+            destinationType?: 'internal' | 'interstate' | 'international';
+            /**
+             * Só `1`/`normal`. Contingência ainda não suportada → 422
+             */
+            emissionType?: string;
+            /**
+             * Não configurável → 422
+             */
+            process?: string;
+            /**
+             * Não configurável → 422
+             */
+            versionProcess?: string;
+            /**
+             * Contingência ainda não suportada → 422
+             */
+            contingencyStartedAt?: string;
+            /**
+             * Contingência ainda não suportada → 422
+             */
+            contingencyReason?: string;
         };
         avulsa?: {
             [key: string]: unknown;
@@ -1874,21 +1987,118 @@ export type NfeCreateData = {
             address?: DfeAddressLayout;
         };
         autXml?: Array<DfeAutXml>;
+        /**
+         * Cobrança (`cobr/fat` + `dup`). Faltando nFat/vOrig/vLiq, são completados pelas duplicatas e pelo vNF
+         */
         billing?: {
-            [key: string]: unknown;
+            /**
+             * nFat
+             */
+            invoiceNumber?: string;
+            /**
+             * vOrig
+             */
+            originalAmount?: number;
+            /**
+             * vDesc da fatura (netAmount = originalAmount − discount)
+             */
+            discount?: number;
+            /**
+             * vLiq
+             */
+            netAmount?: number;
+            duplicates?: Array<{
+                /**
+                 * nDup
+                 */
+                number?: string;
+                /**
+                 * dVenc (AAAA-MM-DD)
+                 */
+                dueOn?: string;
+                /**
+                 * vDup
+                 */
+                amount: number;
+            }>;
         };
+        /**
+         * Pagamentos detalhados (`pag/detPag`, um por item). A soma (exceto method 90) não pode ser menor que o vNF (422).
+         * Excedente vira troco (`vTroco`) automaticamente. Cartão (03/04) e PIX (17) levam o grupo `card` (tpIntegra 2).
+         *
+         */
         payments?: Array<{
-            [key: string]: unknown;
+            /**
+             * Código tPag SEFAZ (01, 02, 03, 04, 05, 10, 11, 12, 13, 15, 16, 17, 18, 19, 20, 21, 22, 90, 91, 99) ou credit_card, debit_card, pix, bank_transfer, cash, bank_slip, other, no_payment
+             */
+            method?: string;
+            /**
+             * vPag (0 com method 90)
+             */
+            amount: number;
+            /**
+             * indPag: 0 à vista (padrão), 1 a prazo
+             */
+            indicator?: '0' | '1';
+            /**
+             * xPag (padrão "Outros" com method 99)
+             */
+            description?: string;
+            /**
+             * tBand: visa, mastercard, amex, elo, hipercard… ou o código de 2 dígitos
+             */
+            cardBrand?: string;
+            /**
+             * cAut
+             */
+            authorization?: string;
+            /**
+             * CNPJ da credenciadora (14 dígitos)
+             */
+            cardTaxId?: string;
         }>;
         /**
-         * Troco
+         * Troco (vTroco). Opcional; quando enviado precisa ser soma(payments) − vNF. Só com `payments`
          */
         change?: number;
         intermediary?: {
             [key: string]: unknown;
         };
         additional?: {
-            [key: string]: unknown;
+            /**
+             * infCpl (somado às observações padrão)
+             */
+            complement?: string;
+            /**
+             * infAdFisco
+             */
+            fisco?: string;
+            /**
+             * obsCont
+             */
+            taxpayerNotes?: Array<{
+                /**
+                 * xCampo
+                 */
+                field: string;
+                /**
+                 * xTexto
+                 */
+                text: string;
+            }>;
+            /**
+             * obsFisco
+             */
+            fiscoNotes?: Array<{
+                /**
+                 * xCampo
+                 */
+                field: string;
+                /**
+                 * xTexto
+                 */
+                text: string;
+            }>;
         };
         export?: {
             [key: string]: unknown;
@@ -1899,16 +2109,36 @@ export type NfeCreateData = {
         sugarcane?: {
             [key: string]: unknown;
         };
+        /**
+         * Na NF-e, csrtId/csrtHash ainda não são suportados → 422
+         */
         techResponsible?: DfeTechResponsible;
         nffRequest?: string;
         farming?: {
             [key: string]: unknown;
         };
         /**
-         * Override de totais
+         * Totais da nota rateados pelos itens (proporcional ao valor). Se algum item informar o mesmo campo,
+         * a soma dos itens prevalece e `totals` precisa bater (422).
+         *
          */
         totals?: {
-            [key: string]: unknown;
+            /**
+             * vDesc da nota
+             */
+            discount?: number;
+            /**
+             * vSeg da nota
+             */
+            insurance?: number;
+            /**
+             * vOutro da nota
+             */
+            other?: number;
+            /**
+             * Frete da nota (igual a transport.value; divergência → 422)
+             */
+            freight?: number;
         };
     };
     headers?: {
