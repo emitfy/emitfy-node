@@ -600,9 +600,17 @@ export type ProductEmitItem = {
     pisTaxRate?: number;
     cofinsCst?: string;
     cofinsTaxRate?: number;
+    /**
+     * NF-e — CST do IPI nesta nota (atalho de `ipi.cst`; com `ipiTaxRate` → pIPI e `ipiLegalCode` → cEnq).
+     * Só destaca IPI quando vem na requisição (o cadastro nunca destaca sozinho). Divergir de `ipi.cst` → 422.
+     *
+     */
     ipiCst?: string;
     ipiTaxRate?: number;
     ipiLegalCode?: string;
+    icms?: NfeItemIcms;
+    ipi?: NfeItemIpi;
+    importTax?: NfeItemImportTax;
     /**
      * CEST (7 dígitos). Sai uma única vez no `prod`; prevalece sobre o do cadastro
      */
@@ -637,9 +645,10 @@ export type ProductEmitItem = {
     taxClassification?: string;
     ibsCst?: string;
     cbsCst?: string;
-    importDeclarations?: Array<{
-        [key: string]: unknown;
-    }>;
+    /**
+     * NF-e — DI/DSI/DA/DUIMP do item (grupo DI, logo após indTot)
+     */
+    importDeclarations?: Array<NfeImportDeclaration>;
     traces?: Array<{
         [key: string]: unknown;
     }>;
@@ -662,6 +671,421 @@ export type ProductEmitItem = {
         [key: string]: unknown;
     };
     additionalInfo?: string;
+};
+
+export type NfeIcmsTriple = {
+    /**
+     * Base (default: vBC para FCP; vBCST para FCP-ST)
+     */
+    base?: number;
+    rate: number;
+    /**
+     * Valor (default: base × rate; FCP-ST deduz o FCP próprio)
+     */
+    amount?: number;
+};
+
+/**
+ * NF-e — grupo ICMS do item por CST/CSOSN (só nesta nota). O código continua em `icmsCst`; base, alíquota e
+ * valor próprios em `icmsBase`/`icmsTaxRate`/`icmsAmount`. Valores informados são aceitos como vierem; o Emitfy
+ * só calcula com todos os insumos (ex.: vBCST com `st.baseMode` 4 + `st.mvaRate`) e confere a consistência
+ * (422 com `items.N.icms.…`). Campo que não existe no grupo do CST → 422.
+ * Grupos: 00 (fcp), 02/15/53/61 (monophasic), 10 (fcp, st, fcpSt, stExemption; com `partition` → ICMSPart),
+ * 20 (baseReductionRate obrigatório, fcp, exemption 3/9/12), 30 (st, fcpSt, exemption 6/7/9),
+ * 40/41/50 (exemption 1,3–11,16,90; 41 com `stDestination` → ICMSST repasse), 51 (baseReductionRate,
+ * baseReductionBenefitCode, fcp, deferral), 60 (retained, fcpStRetained, effective; com `stDestination` → ICMSST),
+ * 70 (baseReductionRate obrigatório, fcp, st, fcpSt, exemption, stExemption), 90 (idem 70, redução opcional;
+ * com `partition` → ICMSPart). CSOSN 201 (st, fcpSt, simplesCredit), 202/203 (st, fcpSt), 500 (retained,
+ * fcpStRetained, effective), 900 (próprio + st + simplesCredit). Sem este grupo, os CST 00/40/41/50/51/90 e
+ * CSOSN 101/102/103/300/400/500/900 saem exatamente como antes.
+ * Totais reais em ICMSTot (vICMSDeson, vFCP, vBCST, vST, vFCPST, vFCPSTRet, qBCMono…) e vNF = … + vST + vFCPST
+ * + vII + vIPI − vICMSDeson (só com `exemption.deductFromTotal`).
+ *
+ */
+export type NfeItemIcms = {
+    /**
+     * modBC do ICMS próprio (default 3)
+     */
+    baseMode?: '0' | '1' | '2' | '3';
+    /**
+     * pRedBC — vBC = base × (1 − pRedBC) quando icmsBase não vem
+     */
+    baseReductionRate?: number;
+    /**
+     * cBenefRBC (CST 51), 8 ou 10 caracteres
+     */
+    baseReductionBenefitCode?: string;
+    st?: {
+        /**
+         * modBCST (4 = MVA)
+         */
+        baseMode: '0' | '1' | '2' | '3' | '4' | '5' | '6';
+        /**
+         * pMVAST
+         */
+        mvaRate?: number;
+        /**
+         * pRedBCST
+         */
+        baseReductionRate?: number;
+        /**
+         * vBCST (sem ele, só com baseMode 4 + mvaRate: (vProd − vDesc + frete + seguro + outras + vIPI) × (1 + MVA) × (1 − pRedBCST))
+         */
+        base?: number;
+        /**
+         * pICMSST
+         */
+        rate: number;
+        /**
+         * vICMSST (default: vBCST × pICMSST − ICMS próprio; obrigatório sem ICMS próprio, ex.: CST 30 e CSOSN 201/202/203)
+         */
+        amount?: number;
+    };
+    fcp?: NfeIcmsTriple;
+    fcpSt?: NfeIcmsTriple;
+    fcpStRetained?: NfeIcmsTriple;
+    exemption?: {
+        /**
+         * vICMSDeson
+         */
+        amount: number;
+        /**
+         * motDesICMS (aceitos por CST, ver acima)
+         */
+        reason: string;
+        /**
+         * indDeduzDeson: true deduz do vNF
+         */
+        deductFromTotal?: boolean;
+    };
+    stExemption?: {
+        /**
+         * vICMSSTDeson
+         */
+        amount: number;
+        /**
+         * motDesICMSST
+         */
+        reason: '3' | '9' | '12';
+    };
+    /**
+     * CST 51 — vICMSOp = vBC × pICMS, vICMSDif = vICMSOp × pDif, vICMS = vICMSOp − vICMSDif (informados: tolerância R$ 0,01)
+     */
+    deferral?: {
+        /**
+         * pDif
+         */
+        rate: number;
+        /**
+         * vICMSOp
+         */
+        operationAmount?: number;
+        /**
+         * vICMSDif
+         */
+        deferredAmount?: number;
+        /**
+         * pFCPDif
+         */
+        fcpRate?: number;
+        /**
+         * vFCPDif
+         */
+        fcpAmount?: number;
+        /**
+         * vFCPEfet
+         */
+        fcpEffectiveAmount?: number;
+    };
+    /**
+     * ST retido anteriormente (CST 60, CSOSN 500, repasse). vICMSSTRet default = vBCSTRet × pST − vICMSSubstituto
+     */
+    retained?: {
+        /**
+         * vBCSTRet
+         */
+        base: number;
+        /**
+         * pST
+         */
+        rate?: number;
+        /**
+         * vICMSSubstituto
+         */
+        substituteAmount?: number;
+        /**
+         * vICMSSTRet
+         */
+        amount?: number;
+    };
+    effective?: {
+        /**
+         * pRedBCEfet (default 0)
+         */
+        baseReductionRate?: number;
+        /**
+         * vBCEfet
+         */
+        base: number;
+        /**
+         * pICMSEfet
+         */
+        rate: number;
+        /**
+         * vICMSEfet (default base × rate)
+         */
+        amount?: number;
+    };
+    /**
+     * Repasse (grupo ICMSST, CST 41/60) — exige `retained`
+     */
+    stDestination?: {
+        /**
+         * vBCSTDest
+         */
+        base: number;
+        /**
+         * vICMSSTDest
+         */
+        amount: number;
+    };
+    /**
+     * Partilha entre UFs (grupo ICMSPart, CST 10/90) — exige `st`
+     */
+    partition?: {
+        /**
+         * pBCOp
+         */
+        operationBaseRate: number;
+        /**
+         * UFST
+         */
+        stState: string;
+    };
+    /**
+     * pCredSN/vCredICMSSN no CSOSN 201 (default: icmsTaxRate) e 900
+     */
+    simplesCredit?: {
+        rate: number;
+        /**
+         * default: (icmsBase ou vProd) × rate
+         */
+        amount?: number;
+    };
+    /**
+     * Combustíveis (CST 02, 15, 53, 61). Valores default = quantidade × ad rem
+     */
+    monophasic?: {
+        /**
+         * qBCMono
+         */
+        quantity?: number;
+        /**
+         * adRemICMS
+         */
+        adRemRate?: number;
+        /**
+         * vICMSMono
+         */
+        amount?: number;
+        /**
+         * qBCMonoReten (CST 15)
+         */
+        retentionQuantity?: number;
+        /**
+         * adRemICMSReten (CST 15)
+         */
+        retentionAdRemRate?: number;
+        /**
+         * vICMSMonoReten (CST 15)
+         */
+        retentionAmount?: number;
+        /**
+         * pRedAdRem (CST 15)
+         */
+        adRemReductionRate?: number;
+        /**
+         * motRedAdRem (CST 15)
+         */
+        adRemReductionReason?: '1' | '9';
+        /**
+         * vICMSMonoOp (CST 53)
+         */
+        operationAmount?: number;
+        /**
+         * pDif (CST 53)
+         */
+        deferralRate?: number;
+        /**
+         * vICMSMonoDif (CST 53)
+         */
+        deferredAmount?: number;
+        /**
+         * qBCMonoDif (CST 53)
+         */
+        deferredQuantity?: number;
+        /**
+         * adRemICMSDif (CST 53)
+         */
+        deferredAdRemRate?: number;
+        /**
+         * qBCMonoRet (CST 61)
+         */
+        retainedQuantity?: number;
+        /**
+         * adRemICMSRet (CST 61)
+         */
+        retainedAdRemRate?: number;
+        /**
+         * vICMSMonoRet (CST 61)
+         */
+        retainedAmount?: number;
+    };
+};
+
+/**
+ * NF-e — IPI do item. CST 00/49/50/99 → IPITrib (base × rate ou unitQuantity × unitAmount); 01–05 e 51–55 →
+ * IPINT (sem base nem valor). Soma em ICMSTot/vIPI e no vNF; entra na base do ST por MVA e na do DIFAL.
+ *
+ */
+export type NfeItemIpi = {
+    cst: '00' | '01' | '02' | '03' | '04' | '05' | '49' | '50' | '51' | '52' | '53' | '54' | '55' | '99';
+    /**
+     * cEnq (default 999)
+     */
+    legalCode?: string;
+    /**
+     * CNPJProd (14 dígitos)
+     */
+    producerTaxId?: string;
+    /**
+     * cSelo
+     */
+    sealCode?: string;
+    /**
+     * qSelo
+     */
+    sealQuantity?: number;
+    /**
+     * vBC (default: vProd − vDesc + vFrete + vSeg + vOutro do item)
+     */
+    base?: number;
+    /**
+     * pIPI
+     */
+    rate?: number;
+    /**
+     * qUnid
+     */
+    unitQuantity?: number;
+    /**
+     * vUnid
+     */
+    unitAmount?: number;
+    /**
+     * vIPI (informado: tolerância R$ 0,01)
+     */
+    amount?: number;
+};
+
+/**
+ * NF-e — II (Imposto de Importação). Só com CFOP 3xxx (senão 422); soma em ICMSTot/vII e no vNF.
+ */
+export type NfeItemImportTax = {
+    /**
+     * vBC
+     */
+    base: number;
+    /**
+     * vDespAdu (default 0)
+     */
+    customsExpenses?: number;
+    /**
+     * vII
+     */
+    amount: number;
+    /**
+     * vIOF (default 0)
+     */
+    iofAmount?: number;
+};
+
+/**
+ * DI (I18). Também obrigatórios na emissão: `transportVia`, `exporterTaxId` e ao menos uma adição com
+ * `manufacturerCode`; `afrmm` na via marítima; `acquirerTaxId`/`acquirerState` com intermediationType 2 ou 3.
+ *
+ */
+export type NfeImportDeclaration = {
+    /**
+     * nDI
+     */
+    number: string;
+    /**
+     * dDI (AAAA-MM-DD ou DD/MM/AAAA)
+     */
+    registeredOn: string;
+    /**
+     * xLocDesemb
+     */
+    location: string;
+    /**
+     * UFDesemb
+     */
+    state: string;
+    /**
+     * dDesemb (AAAA-MM-DD ou DD/MM/AAAA)
+     */
+    customsClearedOn: string;
+    /**
+     * tpViaTransp 1–13 (1 marítima, 4 aérea, 7 rodoviária…)
+     */
+    transportVia?: string;
+    /**
+     * vAFRMM
+     */
+    afrmm?: number;
+    /**
+     * tpIntermedio (default 1, conta própria)
+     */
+    intermediationType?: '1' | '2' | '3';
+    /**
+     * CNPJ/CPF do adquirente ou encomendante
+     */
+    acquirerTaxId?: string;
+    /**
+     * UFTerceiro (alias legado: unloadingState)
+     */
+    acquirerState?: string;
+    /**
+     * @deprecated
+     */
+    unloadingState?: string;
+    /**
+     * cExportador (código do exportador)
+     */
+    exporterTaxId?: string;
+    additions?: Array<{
+        /**
+         * nAdicao
+         */
+        number?: number;
+        /**
+         * nSeqAdic (default: posição + 1)
+         */
+        sequence?: number;
+        /**
+         * cFabricante
+         */
+        manufacturerCode?: string;
+        /**
+         * vDescDI
+         */
+        discount?: number;
+        /**
+         * nDraw (9, 11 ou 20 dígitos)
+         */
+        drawback?: string;
+    }>;
 };
 
 export type NfseTaxEntry = {
@@ -1974,10 +2398,16 @@ export type NfeCreateData = {
         ibsConsumptionCityCode?: string;
         /**
          * Inscrição estadual da empresa (multi-IE) usada como emit/IE. Precisa existir no cadastro e ser da UF do emitente;
-         * IE de outra UF (IEST) ainda não é suportada → 422.
+         * IE de outra UF → 422 (use `stStateRegistrationId` para o IEST).
          *
          */
         stateRegistrationId?: string;
+        /**
+         * IEST — inscrição de substituto tributário da empresa na UF de destino (cadastrada em inscrições estaduais).
+         * Sai em emit/IEST, logo após a IE. Precisa ser da UF do destinatário e diferente da UF do emitente → senão 422.
+         *
+         */
+        stStateRegistrationId?: string;
         cfop?: string;
         issueDate?: string;
         /**
@@ -2706,8 +3136,8 @@ export type NfceCreateData = {
         /**
          * Mesmo item da NF-e: `cest` (uma vez, antes do CFOP), `nve`, `extipi`, `discount`, `insurance`, `other`,
          * `orderNumber`/`orderItem` e `additionalInfo` saem no prod/det e entram nos totais (vSeg/vDesc/vOutro).
-         * Grupos exclusivos da NF-e (`importDeclarations`, `exports`, `vehicle`, `weapons`, `taxReturn`, `icmsUfDest`)
-         * retornam 422 — emita uma NF-e (modelo 55).
+         * Grupos exclusivos da NF-e (`importDeclarations`, `exports`, `vehicle`, `weapons`, `taxReturn`, `icmsUfDest`,
+         * `icms`, `ipi`, `importTax`) retornam 422 — emita uma NF-e (modelo 55).
          *
          */
         items: Array<ProductEmitItem>;
