@@ -2958,6 +2958,30 @@ export type NfeCreateData = {
              * CNPJ da credenciadora (14 dígitos)
              */
             cardTaxId?: string;
+            /**
+             * tpIntegra: 1/integrated/tef (TEF ou Pix dinâmico integrado) ou 2/notIntegrated/pos (padrão)
+             */
+            integration?: string;
+            /**
+             * CNPJReceb — CNPJ do beneficiário do pagamento (14 dígitos)
+             */
+            receiverTaxId?: string;
+            /**
+             * idTermPag — identificador do terminal/POS
+             */
+            terminalId?: string;
+            /**
+             * dPag (AAAA-MM-DD)
+             */
+            paidOn?: string;
+            /**
+             * CNPJPag — CNPJ do pagador/transacional (14 dígitos
+             */
+            payerTaxId?: string;
+            /**
+             * UFPag (junto com payerTaxId)
+             */
+            payerState?: string;
         }>;
         /**
          * Troco (vTroco). Opcional; quando enviado precisa ser soma(payments) − vNF. Só com `payments`
@@ -3002,7 +3026,7 @@ export type NfeCreateData = {
                 text: string;
             }>;
             /**
-             * procRef — processo referenciado (só NF-e; NFC-e → 422)
+             * procRef — processo referenciado (NF-e e NFC-e)
              */
             processReferences?: Array<{
                 /**
@@ -3470,11 +3494,87 @@ export type NfceListResponse = NfceListResponses[keyof NfceListResponses];
 
 export type NfceCreateData = {
     /**
-     * Com `issueMode: offlineContingency` a validação exige `contingency`, `accessKey` (44 dígitos, modelo 65, tpEmis 9), `number`, `series` e `issuedAt` (ou `issueDate`). Falha → 422 `VALIDATION_ERROR`.
+     * Com `issueMode: offlineContingency` a validação exige `contingency`, `accessKey` (44 dígitos, modelo 65, tpEmis 9), `number`, `series` e `issuedAt` (ou `issueDate`). Falha → 422 `VALIDATION_ERROR`. Leiaute NFC-e (fase 5): 422 só para o que o leiaute do modelo 65 não admite — indPres ≠ 1/4/5 (717), tPag 90 (899), frete/transportadora sem entrega a domicílio (753/754), retTransp/veículo/reboque/vagão/balsa (755–759), IE/SUFRAMA do consumidor (729/730) e endereço do consumidor em outra UF (707).
      *
      */
     body: {
-        paymentMethod: 'credit_card' | 'debit_card' | 'pix' | 'bank_transfer' | 'cash' | 'bank_slip' | 'other';
+        /**
+         * Pagamento único com o total. Obrigatório quando não há `payments`
+         */
+        paymentMethod?: 'credit_card' | 'debit_card' | 'pix' | 'bank_transfer' | 'cash' | 'bank_slip' | 'other';
+        /**
+         * Pagamentos detalhados (`pag/detPag`), mesmo formato da NF-e: vários meios, troco, cartão/TEF/POS
+         * (`integration` tpIntegra, `cardTaxId` CNPJ da credenciadora, `cardBrand` tBand, `authorization` cAut,
+         * `receiverTaxId` CNPJReceb, `terminalId` idTermPag), `paidOn`, `payerTaxId`/`payerState`.
+         * Pix dinâmico: method 17 + integration 1 + cardTaxId (CNPJ do PSP) + authorization (E2E/txid);
+         * Pix estático: method 20. Sem pagamento (90) → 422 (rejeição 899).
+         *
+         */
+        payments?: Array<{
+            method?: string;
+            amount: number;
+            indicator?: '0' | '1';
+            description?: string;
+            cardBrand?: string;
+            authorization?: string;
+            cardTaxId?: string;
+            integration?: string;
+            receiverTaxId?: string;
+            terminalId?: string;
+            paidOn?: string;
+            payerTaxId?: string;
+            payerState?: string;
+        }>;
+        /**
+         * Troco (vTroco) = soma(payments) − vNF. Sem troco sai `<vTroco>0.00</vTroco>`
+         */
+        change?: number;
+        /**
+         * indPres na NFC-e: 1 presencial, 4 entrega a domicílio, 5 fora do estabelecimento (MOC B25b-20).
+         * internet/telephone/others (2/3/9) → 422 (rejeição 717): emita NF-e.
+         *
+         */
+        presenceType?: 'presential' | 'delivery' | 'outsideEstablishment';
+        /**
+         * natOp (alias `nature`)
+         */
+        operationNature?: string;
+        /**
+         * Desconto da nota (rateado em vDesc)
+         */
+        discount?: number;
+        /**
+         * Totais da nota rateados pelos itens — discount (vDesc), insurance (vSeg), other (vOutro, acréscimo), freight
+         */
+        totals?: {
+            discount?: number;
+            insurance?: number;
+            other?: number;
+            freight?: number;
+        };
+        /**
+         * Só na entrega a domicílio (presenceType delivery): freightModality (modFrete), value (vFrete),
+         * carrier (transporta, sem vehicle) e volumes (vol). withholding/trailers/wagon/ferry/vehicle → 422.
+         *
+         */
+        transport?: {
+            freightModality?: string;
+            value?: number;
+            carrier?: {
+                [key: string]: unknown;
+            };
+            volumes?: Array<{
+                [key: string]: unknown;
+            }>;
+        };
+        /**
+         * infIntermed (indIntermed 1) — CNPJ e identificador do intermediador (marketplace/app de delivery)
+         */
+        intermediary?: {
+            taxId?: string;
+            identifier?: string;
+        };
+        autXml?: Array<DfeAutXml>;
         /**
          * Mesmo item da NF-e: `cest` (uma vez, antes do CFOP), `nve`, `extipi`, `discount`, `insurance`, `other`,
          * `orderNumber`/`orderItem` e `additionalInfo` saem no prod/det e entram nos totais (vSeg/vDesc/vOutro).
@@ -3486,18 +3586,31 @@ export type NfceCreateData = {
          */
         items: Array<ProductEmitItem>;
         /**
-         * Opcional (padrão consumidor final); todos os campos opcionais.
+         * Opcional (padrão consumidor final). CPF/CNPJ (`taxId`) ou estrangeiro (`foreignId`, idEstrangeiro;
+         * a operação continua interna). `address` é obrigatório na entrega a domicílio e precisa ser da UF
+         * do emitente. `stateRegistration`/`ieIndicator`/`suframa` → 422 (rejeições 729/730).
+         *
          */
         recipient?: {
             taxId?: string;
+            foreignId?: string;
             name?: string;
             email?: string;
             phone?: string;
             address?: NfeAddress;
         };
+        /**
+         * Alias de operationNature (natOp)
+         */
         nature?: string;
+        /**
+         * CFOP padrão dos itens sem CFOP próprio
+         */
         cfop?: string;
         issueDate?: string;
+        /**
+         * complement (infCpl), fisco (infAdFisco), taxpayerNotes (obsCont), fiscoNotes (obsFisco), processReferences (procRef)
+         */
         additional?: {
             [key: string]: unknown;
         };
