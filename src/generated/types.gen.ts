@@ -611,6 +611,47 @@ export type ProductEmitItem = {
     icms?: NfeItemIcms;
     ipi?: NfeItemIpi;
     importTax?: NfeItemImportTax;
+    ibsCbs?: NfeItemIbsCbs;
+    selectiveTax?: NfeItemSelectiveTax;
+    /**
+     * vUnComLiq (NT 2026.008 — produção em 14/12/2026). Sai com vProdLiq = netUnitValue × quantity
+     * (ou `netAmount`) e soma em vProdLiqTot. Se um item informar, todos informam. Antes da data de produção → 422.
+     *
+     */
+    netUnitValue?: number;
+    /**
+     * vProdLiq informado (default netUnitValue × quantity)
+     */
+    netAmount?: number;
+    /**
+     * cAtivSN (NT 2026.005 — produção em 14/12/2026), só CRT 1/2/4
+     */
+    simplesActivity?: '01' | '02' | '03' | '04' | '90';
+    /**
+     * indBemMovelUsado (bem móvel usado)
+     */
+    usedMovableGood?: boolean;
+    /**
+     * tpCredPresIBSZFM
+     */
+    zfmPresumedCreditType?: string;
+    /**
+     * NF-e — DFeReferenciado do item (chave de 44 dígitos + nItem)
+     */
+    referencedDocument?: {
+        accessKey: string;
+        item?: number;
+    };
+    /**
+     * vItem (valor total do item com IBS/CBS/IS). Se um item informar, todos informam; vNFTot = soma.
+     */
+    itemTotal?: number;
+    /**
+     * NF-e — ICMSPrevistoPagtoAntecip (NT 2026.008), só nota de débito 06 ou compra governamental tpOperGov 4
+     */
+    icmsForecast?: {
+        amount: number;
+    };
     /**
      * CEST (7 dígitos). Sai uma única vez no `prod`; prevalece sobre o do cadastro
      */
@@ -941,6 +982,163 @@ export type NfeItemIcms = {
          */
         retainedAmount?: number;
     };
+};
+
+/**
+ * Uma esfera (gIBSUF, gIBSMun ou gCBS). Tudo opcional: alíquota legal do ano (2026: 0,10% / 0% / 0,90%),
+ * pRedAliq da tabela de cClassTrib, pAliqEfet = alíquota × (1 − pRedAliq) × (1 − pRedutor) e valor = vBC × alíquota efetiva − vDif.
+ * Valor informado é conferido (tolerância R$ 0,01).
+ *
+ */
+export type NfeIbsCbsSphere = {
+    rate?: number;
+    /**
+     * gRed/pRedAliq
+     */
+    reductionRate?: number;
+    /**
+     * gRed/pAliqEfet
+     */
+    effectiveRate?: number;
+    /**
+     * gDif (pDif, vDif) — exigido pelos CST com diferimento (ex. 510)
+     */
+    deferral?: {
+        rate: number;
+        amount?: number;
+    };
+    amount?: number;
+};
+
+/**
+ * Grupo IBSCBS do item (NT 2025.002-RTC v1.53). `cst` + `classCode` (cClassTrib) são conferidos na tabela oficial de
+ * classificação tributária (30/10/2026): CST compatível, modelo (NF-e/NFC-e), vigência, tipo de nota (crédito/débito),
+ * doação e quais grupos o CST exige ou proíbe. Exemplos: 000 (tributação integral), 200 (redução — gRed da tabela),
+ * 410 (isenção — sem gIBSCBS), 510 (diferimento — `deferral`), 550 (suspensão — `regular`), 620 (monofásico — `monophasic`),
+ * 800 (transferência de crédito — `creditTransfer`), 810 (ZFM — `zfmPresumedCredit`), 811 (ajuste — `competenceAdjustment`).
+ * Sem `ibsCbs`, o caminho automático (CST 000 do cadastro) continua igual.
+ *
+ */
+export type NfeItemIbsCbs = {
+    cst: string;
+    /**
+     * cClassTrib
+     */
+    classCode: string;
+    /**
+     * indDoacao (só cClassTrib que admite doação)
+     */
+    donation?: boolean;
+    /**
+     * vBC (default: vProd + vFrete + vSeg + vOutro − vDesc − ICMS − PIS − COFINS)
+     */
+    base?: number;
+    state?: NfeIbsCbsSphere;
+    municipal?: NfeIbsCbsSphere;
+    /**
+     * gCBS; aceita também `freeTradeZone` (gALCZFMCBS — type 1/2, suframaProcess, regularEffectiveRate, regularAmount)
+     */
+    cbs?: NfeIbsCbsSphere;
+    /**
+     * vIBS (default vIBSUF + vIBSMun − crédito presumido deduzido)
+     */
+    ibsAmount?: number;
+    /**
+     * gTribRegular (cst, classCode, stateRate, municipalRate, cbsRate e os valores opcionais stateAmount/municipalAmount/cbsAmount)
+     */
+    regular?: {
+        [key: string]: unknown;
+    };
+    /**
+     * gTribCompraGov (stateRate, municipalRate, cbsRate + valores opcionais). Só com `governmentPurchase`. Omitido em compra
+     * governamental, o Emitfy usa as alíquotas efetivas e os valores das esferas (soma conferida — UB82a-20, tolerância R$ 0,04).
+     *
+     */
+    government?: {
+        [key: string]: unknown;
+    };
+    /**
+     * gIBSCBSMono (CST 620): `ibs`/`cbs` com method adRem|adValorem, standard (quantity/base, rate, stateRate, municipalRate,
+     * amount), withholding (quantity/base, rate, amount), retainedAmount e biofuelDifference; ibsTotal/cbsTotal opcionais.
+     *
+     */
+    monophasic?: {
+        [key: string]: unknown;
+    };
+    /**
+     * gTransfCred (CST 800): ibsAmount, cbsAmount
+     */
+    creditTransfer?: {
+        [key: string]: unknown;
+    };
+    /**
+     * gAjusteCompet (CST 811): period AAAA-MM, ibsAmount, cbsAmount
+     */
+    competenceAdjustment?: {
+        [key: string]: unknown;
+    };
+    /**
+     * gTribSN (NT 2026.005 — produção em 14/12/2026): cbs.rate obrigatório, ibs.rate opcional, amounts opcionais. Só CRT 1/2.
+     */
+    simplesNational?: {
+        [key: string]: unknown;
+    };
+    /**
+     * gEstornoCred: ibsAmount, cbsAmount
+     */
+    creditReversal?: {
+        [key: string]: unknown;
+    };
+    /**
+     * gCredPresOper — base, code (cCredPres da tabela oficial), ibs/cbs { rate, amount?, suspended? }
+     */
+    presumedCredit?: {
+        [key: string]: unknown;
+    };
+    /**
+     * gCredPresIBSZFM (só NF-e): period AAAA-MM, type 0–4, amount
+     */
+    zfmPresumedCredit?: {
+        [key: string]: unknown;
+    };
+};
+
+/**
+ * Grupo IS (Imposto Seletivo) — sai antes do IBSCBS e soma em ISTot. vIS default = base × rate + quantity × specificRate.
+ */
+export type NfeItemSelectiveTax = {
+    /**
+     * CSTIS
+     */
+    cst: string;
+    /**
+     * cClassTribIS
+     */
+    classCode: string;
+    /**
+     * vBCIS
+     */
+    base?: number;
+    /**
+     * pIS
+     */
+    rate?: number;
+    /**
+     * adRemIS
+     */
+    specificRate?: number;
+    /**
+     * uTrib
+     */
+    unit?: string;
+    /**
+     * qTrib
+     */
+    quantity?: number;
+    /**
+     * vIS
+     */
+    amount?: number;
 };
 
 /**
@@ -2391,11 +2589,34 @@ export type NfeCreateData = {
          *
          */
         consumerType?: 'normal' | 'finalConsumer';
-        presenceType?: 'presential' | 'internet' | 'telephone' | 'delivery' | 'others';
         /**
-         * Reservado (cMunFGIBS, reforma tributária). Ainda não suportado → 422
+         * indPres (`outsideEstablishment` = 5, operação presencial fora do estabelecimento)
+         */
+        presenceType?: 'presential' | 'internet' | 'telephone' | 'delivery' | 'outsideEstablishment' | 'others';
+        /**
+         * cMunFGIBS (município de consumo do IBS, código IBGE). Só com presenceType outsideEstablishment (indPres 5)
          */
         ibsConsumptionCityCode?: string;
+        /**
+         * gCompraGov (compras governamentais). entityType tpEnteGov 1–6; reductionRate pRedutor (%) aplicado em pAliqEfet;
+         * operationType tpOperGov 1–4 (2 = recebimento do pagamento com fornecimento já realizado: sem ICMS/IPI/PIS/COFINS);
+         * previousKeys refDFeAnt (até 99 chaves). Só NF-e.
+         *
+         */
+        governmentPurchase?: {
+            entityType: '1' | '2' | '3' | '4' | '5' | '6';
+            reductionRate: number;
+            operationType: '1' | '2' | '3' | '4';
+            previousKeys?: Array<string>;
+        };
+        /**
+         * gPagAntecipado — chaves das NF-e de pagamento antecipado (só NF-e)
+         */
+        advancePaymentKeys?: Array<string>;
+        /**
+         * tpRegimeIBSCBS (NT 2026.005 — produção em 14/12/2026). Antes da data → 422
+         */
+        ibsCbsRegime?: '1' | '2' | '3' | '4';
         /**
          * Inscrição estadual da empresa (multi-IE) usada como emit/IE. Precisa existir no cadastro e ser da UF do emitente;
          * IE de outra UF → 422 (use `stStateRegistrationId` para o IEST).
@@ -2415,9 +2636,21 @@ export type NfeCreateData = {
          */
         ide?: {
             /**
-             * finNFe 1–4
+             * finNFe 1–6. `credit` (5, nota de crédito): operationType incoming, `creditType` 01–06 e, nos tipos 01/03/04,
+             * exatamente uma referência. `debit` (6, nota de débito): saída, `debitType` 01–08. Nessas notas o Emitfy omite
+             * ICMS/IPI/II/PIS/COFINS (B25-80; exceções crédito 03/04/06 e débito 07; débito 06 mantém IPI e, até 2026, PIS/COFINS),
+             * exige `items[].ibsCbs` e recusa os grupos detalhados `icms`, `ipi`, `importTax` e `icmsUfDest`.
+             *
              */
-            purpose?: 'normal' | 'complementary' | 'adjustment' | 'return';
+            purpose?: 'normal' | 'complementary' | 'adjustment' | 'return' | 'credit' | 'debit';
+            /**
+             * tpNFCredito (alias SEFAZ tpNFCredito)
+             */
+            creditType?: string;
+            /**
+             * tpNFDebito (alias SEFAZ tpNFDebito)
+             */
+            debitType?: string;
             /**
              * Chaves de NF-e referenciadas (NFref/refNFe). Com purpose ≠ normal, informe referencedKeys ou references
              */
@@ -3137,7 +3370,9 @@ export type NfceCreateData = {
          * Mesmo item da NF-e: `cest` (uma vez, antes do CFOP), `nve`, `extipi`, `discount`, `insurance`, `other`,
          * `orderNumber`/`orderItem` e `additionalInfo` saem no prod/det e entram nos totais (vSeg/vDesc/vOutro).
          * Grupos exclusivos da NF-e (`importDeclarations`, `exports`, `vehicle`, `weapons`, `taxReturn`, `icmsUfDest`,
-         * `icms`, `ipi`, `importTax`) retornam 422 — emita uma NF-e (modelo 55).
+         * `ipi`, `importTax`, `referencedDocument`, `icmsForecast`) retornam 422 — emita uma NF-e (modelo 55).
+         * `icms` é aceito para ICMS próprio e ST retido (CST 60 / CSOSN 500); ST de substituto (CST 10/30/70,
+         * CSOSN 201/202/203), partilha e repasse → 422. `ibsCbs` e `selectiveTax` seguem a tabela oficial (cClassTrib de NFC-e).
          *
          */
         items: Array<ProductEmitItem>;
