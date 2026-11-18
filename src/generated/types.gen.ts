@@ -696,17 +696,57 @@ export type ProductEmitItem = {
     exports?: Array<{
         [key: string]: unknown;
     }>;
+    /**
+     * NF-e — veicProd. Os 24 campos são obrigatórios (chassi 17 caracteres). Exclusivo com medicine/weapons/fuel/recopi
+     */
     vehicle?: {
         [key: string]: unknown;
     };
+    /**
+     * med — anvisaCode (11 ou 13 dígitos ou `ISENTO` + reasonExemption) e maxConsumerPrice (vPMC) obrigatórios
+     */
     medicine?: {
         [key: string]: unknown;
     };
+    /**
+     * arma — kind (0 uso permitido, 1 uso restrito), serial, barrelSerial e description obrigatórios
+     */
     weapons?: Array<{
         [key: string]: unknown;
     }>;
+    /**
+     * comb — anpCode (9 dígitos), description e consumptionState obrigatórios; codif (até 21 dígitos), quantityTemp,
+     * CIDE (cideBase/cideRate/cideAmount juntos), `pump` (encerrante: nozzle, pump?, tank, startReading, endReading),
+     * `biodieselPercent` (pBio, >0 a 100) e `origins` (origComb, até 30: imported, stateCode IBGE, percent). NFC-e aceita.
+     *
+     */
     fuel?: {
         [key: string]: unknown;
+    };
+    /**
+     * NF-e — nRECOPI (papel imune). Exclusivo com vehicle/medicine/weapons/fuel. NFC-e → 422
+     */
+    recopi?: string;
+    /**
+     * infProdEmb — embalagem (xEmb ≤ 8, qVolEmb, uEmb ≤ 8)
+     */
+    packaging?: {
+        description: string;
+        quantity: number;
+        unit: string;
+    };
+    /**
+     * obsItem — observação do item; taxpayer (obsCont) e/ou fisco (obsFisco), cada um { field ≤ 20, text ≤ 60 }
+     */
+    itemNotes?: {
+        taxpayer?: {
+            field?: string;
+            text?: string;
+        };
+        fisco?: {
+            field?: string;
+            text?: string;
+        };
     };
     taxReturn?: {
         [key: string]: unknown;
@@ -2556,7 +2596,51 @@ export type NfeCreateData = {
                  * pesoB (kg)
                  */
                 grossWeight?: number;
+                /**
+                 * lacres/nLacre. Alias `lacres` (lista de textos ou de `{ nLacre }`)
+                 */
+                seals?: Array<string>;
             }>;
+            /**
+             * retTransp — retenção do ICMS do serviço de transporte
+             */
+            withholding?: {
+                /**
+                 * vServ
+                 */
+                serviceAmount: number;
+                /**
+                 * vBCRet
+                 */
+                baseAmount: number;
+                /**
+                 * pICMSRet
+                 */
+                rate: number;
+                /**
+                 * vICMSRet
+                 */
+                amount: number;
+                cfop: string;
+                /**
+                 * cMunFG (IBGE)
+                 */
+                cityCode: string;
+            };
+            /**
+             * reboque — { plate, state?, rntc? }. Exclusivo com wagon/ferry
+             */
+            trailers?: Array<{
+                [key: string]: unknown;
+            }>;
+            /**
+             * vagao (ferroviário). Exclusivo com veículo/reboque/balsa
+             */
+            wagon?: string;
+            /**
+             * balsa (aquaviário). Exclusivo com veículo/reboque/vagão
+             */
+            ferry?: string;
         };
         /**
          * Atalho de forma de pagamento (um `detPag` com o valor total da nota).
@@ -2719,7 +2803,10 @@ export type NfeCreateData = {
              */
             destinationType?: 'internal' | 'interstate' | 'international';
             /**
-             * Só `1`/`normal`. Contingência ainda não suportada → 422
+             * `1`/`normal`. `6`/`svcAn` (SVC-AN) e `7`/`svcRs` (SVC-RS) só com a flag `NFE_SVC_CONTINGENCY_ENABLED`
+             * (senão 422); a UF do emitente precisa usar aquele SVC. O XML sai com tpEmis/dhCont/xJust, mas a
+             * transmissão ao autorizador de contingência ainda não existe — a nota fica com erro de validação.
+             *
              */
             emissionType?: string;
             /**
@@ -2731,11 +2818,11 @@ export type NfeCreateData = {
              */
             versionProcess?: string;
             /**
-             * Contingência ainda não suportada → 422
+             * dhCont — obrigatório com emissionType 6/7; não pode estar no futuro
              */
             contingencyStartedAt?: string;
             /**
-             * Contingência ainda não suportada → 422
+             * xJust — obrigatório com emissionType 6/7
              */
             contingencyReason?: string;
         };
@@ -2914,6 +3001,23 @@ export type NfeCreateData = {
                  */
                 text: string;
             }>;
+            /**
+             * procRef — processo referenciado (só NF-e; NFC-e → 422)
+             */
+            processReferences?: Array<{
+                /**
+                 * nProc
+                 */
+                number: string;
+                /**
+                 * indProc
+                 */
+                origin: '0' | '1' | '2' | '3' | '4' | '9';
+                /**
+                 * tpAto
+                 */
+                actType?: '08' | '10' | '12' | '14' | '15';
+            }>;
         };
         export?: {
             [key: string]: unknown;
@@ -2929,6 +3033,11 @@ export type NfeCreateData = {
          */
         techResponsible?: DfeTechResponsible;
         nffRequest?: string;
+        /**
+         * agropecuario (PL_010h) — `defensives` (até 20: number = nReceituario, taxId = CPF do responsável técnico)
+         * OU `transitGuide` (type 1–7, state, series?, number até 9 dígitos), nunca os dois. `amount` (qApl) não existe no leiaute → 422
+         *
+         */
         farming?: {
             [key: string]: unknown;
         };
@@ -3303,7 +3412,7 @@ export type NfeInutilizeData = {
 
 export type NfeInutilizeErrors = {
     /**
-     * `VALIDATION_ERROR` ou `NFE_INUTILIZATION_REJECTED` (SEFAZ recusou; o registro fica no histórico com `confirmed:false`)
+     * `VALIDATION_ERROR`, `NFE_INUTILIZATION_REJECTED` (SEFAZ recusou; o registro fica no histórico com `confirmed:false`) ou `NFE_INUTILIZATION_DISCONTINUED` (emitente em AC, BA ou SP: serviço desativado pela SEFAZ em 11/11/2026, NT 2023.002 v1.02 — não é preciso inutilizar)
      *
      */
     422: ErrorBody;
@@ -3727,7 +3836,7 @@ export type NfceInutilizeData = {
 
 export type NfceInutilizeErrors = {
     /**
-     * `VALIDATION_ERROR` ou `NFCE_INUTILIZATION_REJECTED` (SEFAZ recusou; o registro fica no histórico com `confirmed:false`)
+     * `VALIDATION_ERROR`, `NFCE_INUTILIZATION_REJECTED` (SEFAZ recusou; o registro fica no histórico com `confirmed:false`) ou `NFE_INUTILIZATION_DISCONTINUED` (emitente em AC, BA ou SP: serviço desativado pela SEFAZ em 11/11/2026, NT 2023.002 v1.02 — não é preciso inutilizar)
      *
      */
     422: ErrorBody;
