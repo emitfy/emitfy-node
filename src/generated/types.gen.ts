@@ -239,7 +239,8 @@ export type InvoiceUpdateRequest = {
 
 export type NfeCorrectionRequest = {
     /**
-     * Texto da CC-e (NF-e autorizada). Não reprocessa rejeição.
+     * Texto da nova correção (15–1000). É somado às CC-e anteriores (texto cumulativo, no máximo 1000 no total). Só NF-e autorizada, no prazo de 30 dias (720h), no máximo 20 por nota. Não reprocessa rejeição.
+     *
      */
     correction: string;
 };
@@ -3369,7 +3370,7 @@ export type NfeCorrectionErrors = {
      */
     409: unknown;
     /**
-     * `VALIDATION_ERROR` (texto fora de 15–1000), `NFE_CORRECTION_INVALID`, `NFE_ACCESS_KEY_MISSING` ou `NFE_CORRECTION_REJECTED` (SEFAZ recusou)
+     * `VALIDATION_ERROR` (texto fora de 15–1000), `NFE_CORRECTION_INVALID`, `NFE_ACCESS_KEY_MISSING` ou `NFE_CORRECTION_REJECTED` (SEFAZ recusou; a mensagem de retorno é a da SEFAZ, inclusive recusa por prazo)
      *
      */
     422: unknown;
@@ -3383,6 +3384,8 @@ export type NfeCorrectionResponses = {
         success?: true;
         data?: {
             confirmed?: true;
+            status?: 'registered';
+            nSeqEvento?: number;
             sequence?: number;
             protocol?: string;
             message?: string;
@@ -3390,11 +3393,82 @@ export type NfeCorrectionResponses = {
              * Texto acumulado enviado (correções anteriores + esta)
              */
             cumulativeText?: string;
+            /**
+             * Caminho autenticado do XML do evento
+             */
+            xmlUrl?: string;
+            /**
+             * Sempre null — a CC-e não tem DANFE/PDF próprio
+             */
+            pdfUrl?: string;
         };
     };
 };
 
 export type NfeCorrectionResponse = NfeCorrectionResponses[keyof NfeCorrectionResponses];
+
+export type NfeCorrectionsListData = {
+    body?: never;
+    path: {
+        /**
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
+         */
+        companyId: string;
+        id: string;
+    };
+    query?: never;
+    url: '/companies/{companyId}/nfe/{id}/corrections';
+};
+
+export type NfeCorrectionsListErrors = {
+    /**
+     * `INVOICE_TYPE_NOT_NFE`
+     */
+    400: unknown;
+    /**
+     * `INVOICE_NOT_FOUND`
+     */
+    404: unknown;
+};
+
+export type NfeCorrectionsListResponses = {
+    /**
+     * Lista de CC-e registradas e política atual (prazo, limite, canIssue)
+     */
+    200: unknown;
+};
+
+export type NfeCorrectionXmlData = {
+    body?: never;
+    path: {
+        /**
+         * UUID da empresa na Emitfy (campo `id` de `GET /companies`). Não é o CNPJ — CNPJ no path retorna 400 `INVALID_COMPANY_ID`.
+         *
+         */
+        companyId: string;
+        id: string;
+        sequence: number;
+    };
+    query?: never;
+    url: '/companies/{companyId}/nfe/{id}/corrections/{sequence}/xml';
+};
+
+export type NfeCorrectionXmlErrors = {
+    /**
+     * `INVOICE_NOT_FOUND`, `NFE_CORRECTION_NOT_FOUND` ou `NFE_CORRECTION_XML_NOT_FOUND`
+     */
+    404: unknown;
+};
+
+export type NfeCorrectionXmlResponses = {
+    /**
+     * XML do evento
+     */
+    200: Blob | File;
+};
+
+export type NfeCorrectionXmlResponse = NfeCorrectionXmlResponses[keyof NfeCorrectionXmlResponses];
 
 export type NfeInutilizationsListData = {
     body?: never;
